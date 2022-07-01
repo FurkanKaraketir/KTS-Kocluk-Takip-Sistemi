@@ -15,12 +15,13 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         val currentUser = auth.currentUser
-        if(currentUser == null){
+        if (currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             this.startActivity(intent)
             finish()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun signOut(){
+    private fun signOut() {
         auth.signOut()
         val intent = Intent(this, LoginActivity::class.java)
         this.startActivity(intent)

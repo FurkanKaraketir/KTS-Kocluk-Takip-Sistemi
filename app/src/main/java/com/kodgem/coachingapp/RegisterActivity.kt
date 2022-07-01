@@ -17,7 +17,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private val dersler =
         arrayOf("Matematik", "Türk Dili ve Edebiyatı", "Fizik", "Kimya", "Biyoloji")
 
-    private lateinit var documentID:String
+    private lateinit var documentID: String
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var nameAndSurname = ""
@@ -50,35 +50,35 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
         signUpButton.setOnClickListener {
-            if (emailEditText.text.toString().isNotEmpty()){
+            if (emailEditText.text.toString().isNotEmpty()) {
                 emailEditText.error = null
 
-                if (passwordEditText.text.toString().isNotEmpty()){
+                if (passwordEditText.text.toString().isNotEmpty()) {
                     passwordEditText.error = null
-                    if (gradeText.text.toString().isNotEmpty() || selection ==2){
+                    if (gradeText.text.toString().isNotEmpty() || selection == 2) {
                         gradeText.error = null
-                        if (nameAndSurnameEditText.text.toString().isNotEmpty()){
+                        if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
                             nameAndSurnameEditText.error = null
 
                             nameAndSurname = nameAndSurnameEditText.text.toString()
 
                             grade = gradeText.text.toString()
-                            signUp(emailEditText.text.toString(),passwordEditText.text.toString())
+                            signUp(emailEditText.text.toString(), passwordEditText.text.toString())
 
-                        }else{
+                        } else {
                             nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
 
                         }
 
 
-                    }else{
+                    } else {
                         gradeText.error = "Bu Alan Boş Bırakılamaz"
                     }
 
-                }else{
+                } else {
                     passwordEditText.error = "Bu Alan Boş Bırakılamaz"
                 }
-            }else{
+            } else {
                 emailEditText.error = "Bu Alan Boş Bırakılamaz"
             }
         }
@@ -120,8 +120,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         }
 
 
-
-
     }
 
     private fun signUp(email: String, password: String) {
@@ -130,7 +128,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 if (task.isSuccessful) {
                     documentID = auth.uid!!
 
-                    if (selection ==1){
+                    if (selection == 1) {
                         val user = hashMapOf(
                             "email" to email,
                             "grade" to grade,
@@ -143,16 +141,15 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         db.collection("User").document(documentID)
                             .set(user)
                             .addOnSuccessListener {
-                                Toast.makeText(this,"Başarılı",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this, MainActivity::class.java)
                                 this.startActivity(intent)
                                 finish()
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(this,e.localizedMessage,Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                             }
-                    }
-                    else if (selection == 2){
+                    } else if (selection == 2) {
                         val user = hashMapOf(
                             "email" to email,
                             "id" to documentID,
@@ -164,24 +161,23 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         db.collection("User").document(documentID)
                             .set(user)
                             .addOnSuccessListener {
-                                Toast.makeText(this,"Başarılı",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this, MainActivity::class.java)
                                 this.startActivity(intent)
                                 finish()
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(this,e.localizedMessage,Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                             }
                     }
 
 
-
-
-
                 } else {
                     // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
@@ -223,7 +219,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 3 -> {
                     branch = "Kimya"
                 }
-                4->{
+                4 -> {
                     branch = "Biyoloji"
 
                 }
@@ -235,7 +231,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
+
     }
 
 }

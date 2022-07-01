@@ -15,7 +15,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -33,17 +32,17 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButton.setOnClickListener {
-            if (emailEditText.text.toString().isNotEmpty()){
+            if (emailEditText.text.toString().isNotEmpty()) {
                 emailEditText.error = null
 
-                if (passwordEditText.text.toString().isNotEmpty()){
+                if (passwordEditText.text.toString().isNotEmpty()) {
                     passwordEditText.error = null
-                    signIn(emailEditText.text.toString(),passwordEditText.text.toString())
+                    signIn(emailEditText.text.toString(), passwordEditText.text.toString())
 
-                }else{
+                } else {
                     passwordEditText.error = "Bu Alan Boş Bırakılamaz"
                 }
-            }else{
+            } else {
                 emailEditText.error = "Bu Alan Boş Bırakılamaz"
             }
 
@@ -53,20 +52,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun signIn(email: String, password: String){
+    private fun signIn(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Toast.makeText(this,"Başarılı!",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Başarılı!", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                     finish()
 
                 } else {
                     // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
