@@ -55,38 +55,31 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+
         android:id="@+id/i_want_sign_up_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/TextInputLoginPassword"
-        android:layout_alignEnd="@id/TextInputLoginPassword"
-        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
         android:text="@string/i_want_to_sign_up"
+        android:textColor="@android:color/holo_blue_dark"
         android:textSize="15sp"
         android:textStyle="italic">
 
     </TextView>
 
+    <Button
 
-    <View
         android:id="@+id/LoginButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="55dp"
-        android:background="@drawable/rectangle_4" />
-
-    <TextView
-        android:id="@+id/log_inSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="75dp"
-        android:gravity="top"
+        android:layout_marginBottom="100dp"
         android:text="@string/log_in"
-        android:textAppearance="@style/log_inSmall" />
+        android:textSize="18sp" />
 
 
 </RelativeLayout>

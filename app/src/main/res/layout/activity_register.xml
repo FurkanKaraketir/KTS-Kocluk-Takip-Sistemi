@@ -32,20 +32,22 @@
         <Button
 
             android:id="@+id/studentButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="@string/student" />
+            android:text="@string/student"
+            android:textSize="18sp" />
 
 
         <Button
             android:id="@+id/teacherButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="@string/teacher" />
+            android:text="@string/teacher"
+            android:textSize="18sp" />
 
 
     </LinearLayout>
@@ -71,7 +73,7 @@
                 android:id="@+id/nameAndSurnameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -174,9 +176,11 @@
 
         <Button
             android:id="@+id/signUpButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_up">
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="320dp"
+            android:layout_height="60dp"
+            android:text="@string/sign_up"
+            android:textSize="18sp">
 
         </Button>
 
