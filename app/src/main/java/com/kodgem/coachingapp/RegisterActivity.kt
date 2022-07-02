@@ -1,16 +1,18 @@
 package com.kodgem.coachingapp
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.*
-import com.google.android.material.textfield.TextInputLayout
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.kodgem.coachingapp.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private val alanlar = arrayOf("Dil", "Eşit Ağırlık", "Sözel", "Sayısal")
@@ -20,6 +22,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var documentID: String
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var binding: ActivityRegisterBinding
     private var nameAndSurname = ""
     private var grade = ""
     private var selection = 0
@@ -27,26 +30,25 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         auth = Firebase.auth
         db = Firebase.firestore
 
-        val studentSpinner = findViewById<Spinner>(R.id.studentSpinner)
-        val teacherSpinner = findViewById<Spinner>(R.id.teacherSpinner)
-        val registerLayout = findViewById<LinearLayout>(R.id.registerLayout)
-        val studentButton = findViewById<Button>(R.id.studentButton)
-        val teacherButton = findViewById<Button>(R.id.teacherButton)
-        val studentSpinnerLayout = findViewById<LinearLayout>(R.id.studentSpinnerLayout)
-        val teacherSpinnerLayout = findViewById<LinearLayout>(R.id.teacherSpinnerLayout)
-        val textInputClass = findViewById<TextInputLayout>(R.id.TextInputClass)
-        val signUpButton = findViewById<Button>(R.id.signUpButton)
-
-        val gradeText = findViewById<EditText>(R.id.classEditText)
-
-        val emailEditText = findViewById<EditText>(R.id.emailRegisterEditText)
-        val passwordEditText = findViewById<EditText>(R.id.passwordRegisterEditText)
-
-        val nameAndSurnameEditText = findViewById<EditText>(R.id.nameAndSurnameEditText)
+        val studentSpinner = binding.studentSpinner
+        val teacherSpinner = binding.teacherSpinner
+        val registerLayout = binding.registerLayout
+        val studentButton = binding.studentButton
+        val teacherButton = binding.teacherButton
+        val studentSpinnerLayout = binding.studentSpinnerLayout
+        val teacherSpinnerLayout = binding.teacherSpinnerLayout
+        val textInputClass = binding.TextInputClass
+        val signUpButton = binding.signUpButton
+        val gradeText = binding.classEditText
+        val emailEditText = binding.emailRegisterEditText
+        val passwordEditText = binding.passwordRegisterEditText
+        val nameAndSurnameEditText = binding.nameAndSurnameEditText
 
 
         signUpButton.setOnClickListener {
@@ -141,10 +143,17 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         db.collection("User").document(documentID)
                             .set(user)
                             .addOnSuccessListener {
-                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                this.startActivity(intent)
-                                finish()
+
+                                db.collection("School").document("SchoolIDDDD")
+                                    .collection("Student").document(documentID).set(user)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        this.startActivity(intent)
+                                        finish()
+                                    }
+
+
                             }
                             .addOnFailureListener { e ->
                                 Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -161,10 +170,17 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         db.collection("User").document(documentID)
                             .set(user)
                             .addOnSuccessListener {
-                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                this.startActivity(intent)
-                                finish()
+
+                                db.collection("School").document("SchoolIDDDD")
+                                    .collection("Teacher").document(documentID).set(user)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        this.startActivity(intent)
+                                        finish()
+                                    }
+
+
                             }
                             .addOnFailureListener { e ->
                                 Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -175,7 +191,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 } else {
                     // If sign in fails, display a message to the user.
                     Toast.makeText(
-                        baseContext, "Authentication failed.",
+                        baseContext, "Kayıt Başarısız!",
                         Toast.LENGTH_SHORT
                     ).show()
                 }

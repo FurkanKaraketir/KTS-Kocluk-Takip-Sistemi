@@ -7,13 +7,13 @@
 
     <Button
         android:id="@+id/signOutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
         style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/k_yap">
+        android:text="@string/k_yap"
+        android:textSize="18sp">
 
     </Button>
 
