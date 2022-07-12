@@ -46,6 +46,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
+    implementation "com.andkulikov:transitionseverywhere:1.8.1"
 
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
