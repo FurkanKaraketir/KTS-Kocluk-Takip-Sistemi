@@ -1,60 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/welcomeText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp">
 
         <LinearLayout
-            android:id="@+id/transitions_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/transitions_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/helloTextView"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/merhaba" />
+
+                <TextView
+                    android:id="@+id/nameAndSurnameTextView"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text=""
+                    android:visibility="gone" />
+            </LinearLayout>
+
 
             <TextView
-                android:id="@+id/helloTextView"
+                android:id="@+id/contentTextView"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="25dp"
-                android:text="@string/merhaba" />
-
-            <TextView
-                android:id="@+id/nameAndSurnameTextView"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:text=""
-                android:visibility="gone" />
+                android:textSize="17sp">
+
+            </TextView>
+
+
         </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/contentTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="25dp"
-            android:text=""
-            android:textSize="17sp">
-
-        </TextView>
-
-
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
