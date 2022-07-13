@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
@@ -71,8 +72,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         db.collection("School").document("SchoolIDDDD").collection("Student")
-            .document(auth.uid.toString()).collection("Studies").get().addOnSuccessListener {
-                val documents = it.documents
+            .document(auth.uid.toString()).collection("Studies")
+            .orderBy("subjectTheme", Query.Direction.ASCENDING).addSnapshotListener { it, _ ->
+                studyList.clear()
+                val documents = it!!.documents
                 for (document in documents) {
                     val subjectTheme = document.get("subjectTheme").toString()
                     val subjectCount = document.get("toplamCalisma").toString()

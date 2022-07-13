@@ -24,10 +24,11 @@ open class StudiesRecyclerAdapter(private val studyList: ArrayList<Study>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudyHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.study_row, parent, false)
-        return StudyHolder(view)    }
+        return StudyHolder(view)
+    }
 
     override fun onBindViewHolder(holder: StudyHolder, position: Int) {
-        with(holder){
+        with(holder) {
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
 

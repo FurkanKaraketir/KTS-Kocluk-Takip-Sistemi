@@ -14,4 +14,17 @@
     <string name="k_yap">ÇIKIŞ YAP</string>
     <string name="merhaba">Merhaba: </string>
     <string name="add_something">Add Something</string>
+    <string name="mant_k">Mantık</string>
+    <string name="k_meler">Kümeler</string>
+    <string name="denklemler_ve_e_itsizlikler">Denklemler ve Eşitsizlikler</string>
+    <string name="genler">Üçgenler</string>
+    <string name="veri">Veri</string>
+    <string name="al_man_n_dersini_ve_konusunu_belirle">Çalışmanın Dersini ve Konusunu Belirle</string>
+    <string name="matematik">Matematik</string>
+    <string name="fizik">Fizik</string>
+    <string name="ka_dakika_konu_al_t_n">Kaç Dakika Konu Çalıştın?</string>
+    <string name="ka_tane_soru_zd_n">Kaç Tane Soru Çözdün?</string>
+    <string name="ka_dakika_testi_zd_n">Kaç Dakika Testi Çözdün?</string>
+    <string name="konu">Konu:</string>
+    <string name="b_tt">BİTTİ</string>
 </resources>

@@ -14,8 +14,15 @@
         android:theme="@style/Theme.CoachingApp"
         tools:targetApi="31">
         <activity
+            android:name=".EnterStudyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ClassesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"

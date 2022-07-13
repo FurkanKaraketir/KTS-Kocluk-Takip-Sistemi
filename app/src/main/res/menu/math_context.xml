@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mantik"
+        android:title="@string/mant_k" />
+    <item
+        android:id="@+id/kumeler"
+        android:title="@string/k_meler" />
+    <item
+        android:id="@+id/denklemlerVeEsitsizlikler"
+        android:title="@string/denklemler_ve_e_itsizlikler" />
+    <item
+        android:id="@+id/ucgenler"
+        android:title="@string/genler" />
+
+    <item
+        android:id="@+id/veri"
+        android:title="@string/veri" />
+</menu>
