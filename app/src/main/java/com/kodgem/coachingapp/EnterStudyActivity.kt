@@ -61,13 +61,13 @@ class EnterStudyActivity : AppCompatActivity() {
                         currentTestsEditText.error = null
                         val study = hashMapOf(
                             "id" to documentID,
-                            "konuAnlatımı" to currentMinutesEditText.text.toString(),
-                            "konuTestiDK" to currentTestsMinutesEditText.text.toString(),
+                            "konuAnlatımı" to currentMinutesEditText.text.toString().toInt(),
+                            "konuTestiDK" to currentTestsMinutesEditText.text.toString().toInt(),
                             "subjectTheme" to subjectType,
-                            "toplamCalisma" to (currentMinutesEditText.text.toString()
+                            "toplamCalisma" to currentMinutesEditText.text.toString()
                                 .toInt() + currentTestsMinutesEditText.text.toString()
-                                .toInt()).toString(),
-                            "çözülenSoru" to currentTestsEditText.text.toString()
+                                .toInt(),
+                            "çözülenSoru" to currentTestsEditText.text.toString().toInt()
                         )
                         db.collection("School").document("SchoolIDDDD").collection("Student")
                             .document(auth.uid.toString()).collection("Studies")

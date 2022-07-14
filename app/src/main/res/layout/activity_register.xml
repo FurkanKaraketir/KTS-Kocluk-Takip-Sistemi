@@ -32,7 +32,7 @@
         <Button
 
             android:id="@+id/studentButton"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -42,7 +42,7 @@
 
         <Button
             android:id="@+id/teacherButton"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -176,7 +176,7 @@
 
         <Button
             android:id="@+id/signUpButton"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="320dp"
             android:layout_height="60dp"
             android:text="@string/sign_up"

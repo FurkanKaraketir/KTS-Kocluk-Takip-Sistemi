@@ -45,9 +45,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val nameAndSurnameTextView = binding.nameAndSurnameTextView
         val transitionsContainer = binding.transitionsContainer
+        val sayacContainer = binding.sayacContainer
+
+        var sayacVisible = false
+
         val contentTextView = binding.contentTextView
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
+        val sayacButton = binding.sayacButton
 
         auth = Firebase.auth
         db = Firebase.firestore
@@ -61,32 +66,44 @@ class MainActivity : AppCompatActivity() {
         var visible = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             nameAndSurnameTextView.text = it.get("nameAndSurname").toString()
-            if (it.get("personType").toString() == "Student") {
-                contentTextView.text = "Geçmiş Çalışmalarım"
-            } else if (it.get("personType").toString() == "Teacher") {
-                contentTextView.text = "Öğrencilerim"
-            }
+
             TransitionManager.beginDelayedTransition(transitionsContainer)
             visible = !visible
             nameAndSurnameTextView.visibility = if (visible) View.VISIBLE else View.GONE
+
+
+            if (it.get("personType").toString() == "Student") {
+                sayacButton.visibility = View.VISIBLE
+                contentTextView.text = "Geçmiş Çalışmalarım"
+                db.collection("School").document("SchoolIDDDD").collection("Student")
+                    .document(auth.uid.toString()).collection("Studies")
+                    .orderBy("subjectTheme", Query.Direction.ASCENDING)
+                    .addSnapshotListener { it1, _ ->
+                        studyList.clear()
+                        val documents = it1!!.documents
+                        for (document in documents) {
+                            val subjectTheme = document.get("subjectTheme").toString()
+                            val subjectCount = document.get("toplamCalisma").toString()
+                            val currentStudy = Study(subjectTheme, subjectCount)
+
+                            studyList.add(currentStudy)
+
+                        }
+                        recyclerViewAdapter.notifyDataSetChanged()
+
+                    }
+
+
+            } else if (it.get("personType").toString() == "Teacher") {
+                contentTextView.text = "Öğrencilerim"
+            }
+            TransitionManager.beginDelayedTransition(sayacContainer)
+            sayacVisible = !sayacVisible
+            contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE
+
         }
 
-        db.collection("School").document("SchoolIDDDD").collection("Student")
-            .document(auth.uid.toString()).collection("Studies")
-            .orderBy("subjectTheme", Query.Direction.ASCENDING).addSnapshotListener { it, _ ->
-                studyList.clear()
-                val documents = it!!.documents
-                for (document in documents) {
-                    val subjectTheme = document.get("subjectTheme").toString()
-                    val subjectCount = document.get("toplamCalisma").toString()
-                    val currentStudy = Study(subjectTheme, subjectCount)
 
-                    studyList.add(currentStudy)
-
-                }
-                recyclerViewAdapter.notifyDataSetChanged()
-
-            }
 
         addStudyButton.setOnClickListener {
             val intent = Intent(this, ClassesActivity::class.java)
@@ -94,6 +111,11 @@ class MainActivity : AppCompatActivity() {
         }
         signOutButton.setOnClickListener {
             signOut()
+        }
+
+        sayacButton.setOnClickListener {
+            val intent = Intent(this, ChronometerActivity::class.java)
+            this.startActivity(intent)
         }
 
 

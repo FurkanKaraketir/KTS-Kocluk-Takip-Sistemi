@@ -44,7 +44,7 @@
 
             <Button
                 android:id="@+id/mathButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="320dp"
                 android:layout_height="60dp"
                 android:layout_margin="15dp"
@@ -53,7 +53,7 @@
 
             <Button
                 android:id="@+id/physics"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="320dp"
                 android:layout_height="60dp"
                 android:layout_margin="15dp"

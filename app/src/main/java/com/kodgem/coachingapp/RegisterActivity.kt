@@ -24,7 +24,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private lateinit var db: FirebaseFirestore
     private lateinit var binding: ActivityRegisterBinding
     private var nameAndSurname = ""
-    private var grade = ""
+    private var grade = 0
     private var selection = 0
     private var branch = ""
 
@@ -64,7 +64,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
                             nameAndSurname = nameAndSurnameEditText.text.toString()
 
-                            grade = gradeText.text.toString()
+                            grade = gradeText.text.toString().toInt()
                             signUp(emailEditText.text.toString(), passwordEditText.text.toString())
 
                         } else {

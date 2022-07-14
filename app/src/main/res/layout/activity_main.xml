@@ -17,7 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <LinearLayout
@@ -32,6 +33,7 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="25dp"
                     android:text="@string/merhaba" />
@@ -41,23 +43,43 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_marginStart="15dp"
                     android:text=""
                     android:visibility="gone" />
+
+
             </LinearLayout>
 
-
-            <TextView
-                android:id="@+id/contentTextView"
-                style="@style/TextAppearance.AppCompat.Title"
+            <LinearLayout
+                android:id="@+id/sayacContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="25dp"
-                android:text=""
-                android:textSize="17sp">
+                android:orientation="horizontal">
 
-            </TextView>
+
+                <TextView
+                    android:id="@+id/contentTextView"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="25dp"
+                    android:text=""
+                    android:textSize="17sp" />
+
+                <Button
+                    android:id="@+id/sayacButton"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/saya"
+                    android:textSize="15sp"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_baseline_timer_24" />
+
+
+            </LinearLayout>
 
 
         </LinearLayout>

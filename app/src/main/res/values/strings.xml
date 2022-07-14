@@ -27,4 +27,7 @@
     <string name="ka_dakika_testi_zd_n">Kaç Dakika Testi Çözdün?</string>
     <string name="konu">Konu:</string>
     <string name="b_tt">BİTTİ</string>
+    <string name="saya">Sayaç</string>
+    <string name="_00_00">00:00</string>
+    <string name="a_k_tema">Açık Tema</string>
 </resources>
