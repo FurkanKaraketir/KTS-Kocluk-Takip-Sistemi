@@ -43,7 +43,7 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="5dp"
                     android:text=""
                     android:visibility="gone" />
 
@@ -74,33 +74,23 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/textCard"
+
+    <TextView
+        android:id="@+id/contentTextView"
+        style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/welcomeText"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="25dp"
-        app:cardCornerRadius="8dp">
-
-        <TextView
-            android:id="@+id/contentTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text=""
-            android:textSize="17sp" />
-
-    </androidx.cardview.widget.CardView>
+        android:layout_margin="10dp"
+        android:text="" />
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/previousStudies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/textCard"
+        android:layout_below="@id/contentTextView"
         android:layout_margin="10dp">
 
 

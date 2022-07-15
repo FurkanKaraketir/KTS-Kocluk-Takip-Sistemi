@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             if (it.get("personType").toString() == "Student") {
                 sayacButton.visibility = View.VISIBLE
                 contentTextView.text = "Geçmiş Çalışmalarım"
+
                 db.collection("School").document("SchoolIDDDD").collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
                     .orderBy("subjectTheme", Query.Direction.ASCENDING)
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity() {
 
             } else if (it.get("personType").toString() == "Teacher") {
                 contentTextView.text = "Öğrencilerim"
+
             }
             TransitionManager.beginDelayedTransition(sayacContainer)
             sayacVisible = !sayacVisible
