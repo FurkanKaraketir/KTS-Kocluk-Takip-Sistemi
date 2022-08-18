@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.SystemClock
+import android.transition.TransitionManager
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -25,6 +26,8 @@ class ChronometerActivity : AppCompatActivity() {
         val pauseButton = binding.pauseButton
 
         val chronometer = binding.chronometer
+        val transitionsContainer = binding.chronometerAnimationContainer
+
         plyButton.visibility = View.VISIBLE
         stpButton.visibility = View.GONE
         pauseButton.visibility = View.GONE
@@ -67,6 +70,9 @@ class ChronometerActivity : AppCompatActivity() {
             if (!isPlay) {
                 chronometer.base = SystemClock.elapsedRealtime() - pauseOffSet
                 chronometer.start()
+
+                TransitionManager.beginDelayedTransition(transitionsContainer)
+
                 plyButton.visibility = View.GONE
                 stpButton.visibility = View.VISIBLE
                 pauseButton.visibility = View.VISIBLE
@@ -78,6 +84,9 @@ class ChronometerActivity : AppCompatActivity() {
             chronometer.base = SystemClock.elapsedRealtime()
             pauseOffSet = 0
             chronometer.stop()
+
+            TransitionManager.beginDelayedTransition(transitionsContainer)
+
             plyButton.visibility = View.VISIBLE
             stpButton.visibility = View.GONE
             pauseButton.visibility = View.GONE
@@ -89,6 +98,9 @@ class ChronometerActivity : AppCompatActivity() {
                 chronometer.stop()
                 pauseOffSet = SystemClock.elapsedRealtime() - chronometer.base
                 isPlay = false
+
+                TransitionManager.beginDelayedTransition(transitionsContainer)
+
                 plyButton.visibility = View.VISIBLE
                 stpButton.visibility = View.VISIBLE
                 pauseButton.visibility = View.GONE
