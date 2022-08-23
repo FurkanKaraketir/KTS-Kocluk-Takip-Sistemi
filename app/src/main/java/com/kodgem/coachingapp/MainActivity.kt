@@ -14,18 +14,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.kodgem.coachingapp.adapter.StudentsRecyclerAdapter
 import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityMainBinding
+import com.kodgem.coachingapp.models.Student
 import com.kodgem.coachingapp.models.Study
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityMainBinding
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewPreviousStudies: RecyclerView
+    private lateinit var recyclerViewMyStudents: RecyclerView
     private lateinit var db: FirebaseFirestore
-    private lateinit var recyclerViewAdapter: StudiesRecyclerAdapter
+    private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
+    private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var studyList = ArrayList<Study>()
+    private var studentList = ArrayList<Student>()
 
     public override fun onStart() {
         super.onStart()
@@ -53,15 +58,19 @@ class MainActivity : AppCompatActivity() {
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
         val sayacButton = binding.sayacButton
+        val allStudentsBtn = binding.allStudentsBtn
 
         auth = Firebase.auth
         db = Firebase.firestore
 
-        recyclerView = binding.previousStudies
+        recyclerViewPreviousStudies = binding.previousStudies
+        recyclerViewMyStudents = binding.myStudents
+
         val layoutManager = LinearLayoutManager(applicationContext)
-        recyclerView.layoutManager = layoutManager
-        recyclerViewAdapter = StudiesRecyclerAdapter(studyList)
-        recyclerView.adapter = recyclerViewAdapter
+
+
+
+
 
         var visible = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
@@ -73,6 +82,13 @@ class MainActivity : AppCompatActivity() {
 
 
             if (it.get("personType").toString() == "Student") {
+                recyclerViewPreviousStudies.visibility = View.VISIBLE
+                allStudentsBtn.visibility = View.GONE
+
+                recyclerViewPreviousStudies.layoutManager = layoutManager
+                recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(studyList)
+                recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
+
                 sayacButton.visibility = View.VISIBLE
                 contentTextView.text = "Geçmiş Çalışmalarım"
 
@@ -90,13 +106,38 @@ class MainActivity : AppCompatActivity() {
                             studyList.add(currentStudy)
 
                         }
-                        recyclerViewAdapter.notifyDataSetChanged()
+                        recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
 
                     }
 
 
             } else if (it.get("personType").toString() == "Teacher") {
+                recyclerViewMyStudents.visibility = View.VISIBLE
+                allStudentsBtn.visibility = View.VISIBLE
+                recyclerViewMyStudents.layoutManager = layoutManager
+
+                recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(studentList)
+
+                recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
                 contentTextView.text = "Öğrencilerim"
+                db.collection("School").document("SchoolIDDDD").collection("Student")
+                    .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { it2, _ ->
+
+                        studentList.clear()
+                        val documents = it2!!.documents
+                        for (document in documents){
+                            val studentName = document.get("nameAndSurname").toString()
+                            val teacher = document.get("teacher").toString()
+                            val id = document.get("id").toString()
+                            val currentStudent = Student(studentName,teacher,id)
+                            studentList.add(currentStudent)
+
+                        }
+
+                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+
+                }
+
 
             }
             TransitionManager.beginDelayedTransition(sayacContainer)
@@ -106,6 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        allStudentsBtn.setOnClickListener {
+            val intent = Intent(this,AllStudentsActivity::class.java)
+            this.startActivity(intent)
+        }
 
         addStudyButton.setOnClickListener {
             val intent = Intent(this, ClassesActivity::class.java)

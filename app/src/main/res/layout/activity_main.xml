@@ -48,6 +48,8 @@
                     android:visibility="gone" />
 
 
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -69,7 +71,15 @@
 
 
             </LinearLayout>
+            <Button
+                android:visibility="gone"
+                android:id="@+id/allStudentsBtn"
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/t_m_renciler">
 
+            </Button>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -85,17 +95,34 @@
         android:layout_margin="10dp"
         android:text="" />
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/previousStudies"
+    <LinearLayout
+        android:layout_below="@id/contentTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/contentTextView"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/myStudents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone">
 
 
-    </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/previousStudies"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone">
+
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
