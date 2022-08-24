@@ -48,8 +48,6 @@
                     android:visibility="gone" />
 
 
-
-
             </LinearLayout>
 
             <LinearLayout
@@ -71,13 +69,14 @@
 
 
             </LinearLayout>
+
             <Button
-                android:visibility="gone"
                 android:id="@+id/allStudentsBtn"
-                android:layout_margin="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/t_m_renciler">
+                android:layout_margin="5dp"
+                android:text="@string/t_m_renciler"
+                android:visibility="gone">
 
             </Button>
 
@@ -96,10 +95,22 @@
         android:text="" />
 
     <LinearLayout
-        android:layout_below="@id/contentTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/contentTextView"
         android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/searchStudentMainActivityEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:autofillHints="StudentName"
+            android:hint="@string/renci_ara"
+            android:inputType="text"
+            android:visibility="gone">
+
+        </EditText>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/myStudents"

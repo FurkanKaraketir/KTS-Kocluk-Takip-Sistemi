@@ -1,5 +1,6 @@
 package com.kodgem.coachingapp.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,13 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kodgem.coachingapp.R
+import com.kodgem.coachingapp.StudiesActivity
 import com.kodgem.coachingapp.databinding.StudentRowBinding
 import com.kodgem.coachingapp.models.Student
 
 open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) :
     RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
     private lateinit var db: FirebaseFirestore
-    lateinit var auth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth
 
     class StudentHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = StudentRowBinding.bind(itemView)
@@ -32,6 +34,11 @@ open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) 
 
             binding.studentNameTextView.text = studentList[position].studentName
 
+            binding.studentCard.setOnClickListener {
+                val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
+                intent.putExtra("studentID", studentList[position].id)
+                holder.itemView.context.startActivity(intent)
+            }
         }
     }
 

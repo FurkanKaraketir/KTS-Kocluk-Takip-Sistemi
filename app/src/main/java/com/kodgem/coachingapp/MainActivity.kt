@@ -3,9 +3,12 @@ package com.kodgem.coachingapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +22,8 @@ import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityMainBinding
 import com.kodgem.coachingapp.models.Student
 import com.kodgem.coachingapp.models.Study
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var studyList = ArrayList<Study>()
+    private lateinit var filteredList: ArrayList<Student>
+
     private var studentList = ArrayList<Student>()
 
     public override fun onStart() {
@@ -59,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = binding.signOutButton
         val sayacButton = binding.sayacButton
         val allStudentsBtn = binding.allStudentsBtn
+        val searchEditText = binding.searchStudentMainActivityEditText
 
         auth = Firebase.auth
         db = Firebase.firestore
@@ -66,10 +74,33 @@ class MainActivity : AppCompatActivity() {
         recyclerViewPreviousStudies = binding.previousStudies
         recyclerViewMyStudents = binding.myStudents
 
-        val layoutManager = LinearLayoutManager(applicationContext)
 
 
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                filteredList = ArrayList()
+                if (p0.toString() != "") {
+                    for (item in studentList) {
+                        if (item.studentName.lowercase(Locale.getDefault())
+                                .contains(p0.toString().lowercase(Locale.getDefault()))
+                        ) {
+                            filteredList.add(item)
+                        }
+                    }
+                    setupRecyclerView(filteredList)
+                } else {
+                    setupRecyclerView(studentList)
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
 
 
         var visible = false
@@ -82,8 +113,10 @@ class MainActivity : AppCompatActivity() {
 
 
             if (it.get("personType").toString() == "Student") {
+                searchEditText.visibility = View.GONE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.GONE
+                val layoutManager = GridLayoutManager(applicationContext, 2)
 
                 recyclerViewPreviousStudies.layoutManager = layoutManager
                 recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(studyList)
@@ -106,37 +139,37 @@ class MainActivity : AppCompatActivity() {
                             studyList.add(currentStudy)
 
                         }
+
                         recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
 
                     }
 
 
             } else if (it.get("personType").toString() == "Teacher") {
+                searchEditText.visibility = View.VISIBLE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
-                recyclerViewMyStudents.layoutManager = layoutManager
+                addStudyButton.visibility = View.GONE
 
-                recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(studentList)
-
-                recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
                 contentTextView.text = "Öğrencilerim"
                 db.collection("School").document("SchoolIDDDD").collection("Student")
                     .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { it2, _ ->
 
                         studentList.clear()
                         val documents = it2!!.documents
-                        for (document in documents){
+                        for (document in documents) {
                             val studentName = document.get("nameAndSurname").toString()
                             val teacher = document.get("teacher").toString()
                             val id = document.get("id").toString()
-                            val currentStudent = Student(studentName,teacher,id)
+                            val currentStudent = Student(studentName, teacher, id)
                             studentList.add(currentStudent)
 
                         }
+                        setupRecyclerView(studentList)
 
                         recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
-                }
+                    }
 
 
             }
@@ -148,7 +181,7 @@ class MainActivity : AppCompatActivity() {
 
 
         allStudentsBtn.setOnClickListener {
-            val intent = Intent(this,AllStudentsActivity::class.java)
+            val intent = Intent(this, AllStudentsActivity::class.java)
             this.startActivity(intent)
         }
 
@@ -165,6 +198,17 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
+
+    }
+
+    private fun setupRecyclerView(list: ArrayList<Student>) {
+        val layoutManager = LinearLayoutManager(applicationContext)
+
+        recyclerViewMyStudents.layoutManager = layoutManager
+
+        recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(list)
+
+        recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 
     }
 

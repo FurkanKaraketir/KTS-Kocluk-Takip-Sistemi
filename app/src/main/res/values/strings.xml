@@ -31,4 +31,7 @@
     <string name="_00_00">00:00</string>
     <string name="a_k_tema">Açık Tema</string>
     <string name="t_m_renciler">Tüm Öğrenciler</string>
+    <string name="al_malar">Çalışmalar</string>
+    <string name="toplam_al_la_s_re">Toplam Çalışıla Süre</string>
+    <string name="renci_ara">Öğrenci Ara:</string>
 </resources>

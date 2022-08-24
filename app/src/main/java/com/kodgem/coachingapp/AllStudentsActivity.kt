@@ -1,8 +1,10 @@
 package com.kodgem.coachingapp
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -11,9 +13,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.adapter.AllStudentsRecyclerAdapter
-import com.kodgem.coachingapp.adapter.StudentsRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityAllStudentsBinding
 import com.kodgem.coachingapp.models.Student
+import java.util.*
 
 class AllStudentsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -23,6 +25,7 @@ class AllStudentsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAllStudentsBinding
     private lateinit var recyclerViewAllStudents: RecyclerView
     private var studentList = ArrayList<Student>()
+    private lateinit var filteredList: ArrayList<Student>
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +35,38 @@ class AllStudentsActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
+        val searchEditText = binding.searchStudentAllStudentsActivityEditText
         recyclerViewAllStudents = binding.recyclerViewAllStudents
-        val layoutManager = LinearLayoutManager(applicationContext)
-        recyclerViewAllStudents.layoutManager = layoutManager
-        recyclerViewAllStudentsAdapter = AllStudentsRecyclerAdapter(studentList)
-        recyclerViewAllStudents.adapter = recyclerViewAllStudentsAdapter
+        setupRecyclerView(studentList)
+
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                filteredList = ArrayList()
+                if (p0.toString() != "") {
+                    for (item in studentList) {
+                        if (item.studentName.lowercase(Locale.getDefault())
+                                .contains(p0.toString().lowercase(Locale.getDefault()))
+                        ) {
+                            filteredList.sortBy { it.studentName }
+                            filteredList.add(item)
+                        }
+                    }
+                    setupRecyclerView(filteredList)
+                } else {
+                    setupRecyclerView(studentList)
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+
+
         db.collection("School").document("SchoolIDDDD").collection("Student")
             .whereEqualTo("teacher", "").addSnapshotListener { value, _ ->
                 studentList.clear()
@@ -45,10 +75,11 @@ class AllStudentsActivity : AppCompatActivity() {
                         val studentName = document.get("nameAndSurname").toString()
                         val teacher = document.get("teacher").toString()
                         val studentID = document.get("id").toString()
-                        val currentStudent = Student(studentName, teacher,studentID)
+                        val currentStudent = Student(studentName, teacher, studentID)
                         studentList.add(currentStudent)
                     }
                 }
+
 
                 db.collection("School").document("SchoolIDDDD").collection("Student")
                     .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { value2, _ ->
@@ -57,14 +88,22 @@ class AllStudentsActivity : AppCompatActivity() {
                                 val studentName = document.get("nameAndSurname").toString()
                                 val teacher = document.get("teacher").toString()
                                 val studentID = document.get("id").toString()
-                                val currentStudent = Student(studentName,teacher,studentID)
+                                val currentStudent = Student(studentName, teacher, studentID)
                                 studentList.add(currentStudent)
                             }
+                            studentList.sortBy { it.studentName }
                             recyclerViewAllStudentsAdapter.notifyDataSetChanged()
                         }
                     }
             }
 
 
+    }
+
+    private fun setupRecyclerView(list: ArrayList<Student>) {
+        val layoutManager = LinearLayoutManager(applicationContext)
+        recyclerViewAllStudents.layoutManager = layoutManager
+        recyclerViewAllStudentsAdapter = AllStudentsRecyclerAdapter(list)
+        recyclerViewAllStudents.adapter = recyclerViewAllStudentsAdapter
     }
 }
