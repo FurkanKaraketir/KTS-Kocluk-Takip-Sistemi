@@ -127,12 +127,12 @@ class MainActivity : AppCompatActivity() {
 
                 db.collection("School").document("SchoolIDDDD").collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
-                    .orderBy("subjectTheme", Query.Direction.ASCENDING)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
                     .addSnapshotListener { it1, _ ->
                         studyList.clear()
                         val documents = it1!!.documents
                         for (document in documents) {
-                            val subjectTheme = document.get("subjectTheme").toString()
+                            val subjectTheme = document.get("konuAdi").toString()
                             val subjectCount = document.get("toplamCalisma").toString()
                             val currentStudy = Study(subjectTheme, subjectCount)
 

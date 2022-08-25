@@ -17,41 +17,171 @@ class ClassesActivity : AppCompatActivity() {
 
 
         val mathButton = binding.mathButton
+        val fizik = binding.physics
+        val turkce = binding.turkce
+        val cografya = binding.cografya
+        val biyoloji = binding.biyoloji
+        val kimya = binding.kimya
+        val tarih = binding.tarih
+
         mathButton.setOnClickListener {
 
             //create instance of PopupMenu
             val popup = PopupMenu(applicationContext, it)
             //inflate menu with layout mainmenu
-            popup.inflate(R.menu.math_context)
+            popup.inflate(R.menu.subject_context)
             popup.show()
 
             popup.setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.kumeler) {
+                if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("studyType", "Kümeler")
+                    intent.putExtra("dersAdi", "Matematik")
+                    intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
 
-                if (item.itemId == R.id.mantik) {
+                if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("studyType", "Mantık")
+                    intent.putExtra("dersAdi", "Matematik")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        fizik.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Fizik")
+                    intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
 
-                if (item.itemId == R.id.denklemlerVeEsitsizlikler) {
+                if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("studyType", "Denklemler ve Eşitsizlikler")
+                    intent.putExtra("dersAdi", "Fizik")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        turkce.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Türkçe-Edebiyat")
+                    intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
 
-                if (item.itemId == R.id.ucgenler) {
+                if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("studyType", "Üçgenler")
+                    intent.putExtra("dersAdi", "Türkçe-Edebiyat")
+                    intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
-                if (item.itemId == R.id.veri) {
+                false
+            }
+        }
+        cografya.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("studyType", "Veri")
+                    intent.putExtra("dersAdi", "Coğrafya")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Coğrafya")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        biyoloji.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Biyoloji")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Biyoloji")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        kimya.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Kimya")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Kimya")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        tarih.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Tarih")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Tarih")
+                    intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
                 false

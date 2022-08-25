@@ -13,17 +13,43 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="30dp"
-        android:text="@string/konu">
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/t_r">
 
     </TextView>
+
+    <LinearLayout
+        android:id="@+id/studySpinnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subjectTypeTitle"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/konu_se_iniz"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/studySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"
+            android:tooltipText="Konu Seçimi Yapınız" />
+    </LinearLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TextInputCurrentMinutes"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/subjectTypeTitle"
+        android:layout_below="@id/studySpinnerLayout"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_margin="20dp"

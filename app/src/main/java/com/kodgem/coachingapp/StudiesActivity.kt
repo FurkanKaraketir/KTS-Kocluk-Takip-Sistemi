@@ -46,12 +46,12 @@ class StudiesActivity : AppCompatActivity() {
         if (studentID != null) {
             db.collection("School").document("SchoolIDDDD").collection("Student")
                 .document(studentID).collection("Studies")
-                .orderBy("subjectTheme", Query.Direction.ASCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener { value, _ ->
                     if (value != null) {
                         studyList.clear()
                         for (document in value) {
-                            val studyName = document.get("subjectTheme").toString()
+                            val studyName = document.get("konuAdi").toString()
                             val sure = document.get("toplamCalisma").toString()
                             val currentStudy = Study(studyName, sure)
                             studyList.add(currentStudy)
