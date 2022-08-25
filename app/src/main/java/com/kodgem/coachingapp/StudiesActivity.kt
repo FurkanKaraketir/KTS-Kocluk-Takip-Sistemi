@@ -53,7 +53,10 @@ class StudiesActivity : AppCompatActivity() {
                         for (document in value) {
                             val studyName = document.get("konuAdi").toString()
                             val sure = document.get("toplamCalisma").toString()
-                            val currentStudy = Study(studyName, sure)
+                            val studyDersAdi = document.get("dersAdi").toString()
+                            val studyTur = document.get("tür").toString()
+                            val currentStudy =
+                                Study(studyName, sure, studentID, studyDersAdi, studyTur)
                             studyList.add(currentStudy)
                         }
                         recyclerViewStudiesAdapter.notifyDataSetChanged()

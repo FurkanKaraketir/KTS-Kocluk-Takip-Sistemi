@@ -39,4 +39,11 @@
     <string name="t_r">Tür:</string>
     <string name="konu_se_iniz">Konu Seçiniz:</string>
     <string name="alt_konu_se_iniz">Alt Konu Seçiniz</string>
+    <string name="al_ma_ara">Çalışma Ara:</string>
+    <string name="geometri">Geometri</string>
+    <string name="kimya">Kimya</string>
+    <string name="biyoloji">Biyoloji</string>
+    <string name="co_rafya">Coğrafya</string>
+    <string name="tarih">Tarih</string>
+    <string name="t_rk_e">Türkçe</string>
 </resources>

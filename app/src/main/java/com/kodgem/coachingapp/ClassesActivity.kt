@@ -23,6 +23,7 @@ class ClassesActivity : AppCompatActivity() {
         val biyoloji = binding.biyoloji
         val kimya = binding.kimya
         val tarih = binding.tarih
+        val geometri = binding.geometri
 
         mathButton.setOnClickListener {
 
@@ -49,6 +50,32 @@ class ClassesActivity : AppCompatActivity() {
                 false
             }
         }
+
+        geometri.setOnClickListener {
+            //create instance of PopupMenu
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Geometri")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Geometri")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+
         fizik.setOnClickListener {
             val popup = PopupMenu(applicationContext, it)
             //inflate menu with layout mainmenu

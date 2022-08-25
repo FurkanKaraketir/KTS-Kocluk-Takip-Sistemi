@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var studyList = ArrayList<Study>()
     private lateinit var filteredList: ArrayList<Student>
+    private lateinit var filteredStudyList: ArrayList<Study>
 
     private var studentList = ArrayList<Student>()
 
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         val sayacButton = binding.sayacButton
         val allStudentsBtn = binding.allStudentsBtn
         val searchEditText = binding.searchStudentMainActivityEditText
-
+        val studySearchEditText = binding.searchStudyEditText
         auth = Firebase.auth
         db = Firebase.firestore
 
@@ -91,9 +92,35 @@ class MainActivity : AppCompatActivity() {
                             filteredList.add(item)
                         }
                     }
-                    setupRecyclerView(filteredList)
+                    setupStudentRecyclerView(filteredList)
                 } else {
-                    setupRecyclerView(studentList)
+                    setupStudentRecyclerView(studentList)
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+
+        studySearchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                filteredStudyList = ArrayList()
+                if (p0.toString() != "") {
+                    for (item in studyList) {
+                        if (item.studyName.lowercase(Locale.getDefault())
+                                .contains(p0.toString().lowercase(Locale.getDefault()))
+                        ) {
+                            filteredStudyList.add(item)
+                        }
+                    }
+                    setupStudyRecyclerView(filteredStudyList)
+                } else {
+                    setupStudyRecyclerView(studyList)
                 }
             }
 
@@ -113,14 +140,10 @@ class MainActivity : AppCompatActivity() {
 
 
             if (it.get("personType").toString() == "Student") {
+                studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.GONE
-                val layoutManager = GridLayoutManager(applicationContext, 2)
-
-                recyclerViewPreviousStudies.layoutManager = layoutManager
-                recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(studyList)
-                recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
 
                 sayacButton.visibility = View.VISIBLE
                 contentTextView.text = "Geçmiş Çalışmalarım"
@@ -134,11 +157,21 @@ class MainActivity : AppCompatActivity() {
                         for (document in documents) {
                             val subjectTheme = document.get("konuAdi").toString()
                             val subjectCount = document.get("toplamCalisma").toString()
-                            val currentStudy = Study(subjectTheme, subjectCount)
+                            val studyDersAdi = document.get("dersAdi").toString()
+                            val studyTur = document.get("tür").toString()
+                            val currentStudy = Study(
+                                subjectTheme,
+                                subjectCount,
+                                auth.uid.toString(),
+                                studyDersAdi,
+                                studyTur
+                            )
 
                             studyList.add(currentStudy)
 
                         }
+
+                        setupStudyRecyclerView(studyList)
 
                         recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
 
@@ -146,6 +179,7 @@ class MainActivity : AppCompatActivity() {
 
 
             } else if (it.get("personType").toString() == "Teacher") {
+                studySearchEditText.visibility = View.GONE
                 searchEditText.visibility = View.VISIBLE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
@@ -165,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                             studentList.add(currentStudent)
 
                         }
-                        setupRecyclerView(studentList)
+                        setupStudentRecyclerView(studentList)
 
                         recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
@@ -201,7 +235,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setupRecyclerView(list: ArrayList<Student>) {
+    private fun setupStudentRecyclerView(list: ArrayList<Student>) {
         val layoutManager = LinearLayoutManager(applicationContext)
 
         recyclerViewMyStudents.layoutManager = layoutManager
@@ -209,6 +243,15 @@ class MainActivity : AppCompatActivity() {
         recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(list)
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
+
+    }
+
+    private fun setupStudyRecyclerView(list: ArrayList<Study>) {
+        val layoutManager = GridLayoutManager(applicationContext, 2)
+
+        recyclerViewPreviousStudies.layoutManager = layoutManager
+        recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(list)
+        recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
 
     }
 

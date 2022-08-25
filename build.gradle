@@ -4,6 +4,7 @@ buildscript {
         // Check that you have the following line (if not, add it):
         google()  // Google's Maven repository
 
+
     }
     dependencies {
         classpath 'com.google.gms:google-services:4.3.13'
@@ -19,7 +20,9 @@ plugins {
 }
 allprojects {
     repositories {
-
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 

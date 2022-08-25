@@ -11,11 +11,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.databinding.ActivityEnterStudyBinding
 import java.util.*
-import kotlin.collections.HashMap
 
 class EnterStudyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEnterStudyBinding
@@ -39,6 +39,7 @@ class EnterStudyActivity : AppCompatActivity() {
         val dersAdi = intent.getStringExtra("dersAdi")
         secilenKonu = ""
         db.collection("Lessons").document(dersAdi.toString()).collection(subjectType.toString())
+            .orderBy("konuAdi", Query.Direction.ASCENDING)
             .addSnapshotListener { value, _ ->
                 if (value != null) {
                     konuAdlari.clear()
@@ -126,6 +127,7 @@ class EnterStudyActivity : AppCompatActivity() {
                             "konuAnlatımı" to currentMinutesEditText.text.toString().toInt(),
                             "konuTestiDK" to currentTestsMinutesEditText.text.toString().toInt(),
                             "dersAdi" to dersAdi,
+                            "tür" to subjectType,
                             "konuAdi" to secilenKonu,
                             "toplamCalisma" to currentMinutesEditText.text.toString()
                                 .toInt() + currentTestsMinutesEditText.text.toString()
@@ -153,6 +155,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                         .toInt() + document.get("konuTestiDK")
                                                         .toString()
                                                         .toInt(),
+                                                    "tür" to subjectType,
                                                     "dersAdi" to dersAdi,
                                                     "konuAdi" to secilenKonu,
                                                     "toplamCalisma" to currentMinutesEditText.text.toString()

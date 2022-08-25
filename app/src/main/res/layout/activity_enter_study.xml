@@ -23,15 +23,18 @@
 
     <LinearLayout
         android:id="@+id/studySpinnerLayout"
-        android:layout_width="match_parent"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/subjectTypeTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/konu_se_iniz"
             android:textSize="18sp" />
 
@@ -39,6 +42,7 @@
             android:id="@+id/studySpinner"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:spinnerMode="dialog"
             android:tooltipText="Konu Seçimi Yapınız" />
     </LinearLayout>
