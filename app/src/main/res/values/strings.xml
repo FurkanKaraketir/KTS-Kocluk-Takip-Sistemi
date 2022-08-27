@@ -45,5 +45,8 @@
     <string name="biyoloji">Biyoloji</string>
     <string name="co_rafya">Coğrafya</string>
     <string name="tarih">Tarih</string>
-    <string name="t_rk_e">Türkçe</string>
+    <string name="t_rk_e">Türkçe/Edebiyat</string>
+    <string name="zaman_aral">Zaman Aralığı:</string>
+    <string name="g_revlerim">Görevlerim</string>
+    <string name="g_revler">Görevler</string>
 </resources>

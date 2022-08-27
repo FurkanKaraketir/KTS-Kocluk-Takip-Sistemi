@@ -1,6 +1,7 @@
 package com.kodgem.coachingapp.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,15 @@ import com.kodgem.coachingapp.databinding.StudyGridRowBinding
 import com.kodgem.coachingapp.models.Study
 
 
-open class StudiesRecyclerAdapter(private val studyList: ArrayList<Study>) :
+open class StudiesRecyclerAdapter(
+    private val studyList: ArrayList<Study>,
+    private val zamanAraligi: String
+) :
     RecyclerView.Adapter<StudiesRecyclerAdapter.StudyHolder>() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+
 
     class StudyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = StudyGridRowBinding.bind(itemView)
@@ -36,18 +41,82 @@ open class StudiesRecyclerAdapter(private val studyList: ArrayList<Study>) :
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
 
-            binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
-            binding.studyGridRowStudyMinuteTextView.text = studyList[position].studyCount + "dk"
-            binding.studyGridCard.setOnClickListener {
-                val intent = Intent(holder.itemView.context, StudentGraphActivity::class.java)
-                intent.putExtra("studyOwnerID", studyList[position].studyOwnerID)
+            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
 
-                intent.putExtra("studyDersAdi", studyList[position].studyDersAdi)
-                intent.putExtra("studyKonuAdi", studyList[position].studyName)
-                intent.putExtra("studyTur", studyList[position].dersTur)
 
-                holder.itemView.context.startActivity(intent)
+                if (it.get("personType").toString() == "Student") {
+
+                    binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
+                    binding.studyGridRowStudyMinuteTextView.visibility = View.GONE
+                    binding.studyGridRowStudyCountTextView.visibility = View.GONE
+                    binding.studyTurText.text = studyList[position].dersTur
+                    binding.studyDersText.text = studyList[position].studyDersAdi
+
+                } else {
+                    if (position < studyList.size) {
+
+                        binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
+                        binding.studyGridRowStudyCountTextView.visibility = View.VISIBLE
+
+                        binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
+                        binding.studyGridRowStudyMinuteTextView.text =
+                            studyList[position].studyCount + "dk"
+                        binding.studyGridRowStudyCountTextView.text = studyList[position].soruSayisi + " Soru"
+                        binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
+                        binding.studyTurText.text = studyList[position].dersTur
+                        binding.studyDersText.text = studyList[position].studyDersAdi
+
+
+
+
+                        binding.studyGridCard.setOnClickListener {
+
+                            val soruOrSureAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                            soruOrSureAlertDialog.setTitle("Soru-Süre Grafikleri")
+                            soruOrSureAlertDialog.setMessage(studyList[position].dersTur + " " + studyList[position].studyDersAdi + " Konularındaki Görmek İstediğiniz Grafik Türünü Seçiniz")
+                            soruOrSureAlertDialog.setPositiveButton("Süre Grafiği") { _, _ ->
+
+                                val intent =
+                                    Intent(
+                                        holder.itemView.context,
+                                        StudentGraphActivity::class.java
+                                    )
+                                intent.putExtra("studyOwnerID", studyList[position].studyOwnerID)
+                                intent.putExtra("zamanAraligi", zamanAraligi)
+                                intent.putExtra("grafikTuru", "Süre")
+                                intent.putExtra("studyDersAdi", studyList[position].studyDersAdi)
+                                intent.putExtra("studyKonuAdi", studyList[position].studyName)
+                                intent.putExtra("studyTur", studyList[position].dersTur)
+                                intent.putExtra("soruSayisi",studyList[position].soruSayisi)
+
+                                holder.itemView.context.startActivity(intent)
+                            }
+
+                            soruOrSureAlertDialog.setNegativeButton("Soru Grafiği") { _, _ ->
+                                val intent =
+                                    Intent(
+                                        holder.itemView.context,
+                                        StudentGraphActivity::class.java
+                                    )
+                                intent.putExtra("studyOwnerID", studyList[position].studyOwnerID)
+                                intent.putExtra("zamanAraligi", zamanAraligi)
+                                intent.putExtra("grafikTuru", "Soru")
+                                intent.putExtra("studyDersAdi", studyList[position].studyDersAdi)
+                                intent.putExtra("studyKonuAdi", studyList[position].studyName)
+                                intent.putExtra("studyTur", studyList[position].dersTur)
+                                intent.putExtra("soruSayisi",studyList[position].soruSayisi)
+
+                                holder.itemView.context.startActivity(intent)
+                            }
+                            soruOrSureAlertDialog.show()
+
+
+                        }
+                    }
+                }
+
             }
+
 
         }
     }

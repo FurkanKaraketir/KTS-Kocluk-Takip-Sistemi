@@ -9,17 +9,49 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/studiesCard"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:cardCornerRadius="10dp">
 
-        <TextView
-            android:id="@+id/studiesTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/al_malar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/studiesTextView"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="@string/al_malar" />
+
+            <LinearLayout
+                android:id="@+id/teacherSpinnerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zaman_aral"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/studyZamanAraligiSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dialog"
+                    android:tooltipText="Alan Seçimi Yapınız" />
+            </LinearLayout>
+
+        </LinearLayout>
+
 
     </androidx.cardview.widget.CardView>
 
@@ -27,8 +59,7 @@
         android:id="@+id/recyclerViewStudies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/studiesCard"
-        android:layout_margin="8dp">
+        android:layout_below="@id/studiesCard">
 
     </androidx.recyclerview.widget.RecyclerView>
 

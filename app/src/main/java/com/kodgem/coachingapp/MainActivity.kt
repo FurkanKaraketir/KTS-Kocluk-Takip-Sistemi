@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
         val sayacButton = binding.sayacButton
+        val gorevButton = binding.gorevButton
         val allStudentsBtn = binding.allStudentsBtn
         val searchEditText = binding.searchStudentMainActivityEditText
         val studySearchEditText = binding.searchStudyEditText
@@ -144,12 +146,30 @@ class MainActivity : AppCompatActivity() {
                 searchEditText.visibility = View.GONE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.GONE
+                addStudyButton.visibility = View.VISIBLE
 
                 sayacButton.visibility = View.VISIBLE
-                contentTextView.text = "Geçmiş Çalışmalarım"
+                gorevButton.visibility = View.VISIBLE
+
+                contentTextView.text = "Bu Haftaki Çalışmalarım"
+                val cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                val baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                val bitisTarihi = cal.time
 
                 db.collection("School").document("SchoolIDDDD").collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi)
                     .orderBy("timestamp", Query.Direction.DESCENDING)
                     .addSnapshotListener { it1, _ ->
                         studyList.clear()
@@ -159,12 +179,13 @@ class MainActivity : AppCompatActivity() {
                             val subjectCount = document.get("toplamCalisma").toString()
                             val studyDersAdi = document.get("dersAdi").toString()
                             val studyTur = document.get("tür").toString()
+                            val soruSayisi = document.get("çözülenSoru").toString()
                             val currentStudy = Study(
                                 subjectTheme,
                                 subjectCount,
                                 auth.uid.toString(),
                                 studyDersAdi,
-                                studyTur
+                                studyTur, soruSayisi
                             )
 
                             studyList.add(currentStudy)
@@ -184,6 +205,7 @@ class MainActivity : AppCompatActivity() {
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
                 addStudyButton.visibility = View.GONE
+                gorevButton.visibility = View.GONE
 
                 contentTextView.text = "Öğrencilerim"
                 db.collection("School").document("SchoolIDDDD").collection("Student")
@@ -224,7 +246,19 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
         signOutButton.setOnClickListener {
-            signOut()
+
+            val signOutAlertDialog = AlertDialog.Builder(this)
+            signOutAlertDialog.setTitle("Çıkış Yap")
+            signOutAlertDialog.setMessage("Hesabınızdan Çıkış Yapmak İstediğinize Emin misiniz?")
+            signOutAlertDialog.setPositiveButton("Çıkış") { _, _ ->
+                signOut()
+                finish()
+            }
+            signOutAlertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            signOutAlertDialog.show()
+
         }
 
         sayacButton.setOnClickListener {
@@ -250,7 +284,7 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = GridLayoutManager(applicationContext, 2)
 
         recyclerViewPreviousStudies.layoutManager = layoutManager
-        recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(list)
+        recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(list, "Bu Hafta")
         recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
 
     }

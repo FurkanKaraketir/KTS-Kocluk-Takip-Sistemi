@@ -61,11 +61,21 @@
                     style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_margin="10dp"
                     android:text="@string/saya"
                     android:textSize="15sp"
                     android:visibility="gone"
                     app:icon="@drawable/ic_baseline_timer_24" />
+                <Button
+                    android:id="@+id/gorevButton"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/g_revlerim"
+                    android:textSize="15sp"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_baseline_bookmark_24" />
 
 
             </LinearLayout>
@@ -154,9 +164,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
         android:contentDescription="@string/add_something"
         android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:visibility="gone"
         tools:ignore="RelativeOverlap" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

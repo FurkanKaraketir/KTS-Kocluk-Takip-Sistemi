@@ -5,6 +5,7 @@ class Study(
     var studyCount: String,
     var studyOwnerID: String,
     var studyDersAdi: String,
-    var dersTur: String
+    var dersTur: String,
+    var soruSayisi: String
 
 )
