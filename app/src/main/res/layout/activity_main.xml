@@ -66,6 +66,7 @@
                     android:textSize="15sp"
                     android:visibility="gone"
                     app:icon="@drawable/ic_baseline_timer_24" />
+
                 <Button
                     android:id="@+id/gorevButton"
                     style="@style/Widget.Material3.Button.ElevatedButton.Icon"
@@ -82,6 +83,7 @@
 
             <Button
                 android:id="@+id/allStudentsBtn"
+                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"

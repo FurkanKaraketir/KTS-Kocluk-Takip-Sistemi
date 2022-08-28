@@ -87,13 +87,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
         val studentAdapter = ArrayAdapter(
-            this@RegisterActivity,
-            android.R.layout.simple_spinner_item, alanlar
+            this@RegisterActivity, android.R.layout.simple_spinner_item, alanlar
         )
 
         val teacherAdapter = ArrayAdapter(
-            this@RegisterActivity,
-            android.R.layout.simple_spinner_item, dersler
+            this@RegisterActivity, android.R.layout.simple_spinner_item, dersler
         )
 
         teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -125,77 +123,67 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun signUp(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    documentID = auth.uid!!
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                documentID = auth.uid!!
 
-                    if (selection == 1) {
-                        val user = hashMapOf(
-                            "email" to email,
-                            "grade" to grade,
-                            "id" to documentID,
-                            "nameAndSurname" to nameAndSurname,
-                            "personType" to "Student",
-                            "subjectType" to branch
-                        )
+                if (selection == 1) {
+                    val user = hashMapOf(
+                        "email" to email,
+                        "grade" to grade,
+                        "id" to documentID,
+                        "nameAndSurname" to nameAndSurname,
+                        "personType" to "Student",
+                        "subjectType" to branch
+                    )
 
-                        db.collection("User").document(documentID)
-                            .set(user)
-                            .addOnSuccessListener {
+                    db.collection("User").document(documentID).set(user).addOnSuccessListener {
 
-                                db.collection("School").document("SchoolIDDDD")
-                                    .collection("Student").document(documentID).set(user)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this, MainActivity::class.java)
-                                        this.startActivity(intent)
-                                        finish()
-                                    }
-
-
+                        db.collection("School").document("SchoolIDDDD").collection("Student")
+                            .document(documentID).set(user).addOnSuccessListener {
+                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, MainActivity::class.java)
+                                this.startActivity(intent)
+                                finish()
                             }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                            }
-                    } else if (selection == 2) {
-                        val user = hashMapOf(
-                            "email" to email,
-                            "id" to documentID,
-                            "nameAndSurname" to nameAndSurname,
-                            "personType" to "Teacher",
-                            "subjectType" to branch
-                        )
-
-                        db.collection("User").document(documentID)
-                            .set(user)
-                            .addOnSuccessListener {
-
-                                db.collection("School").document("SchoolIDDDD")
-                                    .collection("Teacher").document(documentID).set(user)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this, MainActivity::class.java)
-                                        this.startActivity(intent)
-                                        finish()
-                                    }
 
 
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                            }
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                     }
+                } else if (selection == 2) {
+                    val user = hashMapOf(
+                        "email" to email,
+                        "id" to documentID,
+                        "nameAndSurname" to nameAndSurname,
+                        "personType" to "Teacher",
+                        "subjectType" to branch
+                    )
+
+                    db.collection("User").document(documentID).set(user).addOnSuccessListener {
+
+                        db.collection("School").document("SchoolIDDDD").collection("Teacher")
+                            .document(documentID).set(user).addOnSuccessListener {
+                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, MainActivity::class.java)
+                                this.startActivity(intent)
+                                finish()
+                            }
 
 
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Toast.makeText(
-                        baseContext, "Kayıt Başarısız!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                    }
                 }
+
+
+            } else {
+                // If sign in fails, display a message to the user.
+                Toast.makeText(
+                    baseContext, "Kayıt Başarısız!", Toast.LENGTH_SHORT
+                ).show()
             }
+        }
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {

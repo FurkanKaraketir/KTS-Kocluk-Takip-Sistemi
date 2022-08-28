@@ -57,8 +57,7 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                     removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
                     removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
                         db.collection("School").document("SchoolIDDDD").collection("Student")
-                            .document(studentList[position].id)
-                            .update("teacher", "")
+                            .document(studentList[position].id).update("teacher", "")
                     }
                     removeStudent.setNegativeButton("İPTAL") { _, _ ->
 

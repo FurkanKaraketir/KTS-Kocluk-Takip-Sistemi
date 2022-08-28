@@ -45,8 +45,13 @@
     <string name="biyoloji">Biyoloji</string>
     <string name="co_rafya">Coğrafya</string>
     <string name="tarih">Tarih</string>
-    <string name="t_rk_e">Türkçe/Edebiyat</string>
+    <string name="t_rk_e">Türkçe-Edebiyat</string>
     <string name="zaman_aral">Zaman Aralığı:</string>
     <string name="g_revlerim">Görevlerim</string>
     <string name="g_revler">Görevler</string>
+    <string name="statusicon">statusIcon</string>
+    <string name="g_rev_al_ma_s_resi">Görev Çalışma Süresi</string>
+    <string name="g_rev_soru_say_s">Görev Soru Sayısı</string>
+    <string name="biti_tarihi_se">Bitiş Tarihi Seç</string>
+    <string name="g_revi_kaydet">Görevi Kaydet</string>
 </resources>

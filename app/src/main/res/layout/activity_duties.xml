@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DutiesActivity">
+
     <androidx.cardview.widget.CardView
         android:id="@+id/dutiesCard"
         android:layout_width="match_parent"
@@ -17,19 +18,32 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
             android:gravity="center"
-            android:layout_gravity="center"
             android:text="@string/g_revler" />
 
 
     </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@id/dutiesCard"
+        android:id="@+id/dutiesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/dutiesCard">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/addDutyButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="30dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:contentDescription="@string/add_something">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
 </RelativeLayout>

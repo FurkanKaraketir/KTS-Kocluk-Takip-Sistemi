@@ -16,10 +16,8 @@ import com.kodgem.coachingapp.models.Study
 
 
 open class StudiesRecyclerAdapter(
-    private val studyList: ArrayList<Study>,
-    private val zamanAraligi: String
-) :
-    RecyclerView.Adapter<StudiesRecyclerAdapter.StudyHolder>() {
+    private val studyList: ArrayList<Study>, private val zamanAraligi: String
+) : RecyclerView.Adapter<StudiesRecyclerAdapter.StudyHolder>() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -61,7 +59,8 @@ open class StudiesRecyclerAdapter(
                         binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
                         binding.studyGridRowStudyMinuteTextView.text =
                             studyList[position].studyCount + "dk"
-                        binding.studyGridRowStudyCountTextView.text = studyList[position].soruSayisi + " Soru"
+                        binding.studyGridRowStudyCountTextView.text =
+                            studyList[position].soruSayisi + " Soru"
                         binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
                         binding.studyTurText.text = studyList[position].dersTur
                         binding.studyDersText.text = studyList[position].studyDersAdi
@@ -74,37 +73,33 @@ open class StudiesRecyclerAdapter(
                             val soruOrSureAlertDialog = AlertDialog.Builder(holder.itemView.context)
                             soruOrSureAlertDialog.setTitle("Soru-Süre Grafikleri")
                             soruOrSureAlertDialog.setMessage(studyList[position].dersTur + " " + studyList[position].studyDersAdi + " Konularındaki Görmek İstediğiniz Grafik Türünü Seçiniz")
-                            soruOrSureAlertDialog.setPositiveButton("Süre Grafiği") { _, _ ->
+                            soruOrSureAlertDialog.setPositiveButton("SÜRE GRAFİĞİ") { _, _ ->
 
-                                val intent =
-                                    Intent(
-                                        holder.itemView.context,
-                                        StudentGraphActivity::class.java
-                                    )
+                                val intent = Intent(
+                                    holder.itemView.context, StudentGraphActivity::class.java
+                                )
                                 intent.putExtra("studyOwnerID", studyList[position].studyOwnerID)
                                 intent.putExtra("zamanAraligi", zamanAraligi)
                                 intent.putExtra("grafikTuru", "Süre")
                                 intent.putExtra("studyDersAdi", studyList[position].studyDersAdi)
                                 intent.putExtra("studyKonuAdi", studyList[position].studyName)
                                 intent.putExtra("studyTur", studyList[position].dersTur)
-                                intent.putExtra("soruSayisi",studyList[position].soruSayisi)
+                                intent.putExtra("soruSayisi", studyList[position].soruSayisi)
 
                                 holder.itemView.context.startActivity(intent)
                             }
 
-                            soruOrSureAlertDialog.setNegativeButton("Soru Grafiği") { _, _ ->
-                                val intent =
-                                    Intent(
-                                        holder.itemView.context,
-                                        StudentGraphActivity::class.java
-                                    )
+                            soruOrSureAlertDialog.setNegativeButton("SORU GRAFİĞİ") { _, _ ->
+                                val intent = Intent(
+                                    holder.itemView.context, StudentGraphActivity::class.java
+                                )
                                 intent.putExtra("studyOwnerID", studyList[position].studyOwnerID)
                                 intent.putExtra("zamanAraligi", zamanAraligi)
                                 intent.putExtra("grafikTuru", "Soru")
                                 intent.putExtra("studyDersAdi", studyList[position].studyDersAdi)
                                 intent.putExtra("studyKonuAdi", studyList[position].studyName)
                                 intent.putExtra("studyTur", studyList[position].dersTur)
-                                intent.putExtra("soruSayisi",studyList[position].soruSayisi)
+                                intent.putExtra("soruSayisi", studyList[position].soruSayisi)
 
                                 holder.itemView.context.startActivity(intent)
                             }

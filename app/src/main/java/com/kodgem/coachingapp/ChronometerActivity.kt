@@ -34,16 +34,10 @@ class ChronometerActivity : AppCompatActivity() {
 
         val themeChangeSwitch = binding.themeChangeSwitch
 
-        val nightModeFlags: Int = this.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK
-
-        when (nightModeFlags) {
-            Configuration.UI_MODE_NIGHT_YES ->
-                themeChangeSwitch.isChecked = true
-            Configuration.UI_MODE_NIGHT_NO ->
-                themeChangeSwitch.isChecked = false
-            Configuration.UI_MODE_NIGHT_UNDEFINED ->
-                themeChangeSwitch.isChecked = false
+        when (this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> themeChangeSwitch.isChecked = true
+            Configuration.UI_MODE_NIGHT_NO -> themeChangeSwitch.isChecked = false
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> themeChangeSwitch.isChecked = false
         }
 
         if (themeChangeSwitch.isChecked) {

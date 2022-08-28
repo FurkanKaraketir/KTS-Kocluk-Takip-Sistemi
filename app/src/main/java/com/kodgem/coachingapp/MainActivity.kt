@@ -185,7 +185,8 @@ class MainActivity : AppCompatActivity() {
                                 subjectCount,
                                 auth.uid.toString(),
                                 studyDersAdi,
-                                studyTur, soruSayisi
+                                studyTur,
+                                soruSayisi
                             )
 
                             studyList.add(currentStudy)
@@ -263,6 +264,12 @@ class MainActivity : AppCompatActivity() {
 
         sayacButton.setOnClickListener {
             val intent = Intent(this, ChronometerActivity::class.java)
+            this.startActivity(intent)
+        }
+
+        gorevButton.setOnClickListener {
+            val intent = Intent(this, DutiesActivity::class.java)
+            intent.putExtra("studentID", auth.uid)
             this.startActivity(intent)
         }
 

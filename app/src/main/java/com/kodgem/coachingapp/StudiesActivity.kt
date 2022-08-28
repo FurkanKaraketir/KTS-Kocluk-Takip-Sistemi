@@ -3,6 +3,7 @@ package com.kodgem.coachingapp
 //noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -48,11 +49,11 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         layoutManager = GridLayoutManager(applicationContext, 2)
         val intent = intent
         val studyZamanSpinner = binding.studyZamanAraligiSpinner
+        val gorevlerButton = binding.gorevTeacherButton
 
 
         val studyAdapter = ArrayAdapter(
-            this@StudiesActivity,
-            R.layout.simple_spinner_item, zamanAraliklari
+            this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
         )
 
         studentID = intent.getStringExtra("studentID").toString()
@@ -61,7 +62,11 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         studyZamanSpinner.adapter = studyAdapter
         studyZamanSpinner.onItemSelectedListener = this
 
-
+        gorevlerButton.setOnClickListener {
+            val intent2 = Intent(this, DutiesActivity::class.java)
+            intent2.putExtra("studentID", studentID)
+            this.startActivity(intent2)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -81,58 +86,61 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         cal.clear(Calendar.SECOND)
         cal.clear(Calendar.MILLISECOND)
 
-        if (position == 0) {
-            cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-            baslangicTarihi = cal.time
+        when (position) {
+            0 -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                baslangicTarihi = cal.time
 
 
-            cal.add(Calendar.WEEK_OF_YEAR, 1)
-            bitisTarihi = cal.time
+                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                bitisTarihi = cal.time
 
-        } else if (position == 1) {
-            cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-            bitisTarihi = cal.time
-
-
-            cal.add(Calendar.DAY_OF_YEAR, -7)
-            baslangicTarihi = cal.time
+            }
+            1 -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                bitisTarihi = cal.time
 
 
-        } else if (position == 2) {
-
-            cal = Calendar.getInstance()
-            cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-            cal.clear(Calendar.MINUTE)
-            cal.clear(Calendar.SECOND)
-            cal.clear(Calendar.MILLISECOND)
-
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-            baslangicTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -7)
+                baslangicTarihi = cal.time
 
 
-            cal.add(Calendar.MONTH, 1);
-            bitisTarihi = cal.time
+            }
+            2 -> {
+
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                baslangicTarihi = cal.time
 
 
-        } else if (position == 3) {
-            cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-            baslangicTarihi = cal.time
+                cal.add(Calendar.MONTH, 1)
+                bitisTarihi = cal.time
 
 
-            cal.set(2920, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-            bitisTarihi = cal.time
+            }
+            3 -> {
+                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                baslangicTarihi = cal.time
 
+
+                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                bitisTarihi = cal.time
+
+            }
         }
         println(baslangicTarihi)
         println(bitisTarihi)
 
-        db.collection("School").document("SchoolIDDDD").collection("Student")
-            .document(studentID).collection("Studies")
-            .whereGreaterThan("timestamp", baslangicTarihi)
+        db.collection("School").document("SchoolIDDDD").collection("Student").document(studentID)
+            .collection("Studies").whereGreaterThan("timestamp", baslangicTarihi)
             .whereLessThan("timestamp", bitisTarihi)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .addSnapshotListener { value, _ ->
+            .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
                 if (value != null) {
                     studyList.clear()
                     if (!value.isEmpty) {
@@ -143,23 +151,25 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                             val studyTur = document.get("tür").toString()
                             val soruSayisi = document.get("çözülenSoru").toString()
 
-                            val currentStudy =
-                                Study(
-                                    studyName,
-                                    sure,
-                                    studentID,
-                                    studyDersAdi,
-                                    studyTur,
-                                    soruSayisi
-                                )
+                            val currentStudy = Study(
+                                studyName, sure, studentID, studyDersAdi, studyTur, soruSayisi
+                            )
                             studyList.add(currentStudy)
                             println(currentStudy.studyName)
                         }
 
                         recyclerViewStudiesAdapter.notifyDataSetChanged()
 
+                    } else {
+                        studyList.clear()
+                        recyclerViewStudiesAdapter.notifyDataSetChanged()
+
                     }
 
+
+                } else {
+                    studyList.clear()
+                    recyclerViewStudiesAdapter.notifyDataSetChanged()
 
                 }
 

@@ -1,32 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".EnterStudyActivity">
-
-
-    <TextView
-        android:id="@+id/subjectTypeTitle"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:text="@string/t_r">
-
-    </TextView>
+    tools:context=".EnterDutyActivity">
 
     <LinearLayout
-        android:id="@+id/studySpinnerLayout"
+        android:id="@+id/dutyDersAdiSpinnerLayout"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/subjectTypeTitle"
-        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/ders_se_imi_yap_n_z"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/dutyDersAdiSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:spinnerMode="dialog"
+            android:tooltipText="Konu Seçimi Yapınız" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dutyTurSpinnerLayout"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/t_r"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/dutyTurSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:spinnerMode="dialog"
+            android:tooltipText="Konu Seçimi Yapınız" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dutyKonuAdiSpinnerLayout"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:gravity="center"
         android:orientation="horizontal">
@@ -39,7 +72,7 @@
             android:textSize="18sp" />
 
         <Spinner
-            android:id="@+id/studySpinner"
+            android:id="@+id/dutyKonuAdiSpinner"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -47,20 +80,17 @@
             android:tooltipText="Konu Seçimi Yapınız" />
     </LinearLayout>
 
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/TextInputCurrentMinutes"
+        android:id="@+id/TextInputToplamCalisma"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/studySpinnerLayout"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_margin="20dp"
-        android:hint="@string/ka_dakika_konu_al_t_n">
+        android:hint="@string/g_rev_al_ma_s_resi">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/currentMinutesEditText"
+            android:id="@+id/gorevToplamCalisma"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number" />
@@ -68,37 +98,16 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/TextInputCurrentTestsMinutes"
+        android:id="@+id/TextInputCozulenSoru"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/TextInputCurrentMinutes"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_margin="20dp"
-        android:hint="@string/ka_dakika_testi_zd_n">
+        android:hint="@string/g_rev_soru_say_s">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/currentTestsMinutesEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/TextInputCurrentTests"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/TextInputCurrentTestsMinutes"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="20dp"
-        android:hint="@string/ka_tane_soru_zd_n">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/currentTestsEditText"
+            android:id="@+id/gorevCozulenSoru"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number" />
@@ -106,19 +115,30 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/studySaveButton"
+        android:id="@+id/tarihSecButton"
+        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:text="@string/biti_tarihi_se"
+        android:textSize="15sp"
+        app:icon="@drawable/ic_baseline_timer_24" />
+
+    <Button
+        android:id="@+id/dutySaveButton"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="320dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
-        android:text="@string/b_tt"
+        android:text="@string/g_revi_kaydet"
         android:textSize="18sp">
 
     </Button>
-</RelativeLayout>
+
+
+</LinearLayout>
