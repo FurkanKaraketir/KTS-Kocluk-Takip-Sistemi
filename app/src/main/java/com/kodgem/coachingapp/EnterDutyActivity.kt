@@ -190,47 +190,65 @@ class EnterDutyActivity : AppCompatActivity() {
 
                     )
 
-                    db.collection("School").document("SchoolIDDDD").collection("Student")
-                        .document(studentID!!).collection("Duties")
-                        .whereEqualTo("dersAdi", secilenDers).whereEqualTo("tür", secilenTur)
-                        .whereEqualTo("konuAdi", secilenKonu).addSnapshotListener { value, _ ->
-                            if (!stopper) {
-                                if (value != null) {
+                    var kurumKodu: Int
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                        kurumKodu = it.get("kurumKodu").toString().toInt()
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(studentID!!).collection("Duties")
+                            .whereEqualTo("dersAdi", secilenDers).whereEqualTo("tür", secilenTur)
+                            .whereEqualTo("konuAdi", secilenKonu).addSnapshotListener { value, _ ->
+                                if (!stopper) {
+                                    if (value != null) {
 
-                                    if (!value.isEmpty) {
+                                        if (!value.isEmpty) {
 
-                                        for (document in value) {
+                                            for (document in value) {
 
-                                            val dutyUpdate = hashMapOf(
+                                                val dutyUpdate = hashMapOf(
 
-                                                "eklenmeTarihi" to Timestamp.now(),
-                                                "toplamCalisma" to gorevToplamCalisma.text.toString()
-                                                    .toInt() + document.get("toplamCalisma")
-                                                    .toString().toInt(),
-                                                "çözülenSoru" to gorevCozulenSoru.text.toString()
-                                                    .toInt() + document.get("çözülenSoru")
-                                                    .toString().toInt(),
-                                                "bitisZamani" to c.time
-                                            )
+                                                    "eklenmeTarihi" to Timestamp.now(),
+                                                    "toplamCalisma" to gorevToplamCalisma.text.toString()
+                                                        .toInt() + document.get("toplamCalisma")
+                                                        .toString().toInt(),
+                                                    "çözülenSoru" to gorevCozulenSoru.text.toString()
+                                                        .toInt() + document.get("çözülenSoru")
+                                                        .toString().toInt(),
+                                                    "bitisZamani" to c.time
+                                                )
 
-                                            stopper = true
-                                            db.collection("School").document("SchoolIDDDD")
+                                                stopper = true
+                                                db.collection("School")
+                                                    .document(kurumKodu.toString())
+                                                    .collection("Student").document(studentID)
+                                                    .collection("Duties").document(document.id)
+                                                    .update(dutyUpdate as Map<String, Any>)
+                                                    .addOnSuccessListener {
+
+                                                        Toast.makeText(
+                                                            this,
+                                                            "İşlem Başarılı",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        finish()
+                                                    }
+
+
+                                            }
+
+                                        } else {
+                                            db.collection("School").document(kurumKodu.toString())
                                                 .collection("Student").document(studentID)
-                                                .collection("Duties").document(document.id)
-                                                .update(dutyUpdate as Map<String, Any>)
+                                                .collection("Duties").document(documentID).set(duty)
                                                 .addOnSuccessListener {
-
                                                     Toast.makeText(
                                                         this, "İşlem Başarılı", Toast.LENGTH_SHORT
                                                     ).show()
                                                     finish()
                                                 }
-
-
                                         }
 
                                     } else {
-                                        db.collection("School").document("SchoolIDDDD")
+                                        db.collection("School").document(kurumKodu.toString())
                                             .collection("Student").document(studentID)
                                             .collection("Duties").document(documentID).set(duty)
                                             .addOnSuccessListener {
@@ -240,20 +258,10 @@ class EnterDutyActivity : AppCompatActivity() {
                                                 finish()
                                             }
                                     }
-
-                                } else {
-                                    db.collection("School").document("SchoolIDDDD")
-                                        .collection("Student").document(studentID)
-                                        .collection("Duties").document(documentID).set(duty)
-                                        .addOnSuccessListener {
-                                            Toast.makeText(
-                                                this, "İşlem Başarılı", Toast.LENGTH_SHORT
-                                            ).show()
-                                            finish()
-                                        }
                                 }
                             }
-                        }
+                    }
+
 
                 } else {
                     gorevCozulenSoru.error = "Bu Alan Boş Bırakılamaz"

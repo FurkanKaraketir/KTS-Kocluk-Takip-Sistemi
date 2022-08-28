@@ -30,41 +30,46 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
         with(holder) {
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
+            var kurumKodu: Int
+            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                kurumKodu = it.get("kurumKodu").toString().toInt()
+                binding.studentNameTextView.text = studentList[position].studentName
 
-            binding.studentNameTextView.text = studentList[position].studentName
+                binding.studentCard.setOnClickListener {
 
-            binding.studentCard.setOnClickListener {
+                    if (studentList[position].teacher == "") {
 
-                if (studentList[position].teacher == "") {
+                        val addStudent = AlertDialog.Builder(holder.itemView.context)
+                        addStudent.setTitle("Öğrenci Ekle")
+                        addStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
+                        addStudent.setPositiveButton("EKLE") { _, _ ->
+                            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                                .document(studentList[position].id)
+                                .update("teacher", auth.uid.toString())
+                        }
+                        addStudent.setNegativeButton("İPTAL") { _, _ ->
 
-                    val addStudent = AlertDialog.Builder(holder.itemView.context)
-                    addStudent.setTitle("Öğrenci Ekle")
-                    addStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
-                    addStudent.setPositiveButton("EKLE") { _, _ ->
-                        db.collection("School").document("SchoolIDDDD").collection("Student")
-                            .document(studentList[position].id)
-                            .update("teacher", auth.uid.toString())
+                        }
+                        addStudent.show()
+
+
+                    } else {
+                        val removeStudent = AlertDialog.Builder(holder.itemView.context)
+                        removeStudent.setTitle("Öğrenci Çıkar")
+                        removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                        removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
+                            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                                .document(studentList[position].id).update("teacher", "")
+                        }
+                        removeStudent.setNegativeButton("İPTAL") { _, _ ->
+
+                        }
+                        removeStudent.show()
                     }
-                    addStudent.setNegativeButton("İPTAL") { _, _ ->
-
-                    }
-                    addStudent.show()
-
-
-                } else {
-                    val removeStudent = AlertDialog.Builder(holder.itemView.context)
-                    removeStudent.setTitle("Öğrenci Çıkar")
-                    removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
-                    removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
-                        db.collection("School").document("SchoolIDDDD").collection("Student")
-                            .document(studentList[position].id).update("teacher", "")
-                    }
-                    removeStudent.setNegativeButton("İPTAL") { _, _ ->
-
-                    }
-                    removeStudent.show()
                 }
             }
+
+
         }
 
     }

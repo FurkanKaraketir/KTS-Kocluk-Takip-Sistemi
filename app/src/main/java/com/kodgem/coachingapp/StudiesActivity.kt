@@ -137,28 +137,40 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         println(baslangicTarihi)
         println(bitisTarihi)
 
-        db.collection("School").document("SchoolIDDDD").collection("Student").document(studentID)
-            .collection("Studies").whereGreaterThan("timestamp", baslangicTarihi)
-            .whereLessThan("timestamp", bitisTarihi)
-            .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
-                if (value != null) {
-                    studyList.clear()
-                    if (!value.isEmpty) {
-                        for (document in value) {
-                            val studyName = document.get("konuAdi").toString()
-                            val sure = document.get("toplamCalisma").toString()
-                            val studyDersAdi = document.get("dersAdi").toString()
-                            val studyTur = document.get("tür").toString()
-                            val soruSayisi = document.get("çözülenSoru").toString()
 
-                            val currentStudy = Study(
-                                studyName, sure, studentID, studyDersAdi, studyTur, soruSayisi
-                            )
-                            studyList.add(currentStudy)
-                            println(currentStudy.studyName)
+        var kurumKodu: Int
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            kurumKodu = it.get("kurumKodu").toString().toInt()
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .document(studentID).collection("Studies")
+                .whereGreaterThan("timestamp", baslangicTarihi)
+                .whereLessThan("timestamp", bitisTarihi)
+                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
+                    if (value != null) {
+                        studyList.clear()
+                        if (!value.isEmpty) {
+                            for (document in value) {
+                                val studyName = document.get("konuAdi").toString()
+                                val sure = document.get("toplamCalisma").toString()
+                                val studyDersAdi = document.get("dersAdi").toString()
+                                val studyTur = document.get("tür").toString()
+                                val soruSayisi = document.get("çözülenSoru").toString()
+
+                                val currentStudy = Study(
+                                    studyName, sure, studentID, studyDersAdi, studyTur, soruSayisi
+                                )
+                                studyList.add(currentStudy)
+                                println(currentStudy.studyName)
+                            }
+
+                            recyclerViewStudiesAdapter.notifyDataSetChanged()
+
+                        } else {
+                            studyList.clear()
+                            recyclerViewStudiesAdapter.notifyDataSetChanged()
+
                         }
 
-                        recyclerViewStudiesAdapter.notifyDataSetChanged()
 
                     } else {
                         studyList.clear()
@@ -166,14 +178,9 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
                     }
 
-
-                } else {
-                    studyList.clear()
-                    recyclerViewStudiesAdapter.notifyDataSetChanged()
-
                 }
 
-            }
+        }
 
 
     }

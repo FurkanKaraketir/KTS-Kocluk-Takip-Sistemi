@@ -135,6 +135,7 @@ class MainActivity : AppCompatActivity() {
         var visible = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             nameAndSurnameTextView.text = it.get("nameAndSurname").toString()
+            val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
             TransitionManager.beginDelayedTransition(transitionsContainer)
             visible = !visible
@@ -166,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 val bitisTarihi = cal.time
 
-                db.collection("School").document("SchoolIDDDD").collection("Student")
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
                     .whereGreaterThan("timestamp", baslangicTarihi)
                     .whereLessThan("timestamp", bitisTarihi)
@@ -209,8 +210,9 @@ class MainActivity : AppCompatActivity() {
                 gorevButton.visibility = View.GONE
 
                 contentTextView.text = "Öğrencilerim"
-                db.collection("School").document("SchoolIDDDD").collection("Student")
-                    .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { it2, _ ->
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .whereEqualTo("teacher", auth.uid.toString())
+                    .addSnapshotListener { it2, _ ->
 
                         studentList.clear()
                         val documents = it2!!.documents
@@ -230,6 +232,9 @@ class MainActivity : AppCompatActivity() {
 
 
             }
+
+
+
             TransitionManager.beginDelayedTransition(sayacContainer)
             sayacVisible = !sayacVisible
             contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE

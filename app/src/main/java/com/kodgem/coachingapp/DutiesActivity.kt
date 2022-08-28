@@ -61,40 +61,46 @@ class DutiesActivity : AppCompatActivity() {
 
         dutiesRecyclerView.adapter = dutiesRecyclerAdapter
 
-
-        db.collection("School").document("SchoolIDDDD").collection("Student").document(studentID!!)
-            .collection("Duties").orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
-            .addSnapshotListener { value, e ->
-                if (e != null) {
-                    println(e.localizedMessage)
-                }
-                if (value != null) {
-                    dutyList.clear()
-                    for (document in value) {
-                        val konuAdi = document.get("konuAdi").toString()
-                        val tur = document.get("tür").toString()
-                        val dersAdi = document.get("dersAdi").toString()
-                        val toplamCalisma = document.get("toplamCalisma").toString()
-                        val cozulenSoru = document.get("çözülenSoru").toString()
-                        val bitisZamani = document.get("bitisZamani") as Timestamp
-
-                        val currentDuty = Duty(
-                            konuAdi,
-                            toplamCalisma,
-                            studentID,
-                            dersAdi,
-                            tur,
-                            cozulenSoru,
-                            bitisZamani,
-                            document.id
-                        )
-                        dutyList.add(currentDuty)
+        var kurumKodu: Int
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            kurumKodu = it.get("kurumKodu").toString().toInt()
+            db.collection("School").document(kurumKodu.toString()).collection("Student").document(studentID!!)
+                .collection("Duties").orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
+                .addSnapshotListener { value, e ->
+                    if (e != null) {
+                        println(e.localizedMessage)
                     }
-                    dutiesRecyclerAdapter.notifyDataSetChanged()
+                    if (value != null) {
+                        dutyList.clear()
+                        for (document in value) {
+                            val konuAdi = document.get("konuAdi").toString()
+                            val tur = document.get("tür").toString()
+                            val dersAdi = document.get("dersAdi").toString()
+                            val toplamCalisma = document.get("toplamCalisma").toString()
+                            val cozulenSoru = document.get("çözülenSoru").toString()
+                            val bitisZamani = document.get("bitisZamani") as Timestamp
+
+                            val currentDuty = Duty(
+                                konuAdi,
+                                toplamCalisma,
+                                studentID,
+                                dersAdi,
+                                tur,
+                                cozulenSoru,
+                                bitisZamani,
+                                document.id
+                            )
+                            dutyList.add(currentDuty)
+                        }
+                        dutiesRecyclerAdapter.notifyDataSetChanged()
 
 
+                    }
                 }
-            }
+
+        }
+
+
 
 
     }

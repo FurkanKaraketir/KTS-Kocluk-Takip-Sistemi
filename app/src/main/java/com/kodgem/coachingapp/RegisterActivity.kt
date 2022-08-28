@@ -16,8 +16,7 @@ import com.kodgem.coachingapp.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private val alanlar = arrayOf("Dil", "Eşit Ağırlık", "Sözel", "Sayısal")
-    private val dersler =
-        arrayOf("Matematik", "Türk Dili ve Edebiyatı", "Fizik", "Kimya", "Biyoloji")
+    private val dersler = ArrayList<String>()
 
     private lateinit var documentID: String
     private lateinit var auth: FirebaseAuth
@@ -49,7 +48,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val emailEditText = binding.emailRegisterEditText
         val passwordEditText = binding.passwordRegisterEditText
         val nameAndSurnameEditText = binding.nameAndSurnameEditText
-
+        val kurumKoduEditText = binding.kurumKoduEditText
 
         signUpButton.setOnClickListener {
             if (emailEditText.text.toString().isNotEmpty()) {
@@ -62,10 +61,26 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
                             nameAndSurnameEditText.error = null
 
-                            nameAndSurname = nameAndSurnameEditText.text.toString()
+                            if (kurumKoduEditText.text.toString().isNotEmpty()) {
+                                kurumKoduEditText.error = null
 
-                            grade = gradeText.text.toString().toInt()
-                            signUp(emailEditText.text.toString(), passwordEditText.text.toString())
+
+                                nameAndSurname = nameAndSurnameEditText.text.toString()
+
+                                grade = try {
+                                    gradeText.text.toString().toInt()
+                                } catch (e: Exception) {
+                                    0
+                                }
+                                signUp(
+                                    emailEditText.text.toString(),
+                                    passwordEditText.text.toString(),
+                                    kurumKoduEditText.text.toString().toInt()
+                                )
+                            } else {
+                                kurumKoduEditText.error = "Bu Alan Boş Bırakılamaz"
+                            }
+
 
                         } else {
                             nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
@@ -90,13 +105,23 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this@RegisterActivity, android.R.layout.simple_spinner_item, alanlar
         )
 
-        val teacherAdapter = ArrayAdapter(
-            this@RegisterActivity, android.R.layout.simple_spinner_item, dersler
-        )
 
-        teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        teacherSpinner.adapter = teacherAdapter
-        teacherSpinner.onItemSelectedListener = this
+
+        db.collection("Lessons").addSnapshotListener { value, _ ->
+            if (value != null) {
+                for (document in value) {
+                    dersler.add(document.get("dersAdi").toString())
+                }
+                val teacherAdapter = ArrayAdapter(
+                    this@RegisterActivity, android.R.layout.simple_spinner_item, dersler
+                )
+                teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                teacherSpinner.adapter = teacherAdapter
+                teacherSpinner.onItemSelectedListener = this
+            }
+        }
+
+
 
         studentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         studentSpinner.adapter = studentAdapter
@@ -122,7 +147,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     }
 
-    private fun signUp(email: String, password: String) {
+    private fun signUp(email: String, password: String, kurumKodu: Int) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 documentID = auth.uid!!
@@ -134,12 +159,14 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "id" to documentID,
                         "nameAndSurname" to nameAndSurname,
                         "personType" to "Student",
-                        "subjectType" to branch
+                        "subjectType" to branch,
+                        "kurumKodu" to kurumKodu,
+                        "teacher" to ""
                     )
 
                     db.collection("User").document(documentID).set(user).addOnSuccessListener {
 
-                        db.collection("School").document("SchoolIDDDD").collection("Student")
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
                             .document(documentID).set(user).addOnSuccessListener {
                                 Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this, MainActivity::class.java)
@@ -157,12 +184,13 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "id" to documentID,
                         "nameAndSurname" to nameAndSurname,
                         "personType" to "Teacher",
-                        "subjectType" to branch
+                        "subjectType" to branch,
+                        "kurumKodu" to kurumKodu
                     )
 
                     db.collection("User").document(documentID).set(user).addOnSuccessListener {
 
-                        db.collection("School").document("SchoolIDDDD").collection("Teacher")
+                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
                             .document(documentID).set(user).addOnSuccessListener {
                                 Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this, MainActivity::class.java)
@@ -209,25 +237,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             }
         }
         if (selection == 2) {
-            when (position) {
-                0 -> {
-                    branch = "Matematik"
-                }
-                1 -> {
-                    branch = "Türk Dili ve Edebiyatı"
-                }
-                2 -> {
-                    branch = "Fizik"
 
-                }
-                3 -> {
-                    branch = "Kimya"
-                }
-                4 -> {
-                    branch = "Biyoloji"
-
-                }
-            }
+            branch = dersler[position]
         }
 
 

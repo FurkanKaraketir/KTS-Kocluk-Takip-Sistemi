@@ -104,158 +104,165 @@ class StudentGraphActivity : AppCompatActivity() {
 
             }
         }
+        var kurumKodu: Int
+
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            kurumKodu = it.get("kurumKodu").toString().toInt()
+            if (studyOwnerID != null) {
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studyOwnerID).collection("Studies")
+                    .whereEqualTo("dersAdi", studyDersAdi).whereEqualTo("tür", studyTur)
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .addSnapshotListener { value, _ ->
+
+                        if (value != null) {
+                            konular.clear()
+                            if (grafikTuru == "Süre") {
+                                for (document in value) {
+                                    val documentKonuAdi = document.get("konuAdi").toString()
+                                    var studyCount: Int
 
 
-        if (studyOwnerID != null) {
-            db.collection("School").document("SchoolIDDDD").collection("Student")
-                .document(studyOwnerID).collection("Studies").whereEqualTo("dersAdi", studyDersAdi)
-                .whereEqualTo("tür", studyTur).whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi)
-                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
+                                    if (documentKonuAdi in konuSureAdlari) {
 
-                    if (value != null) {
-                        konular.clear()
-                        if (grafikTuru == "Süre") {
-                            for (document in value) {
-                                val documentKonuAdi = document.get("konuAdi").toString()
-                                var studyCount: Int
+                                        val currentValue = konuSureHash[documentKonuAdi]
+
+                                        konuSureHash[documentKonuAdi] =
+                                            document.get("toplamCalisma").toString()
+                                                .toInt() + currentValue!!
+                                        println(konuSureHash)
+
+                                        studyCount = konuSureHash[documentKonuAdi]!!
+
+                                    } else {
+                                        konuSureAdlari.add(documentKonuAdi)
+
+                                        konuSureHash[documentKonuAdi] =
+                                            document.get("toplamCalisma").toString().toInt()
+
+                                        studyCount = konuSureHash[documentKonuAdi]!!
+                                    }
+
+                                    val currentDocument = Study(
+                                        documentKonuAdi,
+                                        studyCount.toString(),
+                                        studyOwnerID,
+                                        studyDersAdi!!,
+                                        studyTur!!,
+                                        soruSayisi!!
+                                    )
 
 
-                                if (documentKonuAdi in konuSureAdlari) {
+                                    konular.add(currentDocument)
 
-                                    val currentValue = konuSureHash[documentKonuAdi]
+                                }
+                                val data: MutableList<DataEntry> = ArrayList()
 
-                                    konuSureHash[documentKonuAdi] =
-                                        document.get("toplamCalisma").toString()
-                                            .toInt() + currentValue!!
-                                    println(konuSureHash)
 
-                                    studyCount = konuSureHash[documentKonuAdi]!!
 
-                                } else {
-                                    konuSureAdlari.add(documentKonuAdi)
-
-                                    konuSureHash[documentKonuAdi] =
-                                        document.get("toplamCalisma").toString().toInt()
-
-                                    studyCount = konuSureHash[documentKonuAdi]!!
+                                for (i in konuSureHash) {
+                                    println(i.key + " " + i.value)
+                                    data.add(ValueDataEntry(i.key, i.value))
                                 }
 
-                                val currentDocument = Study(
-                                    documentKonuAdi,
-                                    studyCount.toString(),
-                                    studyOwnerID,
-                                    studyDersAdi!!,
-                                    studyTur!!,
-                                    soruSayisi!!
-                                )
+                                val column: Column = cartesian.column(data)
+
+                                column.tooltip().titleFormat("{%X}")
+                                    .position(Position.CENTER_BOTTOM).anchor(Anchor.CENTER_BOTTOM)
+                                    .offsetX(0.0).offsetY(5.0)
+                                    .format("{%Value}{groupsSeparator:.}dk")
+
+                                cartesian.animation(true)
+                                val title = "$studyTur $studyDersAdi $zamanAraligi"
+                                cartesian.title(title)
+
+                                cartesian.yScale().minimum(0.0)
+
+                                cartesian.yAxis(0).labels().format("{%Value}{groupsSeparator:.}dk")
+
+                                cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
+                                cartesian.interactivity().hoverMode(HoverMode.BY_X)
+
+                                cartesian.xAxis(0).title("Konu Adları")
+                                cartesian.yAxis(0).title("Süre")
+
+                                anyChartView.setChart(cartesian)
+                            } else if (grafikTuru == "Soru") {
+                                for (document in value) {
+                                    val documentKonuAdi = document.get("konuAdi").toString()
+                                    var studyCount: Int
 
 
-                                konular.add(currentDocument)
+                                    if (documentKonuAdi in konuSoruAdlari) {
 
-                            }
-                            val data: MutableList<DataEntry> = ArrayList()
+                                        val currentValue = konuSoruHash[documentKonuAdi]
+                                        konuSoruHash[documentKonuAdi] =
+                                            document.get("çözülenSoru").toString()
+                                                .toInt() + currentValue!!
+                                        println("Selam")
+                                        println(konuSoruHash)
 
+                                        studyCount = konuSoruHash[documentKonuAdi]!!
 
+                                    } else {
+                                        konuSoruAdlari.add(documentKonuAdi)
 
-                            for (i in konuSureHash) {
-                                println(i.key + " " + i.value)
-                                data.add(ValueDataEntry(i.key, i.value))
-                            }
+                                        konuSoruHash[documentKonuAdi] =
+                                            document.get("çözülenSoru").toString().toInt()
 
-                            val column: Column = cartesian.column(data)
+                                        studyCount = konuSoruHash[documentKonuAdi]!!
+                                    }
 
-                            column.tooltip().titleFormat("{%X}").position(Position.CENTER_BOTTOM)
-                                .anchor(Anchor.CENTER_BOTTOM).offsetX(0.0).offsetY(5.0)
-                                .format("{%Value}{groupsSeparator:.}dk")
+                                    val currentDocument = Study(
+                                        documentKonuAdi,
+                                        studyCount.toString(),
+                                        studyOwnerID,
+                                        studyDersAdi!!,
+                                        studyTur!!,
+                                        soruSayisi!!
+                                    )
 
-                            cartesian.animation(true)
-                            val title = "$studyTur $studyDersAdi $zamanAraligi"
-                            cartesian.title(title)
-
-                            cartesian.yScale().minimum(0.0)
-
-                            cartesian.yAxis(0).labels().format("{%Value}{groupsSeparator:.}dk")
-
-                            cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
-                            cartesian.interactivity().hoverMode(HoverMode.BY_X)
-
-                            cartesian.xAxis(0).title("Konu Adları")
-                            cartesian.yAxis(0).title("Süre")
-
-                            anyChartView.setChart(cartesian)
-                        } else if (grafikTuru == "Soru") {
-                            for (document in value) {
-                                val documentKonuAdi = document.get("konuAdi").toString()
-                                var studyCount: Int
+                                    konular.add(currentDocument)
+                                }
+                                val data: MutableList<DataEntry> = ArrayList()
 
 
-                                if (documentKonuAdi in konuSoruAdlari) {
 
-                                    val currentValue = konuSoruHash[documentKonuAdi]
-                                    konuSoruHash[documentKonuAdi] =
-                                        document.get("çözülenSoru").toString()
-                                            .toInt() + currentValue!!
-                                    println("Selam")
-                                    println(konuSoruHash)
-
-                                    studyCount = konuSoruHash[documentKonuAdi]!!
-
-                                } else {
-                                    konuSoruAdlari.add(documentKonuAdi)
-
-                                    konuSoruHash[documentKonuAdi] =
-                                        document.get("çözülenSoru").toString().toInt()
-
-                                    studyCount = konuSoruHash[documentKonuAdi]!!
+                                for (i in konuSoruHash) {
+                                    println(i.key + " " + i.value)
+                                    data.add(ValueDataEntry(i.key, i.value))
                                 }
 
-                                val currentDocument = Study(
-                                    documentKonuAdi,
-                                    studyCount.toString(),
-                                    studyOwnerID,
-                                    studyDersAdi!!,
-                                    studyTur!!,
-                                    soruSayisi!!
-                                )
+                                val column: Column = cartesian.column(data)
 
-                                konular.add(currentDocument)
+                                column.tooltip().titleFormat("{%X}")
+                                    .position(Position.CENTER_BOTTOM).anchor(Anchor.CENTER_BOTTOM)
+                                    .offsetX(0.0).offsetY(5.0).format("{%Value}{groupsSeparator:.}")
+
+                                cartesian.animation(true)
+                                val title = "$studyTur $studyDersAdi $zamanAraligi"
+                                cartesian.title(title)
+
+                                cartesian.yScale().minimum(0.0)
+
+                                cartesian.yAxis(0).labels().format("{%Value}{groupsSeparator:.}")
+
+                                cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
+                                cartesian.interactivity().hoverMode(HoverMode.BY_X)
+
+                                cartesian.xAxis(0).title("Konu Adları")
+                                cartesian.yAxis(0).title("Çözülen Soru Sayısı")
+
+                                anyChartView.setChart(cartesian)
                             }
-                            val data: MutableList<DataEntry> = ArrayList()
 
-
-
-                            for (i in konuSoruHash) {
-                                println(i.key + " " + i.value)
-                                data.add(ValueDataEntry(i.key, i.value))
-                            }
-
-                            val column: Column = cartesian.column(data)
-
-                            column.tooltip().titleFormat("{%X}").position(Position.CENTER_BOTTOM)
-                                .anchor(Anchor.CENTER_BOTTOM).offsetX(0.0).offsetY(5.0)
-                                .format("{%Value}{groupsSeparator:.}")
-
-                            cartesian.animation(true)
-                            val title = "$studyTur $studyDersAdi $zamanAraligi"
-                            cartesian.title(title)
-
-                            cartesian.yScale().minimum(0.0)
-
-                            cartesian.yAxis(0).labels().format("{%Value}{groupsSeparator:.}")
-
-                            cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
-                            cartesian.interactivity().hoverMode(HoverMode.BY_X)
-
-                            cartesian.xAxis(0).title("Konu Adları")
-                            cartesian.yAxis(0).title("Çözülen Soru Sayısı")
-
-                            anyChartView.setChart(cartesian)
                         }
 
                     }
+            }
 
-                }
         }
 
 
