@@ -11,7 +11,6 @@
         android:id="@+id/welcomeText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         app:cardCornerRadius="10dp">
 
         <LinearLayout
@@ -50,47 +49,76 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/sayacContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <Button
-                    android:id="@+id/sayacButton"
-                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                <LinearLayout
+                    android:id="@+id/sayacContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/saya"
-                    android:textSize="15sp"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_baseline_timer_24" />
-
-                <Button
-                    android:id="@+id/gorevButton"
-                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/g_revlerim"
-                    android:textSize="15sp"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_baseline_bookmark_24" />
+                    android:orientation="horizontal">
 
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/studentDenemeButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/denemelerim"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_baseline_book_24" />
 
-            <Button
-                android:id="@+id/allStudentsBtn"
-                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="@string/t_m_renciler"
-                android:visibility="gone">
+                    <Button
+                        android:id="@+id/gorevButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/g_revlerim"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_baseline_bookmark_24" />
 
-            </Button>
+                    <Button
+                        android:id="@+id/sayacButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/saya"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_baseline_timer_24" />
+
+                    <Button
+                        android:id="@+id/allStudentsBtn"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/t_m_renciler"
+                        android:visibility="gone">
+
+                    </Button>
+
+                    <Button
+                        android:id="@+id/koclukStatsBtn"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/ko_luk_statistikleri"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_baseline_auto_graph_24">
+
+                    </Button>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

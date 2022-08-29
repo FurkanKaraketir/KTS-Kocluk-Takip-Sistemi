@@ -1,5 +1,6 @@
 package com.kodgem.coachingapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.anychart.AnyChart
@@ -11,6 +12,7 @@ import com.anychart.enums.Anchor
 import com.anychart.enums.HoverMode
 import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,6 +21,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.databinding.ActivityStudentGraphBinding
 import com.kodgem.coachingapp.models.Study
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -37,6 +40,7 @@ class StudentGraphActivity : AppCompatActivity() {
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStudentGraphBinding.inflate(layoutInflater)
@@ -47,6 +51,7 @@ class StudentGraphActivity : AppCompatActivity() {
 
         val studyOwnerID = intent.getStringExtra("studyOwnerID")
         val studyDersAdi = intent.getStringExtra("studyDersAdi")
+        val studyKonuAdi = intent.getStringExtra("studyKonuAdi")
         val studyTur = intent.getStringExtra("studyTur")
         val zamanAraligi = intent.getStringExtra("zamanAraligi")
         val grafikTuru = intent.getStringExtra("grafikTuru")
@@ -104,6 +109,7 @@ class StudentGraphActivity : AppCompatActivity() {
 
             }
         }
+
         var kurumKodu: Int
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
@@ -112,6 +118,7 @@ class StudentGraphActivity : AppCompatActivity() {
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(studyOwnerID).collection("Studies")
                     .whereEqualTo("dersAdi", studyDersAdi).whereEqualTo("tür", studyTur)
+                    .whereEqualTo("konuAdi", studyKonuAdi)
                     .whereGreaterThan("timestamp", baslangicTarihi)
                     .whereLessThan("timestamp", bitisTarihi)
                     .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -122,36 +129,17 @@ class StudentGraphActivity : AppCompatActivity() {
                             if (grafikTuru == "Süre") {
                                 for (document in value) {
                                     val documentKonuAdi = document.get("konuAdi").toString()
-                                    var studyCount: Int
-
-
-                                    if (documentKonuAdi in konuSureAdlari) {
-
-                                        val currentValue = konuSureHash[documentKonuAdi]
-
-                                        konuSureHash[documentKonuAdi] =
-                                            document.get("toplamCalisma").toString()
-                                                .toInt() + currentValue!!
-                                        println(konuSureHash)
-
-                                        studyCount = konuSureHash[documentKonuAdi]!!
-
-                                    } else {
-                                        konuSureAdlari.add(documentKonuAdi)
-
-                                        konuSureHash[documentKonuAdi] =
-                                            document.get("toplamCalisma").toString().toInt()
-
-                                        studyCount = konuSureHash[documentKonuAdi]!!
-                                    }
+                                    val studyCount = document.get("toplamCalisma").toString()
+                                    val timestamp = document.get("timestamp") as Timestamp
 
                                     val currentDocument = Study(
                                         documentKonuAdi,
-                                        studyCount.toString(),
+                                        studyCount,
                                         studyOwnerID,
                                         studyDersAdi!!,
                                         studyTur!!,
-                                        soruSayisi!!
+                                        soruSayisi!!,
+                                        timestamp
                                     )
 
 
@@ -162,9 +150,10 @@ class StudentGraphActivity : AppCompatActivity() {
 
 
 
-                                for (i in konuSureHash) {
-                                    println(i.key + " " + i.value)
-                                    data.add(ValueDataEntry(i.key, i.value))
+                                for (i in konular) {
+                                    val date = i.timestamp.toDate()
+                                    val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
+                                    data.add(ValueDataEntry(dateFormated, i.studyCount.toInt()))
                                 }
 
                                 val column: Column = cartesian.column(data)
@@ -175,7 +164,7 @@ class StudentGraphActivity : AppCompatActivity() {
                                     .format("{%Value}{groupsSeparator:.}dk")
 
                                 cartesian.animation(true)
-                                val title = "$studyTur $studyDersAdi $zamanAraligi"
+                                val title = "$studyTur $studyDersAdi $studyKonuAdi $zamanAraligi"
                                 cartesian.title(title)
 
                                 cartesian.yScale().minimum(0.0)
@@ -185,43 +174,25 @@ class StudentGraphActivity : AppCompatActivity() {
                                 cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
                                 cartesian.interactivity().hoverMode(HoverMode.BY_X)
 
-                                cartesian.xAxis(0).title("Konu Adları")
-                                cartesian.yAxis(0).title("Süre")
+                                cartesian.xAxis(0).title("Tarihler")
+                                cartesian.yAxis(0).title("Çalışılan Süre")
 
                                 anyChartView.setChart(cartesian)
                             } else if (grafikTuru == "Soru") {
                                 for (document in value) {
                                     val documentKonuAdi = document.get("konuAdi").toString()
-                                    var studyCount: Int
+                                    val studyCount = document.get("çözülenSoru").toString()
+                                    val timestamp = document.get("timestamp") as Timestamp
 
-
-                                    if (documentKonuAdi in konuSoruAdlari) {
-
-                                        val currentValue = konuSoruHash[documentKonuAdi]
-                                        konuSoruHash[documentKonuAdi] =
-                                            document.get("çözülenSoru").toString()
-                                                .toInt() + currentValue!!
-                                        println("Selam")
-                                        println(konuSoruHash)
-
-                                        studyCount = konuSoruHash[documentKonuAdi]!!
-
-                                    } else {
-                                        konuSoruAdlari.add(documentKonuAdi)
-
-                                        konuSoruHash[documentKonuAdi] =
-                                            document.get("çözülenSoru").toString().toInt()
-
-                                        studyCount = konuSoruHash[documentKonuAdi]!!
-                                    }
 
                                     val currentDocument = Study(
                                         documentKonuAdi,
-                                        studyCount.toString(),
+                                        studyCount,
                                         studyOwnerID,
                                         studyDersAdi!!,
                                         studyTur!!,
-                                        soruSayisi!!
+                                        soruSayisi!!,
+                                        timestamp
                                     )
 
                                     konular.add(currentDocument)
@@ -230,9 +201,10 @@ class StudentGraphActivity : AppCompatActivity() {
 
 
 
-                                for (i in konuSoruHash) {
-                                    println(i.key + " " + i.value)
-                                    data.add(ValueDataEntry(i.key, i.value))
+                                for (i in konular) {
+                                    val date = i.timestamp.toDate()
+                                    val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
+                                    data.add(ValueDataEntry(dateFormated, i.soruSayisi.toInt()))
                                 }
 
                                 val column: Column = cartesian.column(data)
@@ -242,7 +214,7 @@ class StudentGraphActivity : AppCompatActivity() {
                                     .offsetX(0.0).offsetY(5.0).format("{%Value}{groupsSeparator:.}")
 
                                 cartesian.animation(true)
-                                val title = "$studyTur $studyDersAdi $zamanAraligi"
+                                val title = "$studyTur $studyDersAdi $studyKonuAdi $zamanAraligi"
                                 cartesian.title(title)
 
                                 cartesian.yScale().minimum(0.0)
@@ -252,7 +224,7 @@ class StudentGraphActivity : AppCompatActivity() {
                                 cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
                                 cartesian.interactivity().hoverMode(HoverMode.BY_X)
 
-                                cartesian.xAxis(0).title("Konu Adları")
+                                cartesian.xAxis(0).title("Tarihler")
                                 cartesian.yAxis(0).title("Çözülen Soru Sayısı")
 
                                 anyChartView.setChart(cartesian)

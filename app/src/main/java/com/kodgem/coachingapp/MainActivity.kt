@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,7 +25,6 @@ import com.kodgem.coachingapp.databinding.ActivityMainBinding
 import com.kodgem.coachingapp.models.Student
 import com.kodgem.coachingapp.models.Study
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -71,6 +71,9 @@ class MainActivity : AppCompatActivity() {
         val allStudentsBtn = binding.allStudentsBtn
         val searchEditText = binding.searchStudentMainActivityEditText
         val studySearchEditText = binding.searchStudyEditText
+        val studentDenemeButton = binding.studentDenemeButton
+        val istatistikButton = binding.koclukStatsBtn
+
         auth = Firebase.auth
         db = Firebase.firestore
 
@@ -145,7 +148,9 @@ class MainActivity : AppCompatActivity() {
             if (it.get("personType").toString() == "Student") {
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
+                studentDenemeButton.visibility = View.VISIBLE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
+                istatistikButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.GONE
                 addStudyButton.visibility = View.VISIBLE
 
@@ -181,13 +186,15 @@ class MainActivity : AppCompatActivity() {
                             val studyDersAdi = document.get("dersAdi").toString()
                             val studyTur = document.get("tür").toString()
                             val soruSayisi = document.get("çözülenSoru").toString()
+                            val timestamp = document.get("timestamp") as Timestamp
                             val currentStudy = Study(
                                 subjectTheme,
                                 subjectCount,
                                 auth.uid.toString(),
                                 studyDersAdi,
                                 studyTur,
-                                soruSayisi
+                                soruSayisi,
+                                timestamp
                             )
 
                             studyList.add(currentStudy)
@@ -205,14 +212,18 @@ class MainActivity : AppCompatActivity() {
                 studySearchEditText.visibility = View.GONE
                 searchEditText.visibility = View.VISIBLE
                 recyclerViewMyStudents.visibility = View.VISIBLE
+                studentDenemeButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.VISIBLE
                 addStudyButton.visibility = View.GONE
+                istatistikButton.visibility = View.VISIBLE
                 gorevButton.visibility = View.GONE
-
                 contentTextView.text = "Öğrencilerim"
+
+
+
+
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .whereEqualTo("teacher", auth.uid.toString())
-                    .addSnapshotListener { it2, _ ->
+                    .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { it2, _ ->
 
                         studentList.clear()
                         val documents = it2!!.documents
@@ -230,7 +241,6 @@ class MainActivity : AppCompatActivity() {
 
                     }
 
-
             }
 
 
@@ -241,6 +251,10 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        istatistikButton.setOnClickListener {
+            val intent = Intent(this, StatsActivity::class.java)
+            this.startActivity(intent)
+        }
 
         allStudentsBtn.setOnClickListener {
             val intent = Intent(this, AllStudentsActivity::class.java)

@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -155,9 +156,16 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                                 val studyDersAdi = document.get("dersAdi").toString()
                                 val studyTur = document.get("tür").toString()
                                 val soruSayisi = document.get("çözülenSoru").toString()
+                                val timestamp = document.get("timestamp") as Timestamp
 
                                 val currentStudy = Study(
-                                    studyName, sure, studentID, studyDersAdi, studyTur, soruSayisi
+                                    studyName,
+                                    sure,
+                                    studentID,
+                                    studyDersAdi,
+                                    studyTur,
+                                    soruSayisi,
+                                    timestamp
                                 )
                                 studyList.add(currentStudy)
                                 println(currentStudy.studyName)

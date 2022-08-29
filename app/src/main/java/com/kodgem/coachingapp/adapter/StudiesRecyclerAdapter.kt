@@ -72,7 +72,7 @@ open class StudiesRecyclerAdapter(
 
                             val soruOrSureAlertDialog = AlertDialog.Builder(holder.itemView.context)
                             soruOrSureAlertDialog.setTitle("Soru-Süre Grafikleri")
-                            soruOrSureAlertDialog.setMessage(studyList[position].dersTur + " " + studyList[position].studyDersAdi + " Konularındaki Görmek İstediğiniz Grafik Türünü Seçiniz")
+                            soruOrSureAlertDialog.setMessage(studyList[position].dersTur + " " + studyList[position].studyDersAdi + " " + studyList[position].studyName + " Konusundaki Görmek İstediğiniz Grafik Türünü Seçiniz")
                             soruOrSureAlertDialog.setPositiveButton("SÜRE GRAFİĞİ") { _, _ ->
 
                                 val intent = Intent(
@@ -85,7 +85,6 @@ open class StudiesRecyclerAdapter(
                                 intent.putExtra("studyKonuAdi", studyList[position].studyName)
                                 intent.putExtra("studyTur", studyList[position].dersTur)
                                 intent.putExtra("soruSayisi", studyList[position].soruSayisi)
-
                                 holder.itemView.context.startActivity(intent)
                             }
 

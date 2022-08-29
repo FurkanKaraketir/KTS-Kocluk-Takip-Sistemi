@@ -9,8 +9,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/dutiesCard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_height="70dp"
         app:cardCornerRadius="10dp">
 
         <TextView

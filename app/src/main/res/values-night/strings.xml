@@ -55,4 +55,12 @@
     <string name="biti_tarihi_se">Bitiş Tarihi Seç</string>
     <string name="g_revi_kaydet">Görevi Kaydet</string>
     <string name="kurum_kodu">Kurum Kodu</string>
+    <string name="deneme">Deneme</string>
+    <string name="do_ru">Doğru</string>
+    <string name="yanl">Yanlış</string>
+    <string name="deneme_ad">Deneme Adı</string>
+    <string name="deneme_tahlili">Deneme Tahlili</string>
+    <string name="ko_luk_statistikleri">Koçluk İstatistikleri</string>
+    <string name="grafik_olarak_g_ster">Grafik Olarak Göster</string>
+    <string name="denemelerim">Denemelerim</string>
 </resources>

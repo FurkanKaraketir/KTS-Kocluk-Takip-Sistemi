@@ -24,6 +24,7 @@ class ClassesActivity : AppCompatActivity() {
         val kimya = binding.kimya
         val tarih = binding.tarih
         val geometri = binding.geometri
+        val deneme = binding.deneme
 
         mathButton.setOnClickListener {
 
@@ -209,6 +210,36 @@ class ClassesActivity : AppCompatActivity() {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Tarih")
                     intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+
+        deneme.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.deneme_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterTytActivity::class.java)
+                    intent.putExtra("dersAdi", "Deneme")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Deneme")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                if (item.itemId == R.id.denemeTahlili) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Deneme")
+                    intent.putExtra("studyType", "DenemeTahlili")
                     this.startActivity(intent)
                 }
                 false

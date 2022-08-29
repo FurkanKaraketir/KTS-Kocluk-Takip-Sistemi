@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EnterTytActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Deneme Adı">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/denemeAdiEditText"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/deneme_ad"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Türkçe">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/turkDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/turkYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Tarih">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/tarihDogru"
+                    android:layout_width="60dp"
+
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/tarihYanlis"
+
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Coğrafya">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/cogDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru" />
+
+                <EditText
+                    android:id="@+id/cogYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Felsefe">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/felDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/felYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Din">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/dinDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/dinYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Matematik">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/matDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/matYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Fizik">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/fizDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/fizYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Kimya">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/kimyaDogru"
+                    android:layout_width="60dp"
+
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/kimyaYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="10dp"
+                    android:hint="Yanlış"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/biyoloji">
+
+                </TextView>
+
+                <EditText
+                    android:id="@+id/biyolojiDogru"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:hint="@string/do_ru"
+
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/biyolojiYanlis"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+
+                    android:hint="@string/yanl"
+                    android:inputType="number" />
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/denemeKaydetButton"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="320dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:text="Deneme Kaydet"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>
