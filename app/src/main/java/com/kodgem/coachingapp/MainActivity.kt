@@ -235,6 +235,9 @@ class MainActivity : AppCompatActivity() {
                             studentList.add(currentStudent)
 
                         }
+                        studentList.sortBy { a ->
+                            a.studentName
+                        }
                         setupStudentRecyclerView(studentList)
 
                         recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()

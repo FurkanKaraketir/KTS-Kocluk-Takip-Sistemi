@@ -13,10 +13,8 @@
         android:theme="@style/Theme.CoachingApp"
         tools:targetApi="31">
         <activity
-            android:name=".StatisticGraph"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            tools:ignore="LockedOrientationActivity">
+            android:name=".DenemeYanlisKonuActivity"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

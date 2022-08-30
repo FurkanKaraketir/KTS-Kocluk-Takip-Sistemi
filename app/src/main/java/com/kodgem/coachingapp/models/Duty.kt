@@ -11,6 +11,7 @@ class Duty(
     var tur: String,
     var cozulenSoru: String,
     var bitisZamani: Timestamp,
-    var dutyID: String
+    var dutyID: String,
+    var dutyTamamlandi: Boolean,
 
-)
+    )

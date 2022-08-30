@@ -17,11 +17,9 @@ import com.kodgem.coachingapp.R
 import com.kodgem.coachingapp.databinding.DutyGridRowBinding
 import com.kodgem.coachingapp.models.Duty
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.logging.Level.parse
 
-open class DutiesRecyclerAdapter(private val dutyList: kotlin.collections.List<Duty>) :
+open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
     RecyclerView.Adapter<DutiesRecyclerAdapter.DutyHolder>() {
 
     private lateinit var db: FirebaseFirestore
@@ -72,20 +70,22 @@ open class DutiesRecyclerAdapter(private val dutyList: kotlin.collections.List<D
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(dutyList[position].studyOwnerID).collection("Duties")
-                    .document(dutyList[position].dutyID).get().addOnSuccessListener {it2->
+                    .document(dutyList[position].dutyID).get().addOnSuccessListener { it2 ->
                         val bitisZamani = it2.get("bitisZamani") as Timestamp
                         bitisZamani.toDate()
 
-
-                        if (Calendar.getInstance().time.after(date)){
-                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_24)
-                        }else{
-                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
+                        if (dutyList[position].dutyTamamlandi) {
+                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                        } else {
+                            if (Calendar.getInstance().time.after(date)) {
+                                binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                            } else {
+                                binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
+                            }
                         }
+
                     }
             }
-
-
 
 
         }

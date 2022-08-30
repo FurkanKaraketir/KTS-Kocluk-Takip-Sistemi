@@ -63,4 +63,13 @@
     <string name="ko_luk_statistikleri">Koçluk İstatistikleri</string>
     <string name="grafik_olarak_g_ster">Grafik Olarak Göster</string>
     <string name="denemelerim">Denemelerim</string>
+    <string name="tamamlanmayan_g_revler">Tamamlanmayan Görevler</string>
+    <string name="tamamlanan_g_revler">Tamamlanan Görevler</string>
+    <string name="t_m_g_revler">Tüm Görevler</string>
+    <string name="g_rev_t_r">Görev Türü:</string>
+    <string name="yanl_konular">Yanlış Konuları</string>
+    <string name="felsefe">Felsefe</string>
+    <string name="din">Din</string>
+    <string name="deneme_kaydet">Deneme Kaydet</string>
+    <string name="toplam_yanl_0">Toplam Yanlış: 0</string>
 </resources>

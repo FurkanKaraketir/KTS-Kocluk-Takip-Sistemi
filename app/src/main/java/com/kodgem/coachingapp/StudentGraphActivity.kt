@@ -32,11 +32,6 @@ class StudentGraphActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private var konular = ArrayList<Study>()
-    private var konuSureAdlari = ArrayList<String>()
-    private var konuSoruAdlari = ArrayList<String>()
-
-    private var konuSureHash = hashMapOf<String, Int>()
-    private var konuSoruHash = hashMapOf<String, Int>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
 

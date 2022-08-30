@@ -49,6 +49,15 @@
 
         </LinearLayout>
 
+        <TextView
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:text="Kalan Görev Miktarı:"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

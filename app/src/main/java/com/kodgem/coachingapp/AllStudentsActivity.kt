@@ -79,7 +79,10 @@ class AllStudentsActivity : AppCompatActivity() {
                             val studentID = document.get("id").toString()
                             val currentStudent = Student(studentName, teacher, studentID)
                             studentList.add(currentStudent)
+
                         }
+                        studentList.sortBy { it.studentName }
+                        recyclerViewAllStudentsAdapter.notifyDataSetChanged()
                     }
 
 

@@ -156,9 +156,7 @@ class EnterStudyActivity : AppCompatActivity() {
                             cal.add(Calendar.WEEK_OF_YEAR, 1)
                             val bitisTarihi = cal.time
                             Toast.makeText(
-                                this,
-                                "Lütfen Bekleyiniz...",
-                                Toast.LENGTH_SHORT
+                                this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT
                             ).show()
                             var kurumKodu: Int
                             db.collection("User").document(auth.uid.toString()).get()
@@ -287,12 +285,12 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                                 .toString()
                                                                                                                 .toInt() - (currentMinutesEditText.text.toString()
                                                                                                                 .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                                                .toInt()) <= 10 && document5.get(
+                                                                                                                .toInt()) <= 0 && document5.get(
                                                                                                                 "çözülenSoru"
                                                                                                             )
                                                                                                                 .toString()
                                                                                                                 .toInt() - currentTestsEditText.text.toString()
-                                                                                                                .toInt() <= 10
+                                                                                                                .toInt() <= 0
                                                                                                         ) {
                                                                                                             db.collection(
                                                                                                                 "School"
@@ -312,7 +310,10 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                                 .document(
                                                                                                                     document5.id
                                                                                                                 )
-                                                                                                                .delete()
+                                                                                                                .update(
+                                                                                                                    "tamamlandi",
+                                                                                                                    true
+                                                                                                                )
                                                                                                                 .addOnSuccessListener {
                                                                                                                     stopper2 =
                                                                                                                         true
@@ -447,12 +448,12 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                             .toString()
                                                                                                             .toInt() - (currentMinutesEditText.text.toString()
                                                                                                             .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                                            .toInt()) <= 10 && document5.get(
+                                                                                                            .toInt()) <= 0 && document5.get(
                                                                                                             "çözülenSoru"
                                                                                                         )
                                                                                                             .toString()
                                                                                                             .toInt() - currentTestsEditText.text.toString()
-                                                                                                            .toInt() <= 10
+                                                                                                            .toInt() <= 0
                                                                                                     ) {
                                                                                                         db.collection(
                                                                                                             "School"
@@ -472,7 +473,10 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                             .document(
                                                                                                                 document5.id
                                                                                                             )
-                                                                                                            .delete()
+                                                                                                            .update(
+                                                                                                                "tamamlandi",
+                                                                                                                true
+                                                                                                            )
                                                                                                             .addOnSuccessListener {
                                                                                                                 stopper2 =
                                                                                                                     true
@@ -583,15 +587,15 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                         gorevUpdate as Map<String, Any>
                                                                                     )
                                                                                     .addOnSuccessListener {
-                                                                                        if (document5.get(
-                                                                                                "toplamCalisma"
-                                                                                            )
-                                                                                                .toString()
-                                                                                                .toInt() <= 10 && document5.get(
+                                                                                        if (("toplamCalisma").toString()
+                                                                                                .toInt() - (currentMinutesEditText.text.toString()
+                                                                                                .toInt() + currentTestsMinutesEditText.text.toString()
+                                                                                                .toInt()) <= 0 && document5.get(
                                                                                                 "çözülenSoru"
                                                                                             )
                                                                                                 .toString()
-                                                                                                .toInt() <= 10
+                                                                                                .toInt() - currentTestsEditText.text.toString()
+                                                                                                .toInt() <= 0
                                                                                         ) {
                                                                                             db.collection(
                                                                                                 "School"
@@ -611,7 +615,10 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                 .document(
                                                                                                     document5.id
                                                                                                 )
-                                                                                                .delete()
+                                                                                                .update(
+                                                                                                    "tamamlandi",
+                                                                                                    true
+                                                                                                )
                                                                                                 .addOnSuccessListener {
                                                                                                     Toast.makeText(
                                                                                                         this,
@@ -644,9 +651,7 @@ class EnterStudyActivity : AppCompatActivity() {
 
                                             }
                                             Toast.makeText(
-                                                this,
-                                                "İşlem Başarılı",
-                                                Toast.LENGTH_SHORT
+                                                this, "İşlem Başarılı", Toast.LENGTH_SHORT
                                             ).show()
 
                                             finish()

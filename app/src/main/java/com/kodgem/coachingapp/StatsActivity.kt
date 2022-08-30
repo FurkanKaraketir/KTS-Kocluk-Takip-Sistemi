@@ -3,19 +3,17 @@ package com.kodgem.coachingapp
 //noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.adapter.StatisticsRecyclerAdapter
@@ -33,9 +31,11 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var layoutManager: GridLayoutManager
     private lateinit var secilenZamanAraligi: String
     private lateinit var recyclerViewStats: RecyclerView
-    private lateinit var showGraph: Button
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
+    private var dersSoruHash = hashMapOf<String, Float>()
+    private var dersSureHash = hashMapOf<String, Float>()
     private var statsList = ArrayList<Statistic>()
+    private var ogrenciSayisi = 0
     private val zamanAraliklari =
         arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
 
@@ -65,6 +65,9 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         secilenZamanAraligi = zamanAraliklari[position]
+        statsList.clear()
+        dersSureHash.clear()
+        dersSoruHash.clear()
 
         recyclerViewStats = binding.statsRecyclerView
         recyclerViewStats.layoutManager = layoutManager
@@ -147,27 +150,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
         println(baslangicTarihi)
         println(bitisTarihi)
-        showGraph = binding.showStatsGraph
 
-        showGraph.setOnClickListener {
-            val selectionAlertDialog = AlertDialog.Builder(this@StatsActivity)
-            selectionAlertDialog.setNegativeButton("Ortalama Soru Grafiği") { _, _ ->
-                val intent = Intent(this@StatsActivity, StatisticGraph::class.java)
-                intent.putExtra("grafikTuru", "Soru")
-                intent.putExtra("zamanAraligi", secilenZamanAraligi)
-                this@StatsActivity.startActivity(intent)
-            }
-            selectionAlertDialog.setPositiveButton("Ortalama Süre Grafiği") { _, _ ->
-                val intent = Intent(this@StatsActivity, StatisticGraph::class.java)
-                intent.putExtra("grafikTuru", "Süre")
-                intent.putExtra("zamanAraligi", secilenZamanAraligi)
-                this@StatsActivity.startActivity(intent)
-            }
-            selectionAlertDialog.setTitle("Ortalama Grafiği")
-            selectionAlertDialog.setMessage("Grafik Türü Seçiniz")
-            selectionAlertDialog.show()
-
-        }
 
         var kurumKodu: Int
         val dersListesi = kotlin.collections.ArrayList<String>()
@@ -175,53 +158,104 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             kurumKodu = it.get("kurumKodu").toString().toInt()
 
-            db.collection("Lessons").addSnapshotListener { dersler, _ ->
-                if (dersler != null) {
-                    for (i in dersler) {
-                        dersListesi.add(i.id)
+            db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
+                .addSnapshotListener { dersler, _ ->
+                    if (dersler != null) {
+                        for (i in dersler) {
+                            dersListesi.add(i.id)
+                        }
                     }
-                }
-                for (dersIndex in dersListesi) {
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .whereEqualTo("teacher", auth.uid.toString())
-                        .addSnapshotListener { ogrencliler, _ ->
-                            if (ogrencliler != null) {
-                                for (ogrenci in ogrencliler) {
-                                    statsList.clear()
+                    for (dersIndex in dersListesi) {
 
-                                    db.collection("School").document(kurumKodu.toString())
-                                        .collection("Student").document(ogrenci.id)
-                                        .collection("Studies").whereEqualTo("dersAdi", dersIndex)
-                                        .whereGreaterThan("timestamp", baslangicTarihi)
-                                        .whereLessThan("timestamp", bitisTarihi)
-                                        .addSnapshotListener { value, _ ->
-                                            var toplamCalisma = 0
-                                            var cozulenSoru = 0
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .whereEqualTo("teacher", auth.uid.toString())
+                            .addSnapshotListener { ogrencliler, _ ->
+                                statsList.clear()
 
-                                            if (value != null && ogrencliler.size() != 0) {
+                                if (ogrencliler != null) {
+                                    ogrenciSayisi = ogrencliler.size()
 
-                                                for (study in value) {
-                                                    toplamCalisma += study.get("toplamCalisma")
-                                                        .toString().toInt()
-                                                    cozulenSoru += study.get("çözülenSoru")
-                                                        .toString().toInt()
+                                    for (ogrenci in ogrencliler) {
+                                        var toplamCalisma = 0
+                                        var cozulenSoru = 0
+                                        db.collection("School").document(kurumKodu.toString())
+                                            .collection("Student").document(ogrenci.id)
+                                            .collection("Studies")
+                                            .whereEqualTo("dersAdi", dersIndex)
+                                            .whereGreaterThan("timestamp", baslangicTarihi)
+                                            .whereLessThan("timestamp", bitisTarihi)
+                                            .addSnapshotListener { studies, _ ->
+
+
+                                                if (studies != null && ogrencliler.size() != 0) {
+
+                                                    for (study in studies) {
+                                                        toplamCalisma += study.get("toplamCalisma")
+                                                            .toString().toInt()
+                                                        cozulenSoru += study.get("çözülenSoru")
+                                                            .toString().toInt()
+
+
+                                                    }
+                                                    if (dersIndex in dersSoruHash.keys) {
+
+                                                        val currentValue = dersSoruHash[dersIndex]
+
+                                                        if (currentValue != null) {
+                                                            dersSoruHash[dersIndex] =
+                                                                currentValue + cozulenSoru
+                                                        }
+
+
+                                                    } else {
+                                                        dersSoruHash[dersIndex] =
+                                                            cozulenSoru.toFloat()
+                                                    }
+
+                                                    if (dersIndex in dersSureHash.keys) {
+
+                                                        val currentValue = dersSureHash[dersIndex]
+
+                                                        if (currentValue != null) {
+                                                            dersSureHash[dersIndex] =
+                                                                currentValue + toplamCalisma
+                                                        }
+
+
+                                                    } else {
+                                                        dersSureHash[dersIndex] =
+                                                            toplamCalisma.toFloat()
+                                                    }
+
+
+
+
+                                                    statsList.clear()
+                                                    for (i in dersSureHash.keys) {
+                                                        val currentStatistic = Statistic(
+                                                            i,
+                                                            (dersSureHash[i]?.div(ogrenciSayisi)).toString(),
+                                                            (dersSoruHash[i]?.div(ogrenciSayisi)).toString()
+                                                        )
+
+                                                        statsList.add(currentStatistic)
+                                                        recyclerViewStatsAdapter.notifyDataSetChanged()
+                                                    }
                                                 }
 
-                                                val currentStatistic = Statistic(
-                                                    dersIndex,
-                                                    (toplamCalisma / ogrencliler.size()).toString(),
-                                                    (cozulenSoru / ogrencliler.size()).toString()
-                                                )
 
-                                                statsList.add(currentStatistic)
                                             }
-                                            recyclerViewStatsAdapter.notifyDataSetChanged()
-                                        }
+
+
+                                    }
+
                                 }
+
+
                             }
-                        }
+                    }
+
                 }
-            }
 
 
         }
@@ -230,4 +264,5 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
     }
+
 }

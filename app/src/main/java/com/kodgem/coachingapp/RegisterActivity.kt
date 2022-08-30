@@ -51,6 +51,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val kurumKoduEditText = binding.kurumKoduEditText
 
         signUpButton.setOnClickListener {
+            Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
             if (emailEditText.text.toString().isNotEmpty()) {
                 emailEditText.error = null
 
@@ -72,11 +73,26 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                 } catch (e: Exception) {
                                     0
                                 }
-                                signUp(
-                                    emailEditText.text.toString(),
-                                    passwordEditText.text.toString(),
-                                    kurumKoduEditText.text.toString().toInt()
-                                )
+
+                                val kurumList = ArrayList<String>()
+                                db.collection("School").addSnapshotListener { kurumlar, _ ->
+                                    if (kurumlar != null) {
+                                        for (kurum in kurumlar) {
+                                            kurumList.add(kurum.id)
+                                        }
+                                        if (kurumKoduEditText.text.toString() in kurumList) {
+                                            signUp(
+                                                emailEditText.text.toString(),
+                                                passwordEditText.text.toString(),
+                                                kurumKoduEditText.text.toString().toInt()
+                                            )
+                                        } else {
+                                            kurumKoduEditText.error = "Kurum Kodunuz Hatalı"
+                                        }
+                                    }
+                                }
+
+
                             } else {
                                 kurumKoduEditText.error = "Bu Alan Boş Bırakılamaz"
                             }

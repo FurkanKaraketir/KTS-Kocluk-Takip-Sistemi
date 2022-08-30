@@ -186,7 +186,8 @@ class EnterDutyActivity : AppCompatActivity() {
                         "tür" to secilenTur,
                         "toplamCalisma" to gorevToplamCalisma.text.toString().toInt(),
                         "çözülenSoru" to gorevCozulenSoru.text.toString().toInt(),
-                        "eklenmeTarihi" to Timestamp.now()
+                        "eklenmeTarihi" to Timestamp.now(),
+                        "tamamlandi" to false
 
                     )
 
@@ -213,7 +214,9 @@ class EnterDutyActivity : AppCompatActivity() {
                                                     "çözülenSoru" to gorevCozulenSoru.text.toString()
                                                         .toInt() + document.get("çözülenSoru")
                                                         .toString().toInt(),
-                                                    "bitisZamani" to c.time
+                                                    "bitisZamani" to c.time,
+                                                    "tamamlandi" to false
+
                                                 )
 
                                                 stopper = true

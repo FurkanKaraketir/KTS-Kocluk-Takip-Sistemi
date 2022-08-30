@@ -27,11 +27,19 @@ class StatisticsRecyclerAdapter(
     override fun onBindViewHolder(holder: StatisticHolder, position: Int) {
         with(holder) {
 
-            binding.statsDersAdi.text = statisticList[position].dersAdi
+            if (statisticList[position].dersAdi == "Deneme") {
+                binding.statsDersAdi.text = "Deneme Tahlili"
+            } else {
+                binding.statsDersAdi.text = statisticList[position].dersAdi
+            }
             binding.statsToplamCalisma.text =
-                "Ortalama Çalışılan Süre: " + statisticList[position].toplamCalisma + "dk"
+                "Ortalama Çalışılan Süre:  ${
+                    statisticList[position].toplamCalisma.toFloat().format(2)
+                } dk"
             binding.statsCozulenSoru.text =
-                "Ortalama Çözülen Soru: " + statisticList[position].cozulenSoru + " Soru"
+                "Ortalama Çözülen Soru:  ${
+                    statisticList[position].cozulenSoru.toFloat().format(2)
+                } Soru"
 
 
         }
@@ -40,4 +48,7 @@ class StatisticsRecyclerAdapter(
     override fun getItemCount(): Int {
         return statisticList.size
     }
+
+    private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+
 }
