@@ -148,8 +148,6 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 bitisTarihi = cal.time
             }
         }
-        println(baslangicTarihi)
-        println(bitisTarihi)
 
 
         var kurumKodu: Int

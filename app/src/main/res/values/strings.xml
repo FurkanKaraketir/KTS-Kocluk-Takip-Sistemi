@@ -74,4 +74,5 @@
     <string name="toplam_yanl_0">Toplam Yanlış: 0</string>
     <string name="deneme_tarihi">Deneme Tarihi:</string>
     <string name="denemeler">Denemeler</string>
+    <string name="show">Show</string>
 </resources>

@@ -17,7 +17,10 @@ import com.kodgem.coachingapp.databinding.DenemeGridRowBinding
 import com.kodgem.coachingapp.models.Deneme
 import java.text.SimpleDateFormat
 
-class DenemelerRecyclerAdapter(private val denemeList: List<Deneme>, private val secilenZamanAraligi: String) :
+class DenemelerRecyclerAdapter(
+    private val denemeList: List<Deneme>,
+    private val secilenZamanAraligi: String
+) :
     RecyclerView.Adapter<DenemelerRecyclerAdapter.DenemeHolder>() {
 
     private lateinit var db: FirebaseFirestore
@@ -42,7 +45,7 @@ class DenemelerRecyclerAdapter(private val denemeList: List<Deneme>, private val
             db = Firebase.firestore
             binding.denemeAdiTextView.text = denemeList[position].denemeAdi
             binding.denemeToplamNetTextView.text =
-                "Toplam Net: " + denemeList[position].denemeToplamNet.toString()
+                "Toplam Net: " + denemeList[position].denemeToplamNet.toString() + " " + denemeList[position].denemeTur
             val date = denemeList[position].denemeTarihi.toDate()
             val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
 
@@ -51,8 +54,9 @@ class DenemelerRecyclerAdapter(private val denemeList: List<Deneme>, private val
             binding.denemeCard.setOnClickListener {
                 val intent = Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
                 intent.putExtra("denemeID", denemeList[position].denemeID)
-                intent.putExtra("secilenZamanAraligi",secilenZamanAraligi)
-                intent.putExtra("denemeStudentID",denemeList[position].denemeStudentID)
+                intent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
+                intent.putExtra("denemeStudentID", denemeList[position].denemeStudentID)
+                intent.putExtra("denemeTür", denemeList[position].denemeTur)
                 holder.itemView.context.startActivity(intent)
             }
         }

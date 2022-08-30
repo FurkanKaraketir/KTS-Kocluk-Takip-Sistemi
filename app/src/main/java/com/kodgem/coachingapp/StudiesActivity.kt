@@ -142,8 +142,6 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
             }
         }
-        println(baslangicTarihi)
-        println(bitisTarihi)
 
 
         var kurumKodu: Int
@@ -175,7 +173,6 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                                     timestamp
                                 )
                                 studyList.add(currentStudy)
-                                println(currentStudy.studyName)
                             }
 
                             recyclerViewStudiesAdapter.notifyDataSetChanged()

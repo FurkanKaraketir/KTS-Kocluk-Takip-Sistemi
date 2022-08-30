@@ -31,6 +31,7 @@ class DenemeGraphActivity : AppCompatActivity() {
     private lateinit var bitisTarihi: Date
     private var zamanAraligi = ""
     private var dersAdi = ""
+    private var denemeTur = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -41,6 +42,7 @@ class DenemeGraphActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         db = Firebase.firestore
+        denemeTur = intent.getStringExtra("denemeTür").toString()
         zamanAraligi = intent.getStringExtra("zamanAraligi").toString()
         val denemeOwnerID = intent.getStringExtra("denemeOwnerID")
         dersAdi = intent.getStringExtra("dersAdi").toString()
@@ -86,11 +88,9 @@ class DenemeGraphActivity : AppCompatActivity() {
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
-                println(baslangicTarihi)
 
                 cal.set(2920, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 bitisTarihi = cal.time
-                println(bitisTarihi)
 
             }
         }
@@ -99,14 +99,14 @@ class DenemeGraphActivity : AppCompatActivity() {
         val denemeList = ArrayList<String>()
 
         val konuHashMap = hashMapOf<String, Int>()
+        konuHashMap.clear()
 
-        var bool1: Boolean
-        var bool2 = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             kurumKodu = it.get("kurumKodu").toString().toInt()
 
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .document(denemeOwnerID!!).collection("Denemeler")
+                .whereEqualTo("denemeTür", denemeTur)
                 .whereGreaterThan("denemeTarihi", baslangicTarihi)
                 .whereLessThan("denemeTarihi", bitisTarihi)
                 .orderBy("denemeTarihi", Query.Direction.DESCENDING)
@@ -119,7 +119,6 @@ class DenemeGraphActivity : AppCompatActivity() {
 
 
                         for (id in denemeList) {
-                            bool1 = false
                             db.collection("School").document(kurumKodu.toString())
                                 .collection("Student").document(denemeOwnerID)
                                 .collection("Denemeler").document(id).collection(dersAdi)
@@ -147,17 +146,12 @@ class DenemeGraphActivity : AppCompatActivity() {
 
 
                                         }
-                                        bool1 = true
-                                        if (bool1 && bool2) {
-                                            drawGraph(konuHashMap)
-                                        }
 
                                     }
                                 }
 
 
                         }
-                        bool2 = true
 
 
                     }
@@ -168,16 +162,23 @@ class DenemeGraphActivity : AppCompatActivity() {
 
         }
 
+        val showBtn = binding.showBtn
+        showBtn.setOnClickListener {
+            drawGraph(konuHashMap)
+
+        }
+
 
     }
+
 
     private fun drawGraph(konuHashMap: HashMap<String, Int>) {
         val data: MutableList<DataEntry> = ArrayList()
         val cartesian: Cartesian = AnyChart.column()
         val anyChartView = binding.anyChartDenemeView
 
-        println(konuHashMap)
 
+        println(konuHashMap)
         for (i in konuHashMap.keys) {
             data.add(ValueDataEntry(i, konuHashMap[i]))
         }
@@ -206,4 +207,9 @@ class DenemeGraphActivity : AppCompatActivity() {
 
     }
 
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
 }

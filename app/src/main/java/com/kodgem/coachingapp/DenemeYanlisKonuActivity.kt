@@ -47,7 +47,6 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             val konuHash = recyclerViewDenemeKonulariRecyclerAdapter.konuHash
             var kurumKodu: Int
-            println(konuHash)
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 kurumKodu = it.get("kurumKodu").toString().toInt()
 

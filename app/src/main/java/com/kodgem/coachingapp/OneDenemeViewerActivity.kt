@@ -18,6 +18,7 @@ class OneDenemeViewerActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private var denemeStudentID = ""
     private var secilenZamanAraligi = ""
+    private var denemeTur = ""
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class OneDenemeViewerActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         val denemeID = intent.getStringExtra("denemeID")
+        denemeTur = intent.getStringExtra("denemeTür").toString()
         denemeStudentID = intent.getStringExtra("denemeStudentID").toString()
         secilenZamanAraligi = intent.getStringExtra("secilenZamanAraligi").toString()
         val denemeTitle = binding.oneDenemeTitle
@@ -53,7 +55,7 @@ class OneDenemeViewerActivity : AppCompatActivity() {
                 .addOnSuccessListener { deneme ->
 
 
-                    denemeTitle.text = "Deneme Adı: "+deneme.get("denemeAdi").toString()
+                    denemeTitle.text = "Deneme Adı: " + deneme.get("denemeAdi").toString()
                     turkNetTextView.text = "Türkçe Net: " + deneme.get("turkceNet").toString()
                     tarihNetTextView.text = "Tarih Net: " + deneme.get("tarihNet").toString()
                     cografyaNetTextView.text = "Coğrafya Net: " + deneme.get("cogNet").toString()
@@ -80,6 +82,9 @@ class OneDenemeViewerActivity : AppCompatActivity() {
         tarihNetTextView.setOnClickListener {
             alertGoster("Tarih")
 
+        }
+        felsefeNetTextView.setOnClickListener {
+            alertGoster("Felsefe")
         }
         dinNetTextView.setOnClickListener {
             alertGoster("Din")
@@ -112,35 +117,38 @@ class OneDenemeViewerActivity : AppCompatActivity() {
         }
         toplamNetTextView.setOnClickListener {
 
-            val intent = Intent(this,DenemeNetGraphByTimeActivity::class.java)
-            intent.putExtra("dersAdi","ToplamNet")
-            intent.putExtra("denemeOwnerID",denemeStudentID)
-            intent.putExtra("zamanAraligi",secilenZamanAraligi)
+            val intent = Intent(this, DenemeNetGraphByTimeActivity::class.java)
+            intent.putExtra("dersAdi", "ToplamNet")
+            intent.putExtra("denemeOwnerID", denemeStudentID)
+            intent.putExtra("denemeTür", denemeTur)
+            intent.putExtra("zamanAraligi", secilenZamanAraligi)
             this.startActivity(intent)
         }
 
 
     }
 
-    private fun alertGoster(dersAdi:String){
+    private fun alertGoster(dersAdi: String) {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Grafik Türü")
         alertDialog.setMessage("Görmek İstedğiniz Grafik Türünü Seçiniz")
-        alertDialog.setPositiveButton("Geçmiş Denemeler $dersAdi Net Grafiği"){_,_->
+        alertDialog.setPositiveButton("Geçmiş Denemeler $dersAdi Net Grafiği") { _, _ ->
 
-            val intent = Intent(this,DenemeNetGraphByTimeActivity::class.java)
-            intent.putExtra("dersAdi",dersAdi)
-            intent.putExtra("denemeOwnerID",denemeStudentID)
-            intent.putExtra("zamanAraligi",secilenZamanAraligi)
+            val intent = Intent(this, DenemeNetGraphByTimeActivity::class.java)
+            intent.putExtra("dersAdi", dersAdi)
+            intent.putExtra("denemeTür", denemeTur)
+            intent.putExtra("denemeOwnerID", denemeStudentID)
+            intent.putExtra("zamanAraligi", secilenZamanAraligi)
             this.startActivity(intent)
 
         }
-        alertDialog.setNegativeButton("Geçmiş Denemeler $dersAdi Yanlış Konu Dağılımı"){_,_->
+        alertDialog.setNegativeButton("Geçmiş Denemeler $dersAdi Yanlış Konu Dağılımı") { _, _ ->
 
-            val intent = Intent(this,DenemeGraphActivity::class.java)
-            intent.putExtra("dersAdi",dersAdi)
-            intent.putExtra("denemeOwnerID",denemeStudentID)
-            intent.putExtra("zamanAraligi",secilenZamanAraligi)
+            val intent = Intent(this, DenemeGraphActivity::class.java)
+            intent.putExtra("dersAdi", dersAdi)
+            intent.putExtra("denemeTür", denemeTur)
+            intent.putExtra("denemeOwnerID", denemeStudentID)
+            intent.putExtra("zamanAraligi", secilenZamanAraligi)
             this.startActivity(intent)
 
         }

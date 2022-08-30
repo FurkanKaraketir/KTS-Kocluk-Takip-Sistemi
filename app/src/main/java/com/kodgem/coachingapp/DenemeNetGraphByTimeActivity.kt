@@ -1,8 +1,8 @@
 package com.kodgem.coachingapp
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
@@ -12,7 +12,6 @@ import com.anychart.enums.Anchor
 import com.anychart.enums.HoverMode
 import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,7 +19,6 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.databinding.ActivityDenemeNetGraphByTimeBinding
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DenemeNetGraphByTimeActivity : AppCompatActivity() {
@@ -34,6 +32,8 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
     private var zamanAraligi = ""
     private var dersAdi = ""
 
+    private var denemeTur = ""
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityDenemeNetGraphByTimeBinding.inflate(layoutInflater)
@@ -43,6 +43,7 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         zamanAraligi = intent.getStringExtra("zamanAraligi").toString()
+        denemeTur = intent.getStringExtra("denemeTür").toString()
 
         val denemeOwnerID = intent.getStringExtra("denemeOwnerID")
 
@@ -90,11 +91,9 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
-                println(baslangicTarihi)
 
                 cal.set(2920, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 bitisTarihi = cal.time
-                println(bitisTarihi)
 
             }
         }
@@ -107,6 +106,7 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
 
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .document(denemeOwnerID!!).collection("Denemeler")
+                .whereEqualTo("denemeTür", denemeTur)
                 .whereGreaterThan("denemeTarihi", baslangicTarihi)
                 .whereLessThan("denemeTarihi", bitisTarihi)
                 .orderBy("denemeTarihi", Query.Direction.DESCENDING)

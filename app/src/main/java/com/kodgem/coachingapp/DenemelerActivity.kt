@@ -1,5 +1,6 @@
 package com.kodgem.coachingapp
 
+//noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
@@ -125,8 +126,6 @@ class DenemelerActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
             }
         }
-        println(baslangicTarihi)
-        println(bitisTarihi)
 
         var kurumKodu: Int
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
@@ -150,9 +149,15 @@ class DenemelerActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                                 val denemeAdi = document.get("denemeAdi").toString()
                                 val denemeToplamNet = document.get("toplamNet").toString().toFloat()
                                 val denemeTarihi = document.get("denemeTarihi") as Timestamp
+                                val denemeTur = document.get("denemeTür").toString()
 
                                 val currentDeneme = Deneme(
-                                    denemeID, denemeAdi, denemeToplamNet, denemeTarihi, studentID
+                                    denemeID,
+                                    denemeAdi,
+                                    denemeToplamNet,
+                                    denemeTarihi,
+                                    studentID,
+                                    denemeTur
                                 )
                                 denemeList.add(currentDeneme)
                             }

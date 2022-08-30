@@ -96,11 +96,9 @@ class StudentGraphActivity : AppCompatActivity() {
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
-                println(baslangicTarihi)
 
                 cal.set(2920, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 bitisTarihi = cal.time
-                println(bitisTarihi)
 
             }
         }
