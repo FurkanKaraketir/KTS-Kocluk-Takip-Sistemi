@@ -51,16 +51,35 @@
                     android:tooltipText="Alan Seçimi Yapınız" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/gorevTeacherButton"
-                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:text="@string/g_revler"
-                android:textSize="15sp"
-                app:icon="@drawable/ic_baseline_bookmark_24" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/denemeTeacherButton"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:text="@string/denemeler"
+                    android:textSize="15sp"
+                    app:icon="@drawable/ic_baseline_book_24" />
+
+                <Button
+                    android:id="@+id/gorevTeacherButton"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:text="@string/g_revler"
+                    android:textSize="15sp"
+                    app:icon="@drawable/ic_baseline_bookmark_24" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

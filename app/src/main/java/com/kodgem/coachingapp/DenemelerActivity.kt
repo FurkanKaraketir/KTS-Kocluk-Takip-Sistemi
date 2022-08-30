@@ -1,14 +1,13 @@
 package com.kodgem.coachingapp
 
-//noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
-import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Spinner
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
@@ -18,74 +17,58 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
-import com.kodgem.coachingapp.databinding.ActivityStudiesBinding
+import com.kodgem.coachingapp.adapter.DenemelerRecyclerAdapter
+import com.kodgem.coachingapp.databinding.ActivityDenemelerBinding
+import com.kodgem.coachingapp.models.Deneme
 import com.kodgem.coachingapp.models.Study
 import java.util.*
 
-
-class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class DenemelerActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+    private lateinit var binding: ActivityDenemelerBinding
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerAdapter: DenemelerRecyclerAdapter
+    private lateinit var spinner: Spinner
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var recyclerViewStudiesAdapter: StudiesRecyclerAdapter
-
-    private lateinit var recyclerViewStudies: RecyclerView
-    private var studyList = ArrayList<Study>()
+    private var denemeList = ArrayList<Deneme>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
-    private lateinit var binding: ActivityStudiesBinding
     private lateinit var secilenZamanAraligi: String
     private lateinit var studentID: String
     private val zamanAraliklari = arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
+        binding = ActivityDenemelerBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        binding = ActivityStudiesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = Firebase.auth
         db = Firebase.firestore
-
+        recyclerView = binding.denemelerRecyclerView
+        spinner = binding.denemeSpinner
         layoutManager = GridLayoutManager(applicationContext, 2)
-        val intent = intent
-        val studyZamanSpinner = binding.studyZamanAraligiSpinner
-        val gorevlerButton = binding.gorevTeacherButton
-        val denemelerButton = binding.denemeTeacherButton
 
-        val studyAdapter = ArrayAdapter(
-            this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
+        val denemeAdapter = ArrayAdapter(
+            this@DenemelerActivity, R.layout.simple_spinner_item, zamanAraliklari
         )
 
         studentID = intent.getStringExtra("studentID").toString()
 
-        studyAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-        studyZamanSpinner.adapter = studyAdapter
-        studyZamanSpinner.onItemSelectedListener = this
+        denemeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = denemeAdapter
+        spinner.onItemSelectedListener = this
 
-
-        denemelerButton.setOnClickListener {
-            val intent2 = Intent(this, DenemelerActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            this.startActivity(intent2)
-        }
-
-        gorevlerButton.setOnClickListener {
-            val intent2 = Intent(this, DutiesActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            this.startActivity(intent2)
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         secilenZamanAraligi = zamanAraliklari[position]
 
-        recyclerViewStudies = binding.recyclerViewStudies
-        recyclerViewStudies.layoutManager = layoutManager
-        recyclerViewStudiesAdapter = StudiesRecyclerAdapter(studyList, secilenZamanAraligi)
-        recyclerViewStudies.adapter = recyclerViewStudiesAdapter
-        recyclerViewStudiesAdapter.notifyDataSetChanged()
+        recyclerView = binding.denemelerRecyclerView
+        recyclerView.layoutManager = layoutManager
+        recyclerAdapter = DenemelerRecyclerAdapter(denemeList, secilenZamanAraligi)
+        recyclerView.adapter = recyclerAdapter
+        recyclerAdapter.notifyDataSetChanged()
 
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -145,62 +128,57 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         println(baslangicTarihi)
         println(bitisTarihi)
 
-
         var kurumKodu: Int
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             kurumKodu = it.get("kurumKodu").toString().toInt()
+
             db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("Studies")
-                .whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi)
-                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
+                .document(studentID).collection("Denemeler")
+                .whereGreaterThan("denemeTarihi", baslangicTarihi)
+                .whereLessThan("denemeTarihi", bitisTarihi)
+                .orderBy("denemeTarihi", Query.Direction.DESCENDING)
+                .addSnapshotListener { value, error ->
+
+                    if (error != null) {
+                        println(error.localizedMessage)
+                    }
                     if (value != null) {
-                        studyList.clear()
+                        denemeList.clear()
                         if (!value.isEmpty) {
                             for (document in value) {
-                                val studyName = document.get("konuAdi").toString()
-                                val sure = document.get("toplamCalisma").toString()
-                                val studyDersAdi = document.get("dersAdi").toString()
-                                val studyTur = document.get("tür").toString()
-                                val soruSayisi = document.get("çözülenSoru").toString()
-                                val timestamp = document.get("timestamp") as Timestamp
+                                val denemeID = document.id
+                                val denemeAdi = document.get("denemeAdi").toString()
+                                val denemeToplamNet = document.get("toplamNet").toString().toFloat()
+                                val denemeTarihi = document.get("denemeTarihi") as Timestamp
 
-                                val currentStudy = Study(
-                                    studyName,
-                                    sure,
-                                    studentID,
-                                    studyDersAdi,
-                                    studyTur,
-                                    soruSayisi,
-                                    timestamp
+                                val currentDeneme = Deneme(
+                                    denemeID, denemeAdi, denemeToplamNet, denemeTarihi, studentID
                                 )
-                                studyList.add(currentStudy)
-                                println(currentStudy.studyName)
+                                denemeList.add(currentDeneme)
                             }
 
-                            recyclerViewStudiesAdapter.notifyDataSetChanged()
+                            recyclerAdapter.notifyDataSetChanged()
 
                         } else {
-                            studyList.clear()
-                            recyclerViewStudiesAdapter.notifyDataSetChanged()
+                            denemeList.clear()
+                            recyclerAdapter.notifyDataSetChanged()
 
                         }
 
 
                     } else {
-                        studyList.clear()
-                        recyclerViewStudiesAdapter.notifyDataSetChanged()
+                        denemeList.clear()
+                        recyclerAdapter.notifyDataSetChanged()
 
                     }
 
                 }
 
-        }
 
+        }
 
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-
     }
 }

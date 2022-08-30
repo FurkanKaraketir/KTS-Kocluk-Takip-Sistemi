@@ -254,6 +254,13 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        studentDenemeButton.setOnClickListener {
+            val intent = Intent(this, DenemelerActivity::class.java)
+            intent.putExtra("studentID", auth.uid.toString())
+            this.startActivity(intent)
+        }
+
+
         istatistikButton.setOnClickListener {
             val intent = Intent(this, StatsActivity::class.java)
             this.startActivity(intent)
