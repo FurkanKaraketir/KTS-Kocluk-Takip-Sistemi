@@ -125,6 +125,24 @@
                         android:textSize="18sp" />
 
                     <Button
+                        android:id="@+id/felsefe"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="15dp"
+                        android:text="@string/felsefe"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/din"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="15dp"
+                        android:text="@string/din"
+                        android:textSize="18sp" />
+
+                    <Button
                         android:id="@+id/deneme"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="320dp"

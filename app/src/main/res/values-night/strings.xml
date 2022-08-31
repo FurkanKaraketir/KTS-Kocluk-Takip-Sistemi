@@ -75,4 +75,6 @@
     <string name="deneme_tarihi">Deneme Tarihi:</string>
     <string name="denemeler">Denemeler</string>
     <string name="show">Show</string>
+    <string name="default_notification_channel_id">212121</string>
+    <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
 </resources>

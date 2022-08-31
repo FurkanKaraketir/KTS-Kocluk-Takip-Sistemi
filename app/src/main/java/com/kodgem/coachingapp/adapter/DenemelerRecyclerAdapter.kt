@@ -18,10 +18,8 @@ import com.kodgem.coachingapp.models.Deneme
 import java.text.SimpleDateFormat
 
 class DenemelerRecyclerAdapter(
-    private val denemeList: List<Deneme>,
-    private val secilenZamanAraligi: String
-) :
-    RecyclerView.Adapter<DenemelerRecyclerAdapter.DenemeHolder>() {
+    private val denemeList: List<Deneme>, private val secilenZamanAraligi: String
+) : RecyclerView.Adapter<DenemelerRecyclerAdapter.DenemeHolder>() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth

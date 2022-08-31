@@ -32,14 +32,12 @@ class StatisticsRecyclerAdapter(
             } else {
                 binding.statsDersAdi.text = statisticList[position].dersAdi
             }
-            binding.statsToplamCalisma.text =
-                "Ortalama Çalışılan Süre:  ${
-                    statisticList[position].toplamCalisma.toFloat().format(2)
-                } dk"
-            binding.statsCozulenSoru.text =
-                "Ortalama Çözülen Soru:  ${
-                    statisticList[position].cozulenSoru.toFloat().format(2)
-                } Soru"
+            binding.statsToplamCalisma.text = "Ortalama Çalışılan Süre:  ${
+                statisticList[position].toplamCalisma.toFloat().format(2)
+            } dk"
+            binding.statsCozulenSoru.text = "Ortalama Çözülen Soru:  ${
+                statisticList[position].cozulenSoru.toFloat().format(2)
+            } Soru"
 
 
         }

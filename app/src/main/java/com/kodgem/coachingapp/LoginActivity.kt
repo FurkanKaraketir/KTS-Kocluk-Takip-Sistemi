@@ -67,6 +67,9 @@ class LoginActivity : AppCompatActivity() {
                     baseContext, "Giriş Başarısız!", Toast.LENGTH_SHORT
                 ).show()
             }
+        }.addOnFailureListener {
+            println(it.localizedMessage)
+
         }
     }
 }

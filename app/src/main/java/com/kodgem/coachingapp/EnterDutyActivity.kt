@@ -19,6 +19,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.databinding.ActivityEnterDutyBinding
+import com.kodgem.coachingapp.services.FcmNotificationsSender
 import java.util.*
 
 class EnterDutyActivity : AppCompatActivity() {
@@ -227,6 +228,15 @@ class EnterDutyActivity : AppCompatActivity() {
                                                     .update(dutyUpdate as Map<String, Any>)
                                                     .addOnSuccessListener {
 
+                                                        val notificationsSender =
+                                                            FcmNotificationsSender(
+                                                                "/topics/$studentID",
+                                                                "Yeni Görev",
+                                                                "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                                this
+                                                            )
+                                                        notificationsSender.sendNotifications()
+
                                                         Toast.makeText(
                                                             this,
                                                             "İşlem Başarılı",
@@ -243,6 +253,15 @@ class EnterDutyActivity : AppCompatActivity() {
                                                 .collection("Student").document(studentID)
                                                 .collection("Duties").document(documentID).set(duty)
                                                 .addOnSuccessListener {
+                                                    val notificationsSender =
+                                                        FcmNotificationsSender(
+                                                            "/topics/$studentID",
+                                                            "Yeni Görev",
+                                                            "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                            this
+                                                        )
+                                                    notificationsSender.sendNotifications()
+
                                                     Toast.makeText(
                                                         this, "İşlem Başarılı", Toast.LENGTH_SHORT
                                                     ).show()
@@ -251,10 +270,19 @@ class EnterDutyActivity : AppCompatActivity() {
                                         }
 
                                     } else {
+
                                         db.collection("School").document(kurumKodu.toString())
                                             .collection("Student").document(studentID)
                                             .collection("Duties").document(documentID).set(duty)
                                             .addOnSuccessListener {
+                                                val notificationsSender = FcmNotificationsSender(
+                                                    "/topics/$studentID",
+                                                    "Yeni Görev",
+                                                    "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                    this
+                                                )
+                                                notificationsSender.sendNotifications()
+
                                                 Toast.makeText(
                                                     this, "İşlem Başarılı", Toast.LENGTH_SHORT
                                                 ).show()

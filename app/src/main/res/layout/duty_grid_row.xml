@@ -52,9 +52,9 @@
         <TextView
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Kalan Görev Miktarı:"
-            android:layout_height="wrap_content">
+            android:text="@string/kalan_g_rev_miktar">
 
         </TextView>
 

@@ -43,8 +43,8 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                         addStudent.setTitle("Öğrenci Ekle")
                         addStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
                         addStudent.setPositiveButton("EKLE") { _, _ ->
-                            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                                .document(studentList[position].id)
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").document(studentList[position].id)
                                 .update("teacher", auth.uid.toString())
                         }
                         addStudent.setNegativeButton("İPTAL") { _, _ ->
@@ -58,8 +58,9 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                         removeStudent.setTitle("Öğrenci Çıkar")
                         removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
                         removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
-                            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                                .document(studentList[position].id).update("teacher", "")
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").document(studentList[position].id)
+                                .update("teacher", "")
                         }
                         removeStudent.setNegativeButton("İPTAL") { _, _ ->
 

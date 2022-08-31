@@ -3,12 +3,12 @@ package com.kodgem.coachingapp
 //noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
@@ -21,7 +21,6 @@ import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.adapter.DenemelerRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityDenemelerBinding
 import com.kodgem.coachingapp.models.Deneme
-import com.kodgem.coachingapp.models.Study
 import java.util.*
 
 class DenemelerActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {

@@ -132,7 +132,7 @@ class OneDenemeViewerActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Grafik Türü")
         alertDialog.setMessage("Görmek İstedğiniz Grafik Türünü Seçiniz")
-        alertDialog.setPositiveButton("Geçmiş Denemeler $dersAdi Net Grafiği") { _, _ ->
+        alertDialog.setPositiveButton("$dersAdi Deneme-Net Grafiği") { _, _ ->
 
             val intent = Intent(this, DenemeNetGraphByTimeActivity::class.java)
             intent.putExtra("dersAdi", dersAdi)
@@ -142,7 +142,7 @@ class OneDenemeViewerActivity : AppCompatActivity() {
             this.startActivity(intent)
 
         }
-        alertDialog.setNegativeButton("Geçmiş Denemeler $dersAdi Yanlış Konu Dağılımı") { _, _ ->
+        alertDialog.setNegativeButton("Yanlış Soru-Konu Dağılımı Grafiği") { _, _ ->
 
             val intent = Intent(this, DenemeGraphActivity::class.java)
             intent.putExtra("dersAdi", dersAdi)
