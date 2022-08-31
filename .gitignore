@@ -163,3 +163,4 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,firebase,kotlin
+app/src/main/java/com/kodgem/coachingapp/services/FcmNotificationsSender.kt
