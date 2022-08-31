@@ -587,7 +587,10 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                         gorevUpdate as Map<String, Any>
                                                                                     )
                                                                                     .addOnSuccessListener {
-                                                                                        if (("toplamCalisma").toString()
+                                                                                        if (document5.get(
+                                                                                                "toplamCalisma"
+                                                                                            )
+                                                                                                .toString()
                                                                                                 .toInt() - (currentMinutesEditText.text.toString()
                                                                                                 .toInt() + currentTestsMinutesEditText.text.toString()
                                                                                                 .toInt()) <= 0 && document5.get(
