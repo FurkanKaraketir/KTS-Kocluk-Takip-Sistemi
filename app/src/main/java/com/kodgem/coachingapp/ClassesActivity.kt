@@ -283,7 +283,7 @@ class ClassesActivity : AppCompatActivity() {
                 }
 
                 if (item.itemId == R.id.AYT) {
-                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    val intent = Intent(this, EnterTytActivity::class.java)
                     intent.putExtra("dersAdi", "Deneme")
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)

@@ -20,6 +20,28 @@ class EnterTytActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
+    private var turkceDogruDegeri = 0
+    private var turkceYanlisDegeri = 0
+    private var cogDogruDegeri = 0
+    private var cogYanlisDegeri = 0
+    private var tarihDogruDegeri = 0
+    private var tarihYanlisDegeri = 0
+    private var felsefeDogruDegeri = 0
+    private var felsefeYanlisDegeri = 0
+    private var dinDogruDegeri = 0
+    private var dinYanlisDegeri = 0
+    private var matDogruDegeri = 0
+    private var matYanlisDegeri = 0
+    private var geoDogruDegeri = 0
+    private var geoYanlisDegeri = 0
+    private var fizikDogruDegeri = 0
+    private var fizikYanlisDegeri = 0
+    private var kimyaDogruDegeri = 0
+    private var kimyaYanlisDegeri = 0
+    private var biyolojiDogruDegeri = 0
+    private var biyolojiYanlisDegeri = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEnterTytBinding.inflate(layoutInflater)
@@ -29,6 +51,7 @@ class EnterTytActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         db = Firebase.firestore
+        val studyType = intent.getStringExtra("studyType")
         val documentID = UUID.randomUUID().toString()
 
         val button = binding.denemeKaydetButton
@@ -36,7 +59,6 @@ class EnterTytActivity : AppCompatActivity() {
         val turDogru = binding.turkDogru
         val turkYanlisEditText = binding.turkYanlisEditText
         val turkYanlisBtn = binding.turkYanlisButton
-
 
         val cogDogru = binding.cogDogru
         val cogYanlisEditText = binding.cogYanlisEditText
@@ -80,14 +102,14 @@ class EnterTytActivity : AppCompatActivity() {
         val denemeAdiEditText = binding.denemeAdiEditText
         fizYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Fizik")
             this.startActivity(intent)
         }
         biyolojiYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Biyoloji")
             this.startActivity(intent)
@@ -95,7 +117,7 @@ class EnterTytActivity : AppCompatActivity() {
 
         kimyaYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Kimya")
             this.startActivity(intent)
@@ -103,7 +125,7 @@ class EnterTytActivity : AppCompatActivity() {
 
         geometriYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Geometri")
             this.startActivity(intent)
@@ -111,7 +133,7 @@ class EnterTytActivity : AppCompatActivity() {
 
         matYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Matematik")
             this.startActivity(intent)
@@ -119,7 +141,7 @@ class EnterTytActivity : AppCompatActivity() {
 
         dinYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Din")
             this.startActivity(intent)
@@ -127,7 +149,7 @@ class EnterTytActivity : AppCompatActivity() {
 
         felYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Felsefe")
             this.startActivity(intent)
@@ -135,21 +157,21 @@ class EnterTytActivity : AppCompatActivity() {
 
         tarihYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Tarih")
             this.startActivity(intent)
         }
         cogYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Coğrafya")
             this.startActivity(intent)
         }
         turkYanlisBtn.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
-            intent.putExtra("tür", "TYT")
+            intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Türkçe-Edebiyat")
             this.startActivity(intent)
@@ -162,148 +184,184 @@ class EnterTytActivity : AppCompatActivity() {
                 auth.uid.toString()
             ).get().addOnSuccessListener {
                 val kurumKodu = it.get("kurumKodu").toString().toInt()
-                if (turDogru.text.isNotEmpty()) {
-                    if (turkYanlisEditText.text.isNotEmpty()) {
-                        if (cogDogru.text.isNotEmpty()) {
-                            if (cogYanlisEditText.text.isNotEmpty()) {
-                                if (tarihDogru.text.isNotEmpty()) {
-                                    if (tarihYanlisEdit.text.isNotEmpty()) {
-                                        if (felDogru.text.isNotEmpty()) {
-                                            if (felYanlisEdit.text.isNotEmpty()) {
-                                                if (dinDogru.text.isNotEmpty()) {
-                                                    if (dinYanlisEdit.text.isNotEmpty()) {
-                                                        if (matDogru.text.isNotEmpty()) {
-                                                            if (matYanlisEdit.text.isNotEmpty()) {
-                                                                if (geometriDogru.text.isNotEmpty()) {
-                                                                    if (geoYanlisEdit.text.isNotEmpty()) {
-                                                                        if (fizDogru.text.isNotEmpty()) {
-                                                                            if (fizYanlisEdit.text.isNotEmpty()) {
-                                                                                if (kimyaDogru.text.isNotEmpty()) {
-                                                                                    if (kimyaYanlisEdit.text.isNotEmpty()) {
-                                                                                        if (biyolojiDogru.text.isNotEmpty()) {
-                                                                                            if (biyolojiYanlisEdit.text.isNotEmpty()) {
-                                                                                                if (denemeAdiEditText.text.isNotEmpty()) {
-                                                                                                    button.isClickable =
-                                                                                                        false
-                                                                                                    val turkceNet =
-                                                                                                        turDogru.text.toString()
-                                                                                                            .toInt() - (turkYanlisEditText.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val tarihNet =
-                                                                                                        tarihDogru.text.toString()
-                                                                                                            .toInt() - (tarihYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val cogNet =
-                                                                                                        cogDogru.text.toString()
-                                                                                                            .toInt() - (cogYanlisEditText.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val felNet =
-                                                                                                        felDogru.text.toString()
-                                                                                                            .toInt() - (felYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val dinNet =
-                                                                                                        dinDogru.text.toString()
-                                                                                                            .toInt() - (dinYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val matNet =
-                                                                                                        matDogru.text.toString()
-                                                                                                            .toInt() - (matYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val fizNet =
-                                                                                                        fizDogru.text.toString()
-                                                                                                            .toInt() - (fizYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val kimyaNet =
-                                                                                                        kimyaDogru.text.toString()
-                                                                                                            .toInt() - (kimyaYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val biyoNet =
-                                                                                                        biyolojiDogru.text.toString()
-                                                                                                            .toInt() - (biyolojiYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
-                                                                                                    val geoNet =
-                                                                                                        geometriDogru.text.toString()
-                                                                                                            .toInt() - (geoYanlisEdit.text.toString()
-                                                                                                            .toInt() * 0.25f)
+                turkceDogruDegeri = if (turDogru.text.isNotEmpty()) {
+                    turDogru.text.toString().toInt()
 
-
-                                                                                                    val toplamNet =
-                                                                                                        turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
-                                                                                                    val deneme =
-                                                                                                        hashMapOf(
-                                                                                                            "denemeTürü" to "TYT",
-                                                                                                            "denemeAdi" to denemeAdiEditText.text.toString(),
-                                                                                                            "turkceNet" to turkceNet,
-                                                                                                            "tarihNet" to tarihNet,
-                                                                                                            "cogNet" to cogNet,
-                                                                                                            "felNet" to felNet,
-                                                                                                            "dinNet" to dinNet,
-                                                                                                            "matNet" to matNet,
-                                                                                                            "fizNet" to fizNet,
-                                                                                                            "kimyaNet" to kimyaNet,
-                                                                                                            "biyoNet" to biyoNet,
-                                                                                                            "geoNet" to geoNet,
-                                                                                                            "denemeTarihi" to Timestamp.now(),
-                                                                                                            "toplamNet" to toplamNet
-                                                                                                        )
-
-                                                                                                    db.collection(
-                                                                                                        "School"
-                                                                                                    )
-                                                                                                        .document(
-                                                                                                            kurumKodu.toString()
-                                                                                                        )
-                                                                                                        .collection(
-                                                                                                            "Student"
-                                                                                                        )
-                                                                                                        .document(
-                                                                                                            auth.uid.toString()
-                                                                                                        )
-                                                                                                        .collection(
-                                                                                                            "Denemeler"
-                                                                                                        )
-                                                                                                        .document(
-                                                                                                            documentID
-                                                                                                        )
-                                                                                                        .set(
-                                                                                                            deneme
-                                                                                                        )
-                                                                                                        .addOnSuccessListener {
-                                                                                                            Toast.makeText(
-                                                                                                                this,
-                                                                                                                "İşlem Başarılı",
-                                                                                                                Toast.LENGTH_SHORT
-                                                                                                            )
-                                                                                                                .show()
-                                                                                                            finish()
-                                                                                                        }
-
-                                                                                                }
-
-
-                                                                                            }
-
-                                                                                        }
-
-
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                } else {
+                    0
                 }
+                turkceYanlisDegeri = if (turkYanlisEditText.text.isNotEmpty()) {
+                    turkYanlisEditText.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                cogDogruDegeri = if (cogDogru.text.isNotEmpty()) {
+                    cogDogru.text.toString().toInt()
+
+
+                } else {
+                    0
+                }
+                cogYanlisDegeri = if (cogYanlisEditText.text.isNotEmpty()) {
+                    cogYanlisEditText.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                tarihDogruDegeri = if (tarihDogru.text.isNotEmpty()) {
+                    tarihDogru.text.toString().toInt()
+
+
+                } else {
+                    0
+                }
+                tarihYanlisDegeri = if (tarihYanlisEdit.text.isNotEmpty()) {
+                    tarihYanlisEdit.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                felsefeDogruDegeri = if (felDogru.text.isNotEmpty()) {
+                    felDogru.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                felsefeYanlisDegeri = if (felYanlisEdit.text.isNotEmpty()) {
+                    felYanlisEdit.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                dinDogruDegeri = if (dinDogru.text.isNotEmpty()) {
+                    dinDogru.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                dinYanlisDegeri = if (dinYanlisEdit.text.isNotEmpty()) {
+                    dinYanlisEdit.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                matDogruDegeri = if (matDogru.text.isNotEmpty()) {
+                    matDogru.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                matYanlisDegeri = if (matYanlisEdit.text.isNotEmpty()) {
+                    matYanlisEdit.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                geoDogruDegeri = if (geometriDogru.text.isNotEmpty()) {
+                    geometriDogru.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                geoYanlisDegeri = if (geoYanlisEdit.text.isNotEmpty()) {
+                    geoYanlisEdit.text.toString().toInt()
+                } else {
+                    0
+                }
+                fizikDogruDegeri = if (fizDogru.text.isNotEmpty()) {
+                    fizDogru.text.toString().toInt()
+                } else {
+                    0
+                }
+                fizikYanlisDegeri = if (fizYanlisEdit.text.isNotEmpty()) {
+                    fizYanlisEdit.text.toString().toInt()
+                } else {
+                    0
+                }
+                kimyaDogruDegeri = if (kimyaDogru.text.isNotEmpty()) {
+                    kimyaDogru.text.toString().toInt()
+                } else {
+                    0
+                }
+                kimyaYanlisDegeri = if (kimyaYanlisEdit.text.isNotEmpty()) {
+                    kimyaYanlisEdit.text.toString().toInt()
+                } else {
+                    0
+                }
+                biyolojiDogruDegeri = if (biyolojiDogru.text.isNotEmpty()) {
+                    biyolojiDogru.text.toString().toInt()
+
+                } else {
+                    0
+                }
+                biyolojiYanlisDegeri = if (biyolojiYanlisEdit.text.isNotEmpty()) {
+                    biyolojiYanlisEdit.text.toString().toInt()
+
+
+                } else {
+                    0
+                }
+                if (denemeAdiEditText.text.isNotEmpty()) {
+                    denemeAdiEditText.error = null
+                    button.isClickable = false
+                    val turkceNet = turkceDogruDegeri - (turkceYanlisDegeri * 0.25f)
+                    val tarihNet = tarihDogruDegeri - (tarihYanlisDegeri * 0.25f)
+                    val cogNet = cogDogruDegeri - (cogYanlisDegeri * 0.25f)
+                    val felNet = felsefeDogruDegeri - (felsefeYanlisDegeri * 0.25f)
+                    val dinNet = dinDogruDegeri - (dinYanlisDegeri * 0.25f)
+                    val matNet = matDogruDegeri - (matYanlisDegeri * 0.25f)
+                    val fizNet = fizikDogruDegeri - (fizikYanlisDegeri * 0.25f)
+                    val kimyaNet = kimyaDogruDegeri - (kimyaYanlisDegeri * 0.25f)
+                    val biyoNet = biyolojiDogruDegeri - (biyolojiYanlisDegeri * 0.25f)
+                    val geoNet = geoDogruDegeri - (geoYanlisDegeri * 0.25f)
+
+
+                    val toplamNet =
+                        turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
+                    val deneme = hashMapOf(
+                        "denemeTür" to studyType,
+                        "denemeAdi" to denemeAdiEditText.text.toString(),
+                        "turkceNet" to turkceNet,
+                        "tarihNet" to tarihNet,
+                        "cogNet" to cogNet,
+                        "felNet" to felNet,
+                        "dinNet" to dinNet,
+                        "matNet" to matNet,
+                        "fizNet" to fizNet,
+                        "kimyaNet" to kimyaNet,
+                        "biyoNet" to biyoNet,
+                        "geoNet" to geoNet,
+                        "denemeTarihi" to Timestamp.now(),
+                        "toplamNet" to toplamNet
+                    )
+
+                    db.collection(
+                        "School"
+                    ).document(
+                        kurumKodu.toString()
+                    ).collection(
+                        "Student"
+                    ).document(
+                        auth.uid.toString()
+                    ).collection(
+                        "Denemeler"
+                    ).document(
+                        documentID
+                    ).set(
+                        deneme
+                    ).addOnSuccessListener {
+                        Toast.makeText(
+                            this, "İşlem Başarılı", Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
+                    }
+
+                } else {
+                    denemeAdiEditText.error = "Bu Alan Boş Bırakılamaz"
+                }
+
+
             }
         }
     }
