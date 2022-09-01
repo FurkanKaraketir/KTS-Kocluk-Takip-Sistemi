@@ -102,12 +102,13 @@
 
                             <Button
                                 android:id="@+id/allStudentsBtn"
-                                style="@style/Widget.Material3.Button.ElevatedButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_margin="10dp"
                                 android:text="@string/t_m_renciler"
-                                android:visibility="gone">
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_baseline_people_outline_24">
 
                             </Button>
 
