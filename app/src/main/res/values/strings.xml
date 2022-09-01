@@ -3,7 +3,7 @@
     <string name="log_in">GİRİŞ YAP</string>
     <string name="email">Email</string>
     <string name="password">Şifre</string>
-    <string name="i_want_to_sign_up"><u>Henüz hesabınız yok mu? Kayıt olun.</u></string>
+    <string name="i_want_to_sign_up"><u>Henüz hesabınız yok mu?</u></string>
     <string name="student">ÖĞRENCİ</string>
     <string name="teacher">ÖĞRETMEN</string>
     <string name="sign_up">KAYIT OL</string>
@@ -78,4 +78,5 @@
     <string name="default_notification_channel_id">212121</string>
     <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
     <string name="deneme_t_rleri">Deneme Türleri</string>
+    <string name="ifreni_mi_unuttun">Şifreni mi Unuttun?</string>
 </resources>

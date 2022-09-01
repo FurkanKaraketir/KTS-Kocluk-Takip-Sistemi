@@ -1,7 +1,10 @@
 package com.kodgem.coachingapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -24,8 +27,17 @@ class LoginActivity : AppCompatActivity() {
         val emailEditText = binding.emailLoginEditText
         val passwordEditText = binding.passwordLoginEditText
         val iWanSignUpText = binding.iWantSignUpTextView
+        val signUpButton = binding.signUpButton
+        val forgotPassword = binding.forgotPasswordText
 
+        forgotPassword.setOnClickListener {
+            showDialog()
+        }
 
+        signUpButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            this.startActivity(intent)
+        }
         iWanSignUpText.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             this.startActivity(intent)
@@ -51,6 +63,36 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    private fun showDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Email Adresinizi Girin")
+
+        val input = EditText(this)
+        input.hint = "Email"
+        input.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        builder.setView(input)
+
+        builder.setPositiveButton("Tamam") { _, _ ->
+            // Here you get get input text from the Edittext
+            if (input.text.toString().isNotEmpty()) {
+                input.error = null
+                val email = input.text.toString()
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnSuccessListener {
+                    Toast.makeText(
+                        this,
+                        "Şifrenizi Sıfırlamak İçin Mail Başarıyla Gönderilmiştir",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+            } else {
+                input.error = "Bu Alan Boş Bırakılamaz"
+            }
+        }
+        builder.setNegativeButton("İptal") { dialog, _ -> dialog.cancel() }
+
+        builder.show()
+    }
 
     private fun signIn(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
