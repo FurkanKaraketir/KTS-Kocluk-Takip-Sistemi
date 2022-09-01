@@ -19,7 +19,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.databinding.ActivityEnterDutyBinding
-import com.kodgem.coachingapp.services.FcmNotificationsSender
+import com.kodgem.coachingapp.services.FcmNotificationsSenderService
 import java.util.*
 
 class EnterDutyActivity : AppCompatActivity() {
@@ -231,7 +231,7 @@ class EnterDutyActivity : AppCompatActivity() {
 
                                                         if (!sended) {
                                                             val notificationsSender =
-                                                                FcmNotificationsSender(
+                                                                FcmNotificationsSenderService(
                                                                     "/topics/$studentID",
                                                                     "Yeni Görev",
                                                                     "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
@@ -260,7 +260,7 @@ class EnterDutyActivity : AppCompatActivity() {
                                                 .addOnSuccessListener {
                                                     if (!sended) {
                                                         val notificationsSender =
-                                                            FcmNotificationsSender(
+                                                            FcmNotificationsSenderService(
                                                                 "/topics/$studentID",
                                                                 "Yeni Görev",
                                                                 "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
@@ -288,7 +288,7 @@ class EnterDutyActivity : AppCompatActivity() {
                                             .addOnSuccessListener {
                                                 if (!sended) {
                                                     val notificationsSender =
-                                                        FcmNotificationsSender(
+                                                        FcmNotificationsSenderService(
                                                             "/topics/$studentID",
                                                             "Yeni Görev",
                                                             "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
