@@ -136,7 +136,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
                 cal.add(Calendar.MONTH, -1)
-                bitisTarihi = cal.time
+                baslangicTarihi = cal.time
 
             }
             4 -> {

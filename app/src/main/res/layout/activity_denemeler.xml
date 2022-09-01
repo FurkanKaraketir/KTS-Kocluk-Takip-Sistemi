@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/dutiesCard"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         app:cardCornerRadius="10dp">
 
         <LinearLayout
@@ -44,6 +44,28 @@
 
                 <Spinner
                     android:id="@+id/denemeSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dialog"
+                    android:tooltipText="Alan Seçimi Yapınız" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/denemeTurSpinnerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/deneme_t_rleri"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/denemeTurSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:spinnerMode="dialog"

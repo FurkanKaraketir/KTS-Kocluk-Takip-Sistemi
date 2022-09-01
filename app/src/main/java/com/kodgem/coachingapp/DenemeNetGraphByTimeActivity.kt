@@ -88,6 +88,22 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                 cal.add(Calendar.MONTH, 1)
                 bitisTarihi = cal.time
             }
+            "Geçen Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                bitisTarihi = cal.time
+
+
+                cal.add(Calendar.MONTH, -1)
+                baslangicTarihi = cal.time
+
+            }
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
@@ -158,7 +174,6 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                         val cartesian: Cartesian = AnyChart.column()
                         val anyChartView = binding.anyChartDenemeByTimeView
 
-                        println(netHash)
 
                         for (i in netHash.keys) {
                             data.add(ValueDataEntry(i, netHash[i]))

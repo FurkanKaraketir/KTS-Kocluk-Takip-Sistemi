@@ -36,7 +36,8 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private lateinit var binding: ActivityStudiesBinding
     private lateinit var secilenZamanAraligi: String
     private lateinit var studentID: String
-    private val zamanAraliklari = arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Tüm Zamanlar")
+    private val zamanAraliklari =
+        arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
 
     @SuppressLint("NotifyDataSetChanged")
@@ -133,6 +134,22 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
             }
             3 -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                bitisTarihi = cal.time
+
+
+                cal.add(Calendar.MONTH, -1)
+                baslangicTarihi = cal.time
+
+            }
+            4 -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
 

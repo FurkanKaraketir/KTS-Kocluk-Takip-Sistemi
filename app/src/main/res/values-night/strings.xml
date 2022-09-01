@@ -77,4 +77,5 @@
     <string name="show">Show</string>
     <string name="default_notification_channel_id">212121</string>
     <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
+    <string name="deneme_t_rleri">Deneme Türleri</string>
 </resources>
