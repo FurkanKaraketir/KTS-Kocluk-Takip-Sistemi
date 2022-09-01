@@ -31,11 +31,13 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
             var kurumKodu: Int
+            binding.studentDeleteButton.visibility = View.GONE
+            binding.studentAddButton.visibility = View.VISIBLE
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 kurumKodu = it.get("kurumKodu").toString().toInt()
                 binding.studentNameTextView.text = studentList[position].studentName
 
-                binding.studentCard.setOnClickListener {
+                binding.studentAddButton.setOnClickListener {
 
                     val addStudent = AlertDialog.Builder(holder.itemView.context)
                     addStudent.setTitle("Öğrenci Ekle")

@@ -35,6 +35,7 @@ open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) 
 
             binding.studentNameTextView.text = studentList[position].studentName
 
+            binding.studentAddButton.visibility = View.GONE
             binding.studentDeleteButton.visibility = View.VISIBLE
             binding.studentDeleteButton.setOnClickListener {
 
