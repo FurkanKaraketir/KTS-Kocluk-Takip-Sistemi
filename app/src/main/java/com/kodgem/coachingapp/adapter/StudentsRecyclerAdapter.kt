@@ -1,5 +1,6 @@
 package com.kodgem.coachingapp.adapter
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,29 @@ open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) 
             auth = FirebaseAuth.getInstance()
 
             binding.studentNameTextView.text = studentList[position].studentName
+
+            binding.studentDeleteButton.visibility = View.VISIBLE
+            binding.studentDeleteButton.setOnClickListener {
+
+                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                    val kurumKodu = it.get("kurumKodu").toString().toInt()
+                    binding.studentNameTextView.text = studentList[position].studentName
+                    val removeStudent = AlertDialog.Builder(holder.itemView.context)
+                    removeStudent.setTitle("Öğrenci Çıkar")
+                    removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                    removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
+
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(studentList[position].id).update("teacher", "")
+                    }
+                    removeStudent.setNegativeButton("İPTAL") { _, _ ->
+
+                    }
+                    removeStudent.show()
+                }
+
+
+            }
 
             binding.studentCard.setOnClickListener {
                 val intent = Intent(holder.itemView.context, StudiesActivity::class.java)

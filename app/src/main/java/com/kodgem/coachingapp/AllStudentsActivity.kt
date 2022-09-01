@@ -69,39 +69,23 @@ class AllStudentsActivity : AppCompatActivity() {
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { it ->
             kurumKodu = it.get("kurumKodu").toString().toInt()
+
             db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .whereEqualTo("teacher", "").addSnapshotListener { value, _ ->
+                .whereEqualTo("teacher", "").addSnapshotListener { value2, _ ->
                     studentList.clear()
-                    if (value != null) {
-                        for (document in value) {
+                    if (value2 != null) {
+                        for (document in value2) {
                             val studentName = document.get("nameAndSurname").toString()
                             val teacher = document.get("teacher").toString()
                             val studentID = document.get("id").toString()
                             val currentStudent = Student(studentName, teacher, studentID)
                             studentList.add(currentStudent)
-
                         }
                         studentList.sortBy { it.studentName }
                         recyclerViewAllStudentsAdapter.notifyDataSetChanged()
                     }
-
-
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .whereEqualTo("teacher", auth.uid.toString())
-                        .addSnapshotListener { value2, _ ->
-                            if (value2 != null) {
-                                for (document in value2) {
-                                    val studentName = document.get("nameAndSurname").toString()
-                                    val teacher = document.get("teacher").toString()
-                                    val studentID = document.get("id").toString()
-                                    val currentStudent = Student(studentName, teacher, studentID)
-                                    studentList.add(currentStudent)
-                                }
-                                studentList.sortBy { it.studentName }
-                                recyclerViewAllStudentsAdapter.notifyDataSetChanged()
-                            }
-                        }
                 }
+
         }
 
 
