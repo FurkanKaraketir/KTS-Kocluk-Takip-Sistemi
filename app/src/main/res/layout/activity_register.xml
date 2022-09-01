@@ -77,6 +77,7 @@
                     android:id="@+id/nameAndSurnameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLength="40"
                     android:inputType="textPersonName" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -91,6 +92,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/kurumKoduEditText"
+                    android:maxLength="6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number" />
@@ -132,7 +134,8 @@
                     android:id="@+id/classEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:maxLength="2" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

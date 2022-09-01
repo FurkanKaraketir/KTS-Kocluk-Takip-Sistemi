@@ -151,6 +151,7 @@
                 android:autofillHints="ÇalışmaAra"
                 android:hint="@string/al_ma_ara"
                 android:inputType="text"
+                android:maxLength="40"
                 android:visibility="gone" />
 
 
@@ -168,6 +169,7 @@
                     android:autofillHints="StudentName"
                     android:hint="@string/renci_ara"
                     android:inputType="text"
+                    android:maxLength="40"
                     android:visibility="gone">
 
                 </EditText>

@@ -29,7 +29,8 @@
         android:layout_margin="10dp"
         android:autofillHints="StudentName"
         android:hint="@string/renci_ara"
-        android:inputType="text">
+        android:inputType="text"
+        android:maxLength="40">
 
     </EditText>
 

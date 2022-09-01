@@ -84,57 +84,63 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 emailEditText.error = null
 
                 if (passwordEditText.text.toString().isNotEmpty()) {
-                    passwordEditText.error = null
-                    if (gradeText.text.toString().isNotEmpty() || selection == 2) {
-                        gradeText.error = null
-                        if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
-                            nameAndSurnameEditText.error = null
 
-                            if (kurumKoduEditText.text.toString().isNotEmpty()) {
-                                kurumKoduEditText.error = null
+                    if (passwordEditText.text.toString().length >= 6) {
+                        passwordEditText.error = null
+                        if (gradeText.text.toString().isNotEmpty() || selection == 2) {
+                            gradeText.error = null
+                            if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
+                                nameAndSurnameEditText.error = null
+
+                                if (kurumKoduEditText.text.toString().isNotEmpty()) {
+                                    kurumKoduEditText.error = null
 
 
-                                nameAndSurname = nameAndSurnameEditText.text.toString()
+                                    nameAndSurname = nameAndSurnameEditText.text.toString()
 
-                                grade = try {
-                                    gradeText.text.toString().toInt()
-                                } catch (e: Exception) {
-                                    0
-                                }
+                                    grade = try {
+                                        gradeText.text.toString().toInt()
+                                    } catch (e: Exception) {
+                                        0
+                                    }
 
-                                val kurumList = ArrayList<String>()
-                                db.collection("School").addSnapshotListener { kurumlar, _ ->
-                                    if (kurumlar != null) {
-                                        for (kurum in kurumlar) {
-                                            kurumList.add(kurum.id)
-                                        }
-                                        if (kurumKoduEditText.text.toString() in kurumList) {
-                                            signUp(
-                                                emailEditText.text.toString(),
-                                                passwordEditText.text.toString(),
-                                                kurumKoduEditText.text.toString().toInt()
-                                            )
-                                        } else {
-                                            kurumKoduEditText.error = "Kurum Kodunuz Hatalı"
+                                    val kurumList = ArrayList<String>()
+                                    db.collection("School").addSnapshotListener { kurumlar, _ ->
+                                        if (kurumlar != null) {
+                                            for (kurum in kurumlar) {
+                                                kurumList.add(kurum.id)
+                                            }
+                                            if (kurumKoduEditText.text.toString() in kurumList) {
+                                                signUp(
+                                                    emailEditText.text.toString(),
+                                                    passwordEditText.text.toString(),
+                                                    kurumKoduEditText.text.toString().toInt()
+                                                )
+                                            } else {
+                                                kurumKoduEditText.error = "Kurum Kodunuz Hatalı"
+                                            }
                                         }
                                     }
+
+
+                                } else {
+                                    kurumKoduEditText.error = "Bu Alan Boş Bırakılamaz"
                                 }
 
 
                             } else {
-                                kurumKoduEditText.error = "Bu Alan Boş Bırakılamaz"
+                                nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
+
                             }
 
 
                         } else {
-                            nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
-
+                            gradeText.error = "Bu Alan Boş Bırakılamaz"
                         }
-
-
                     } else {
-                        gradeText.error = "Bu Alan Boş Bırakılamaz"
+                        passwordEditText.error = "Şifre En Az 6 Karakter Uzunluğunda Olmalı"
                     }
+
 
                 } else {
                     passwordEditText.error = "Bu Alan Boş Bırakılamaz"

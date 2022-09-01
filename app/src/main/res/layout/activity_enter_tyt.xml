@@ -43,7 +43,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="denemeAdi"
                         android:hint="@string/deneme_ad"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:maxLength="40" />
 
                 </LinearLayout>
 
@@ -82,7 +83,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/turkYanlisEditText"
@@ -92,7 +94,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/turkYanlisButton"
@@ -142,7 +145,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="doru"
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/tarihYanlisEditText"
@@ -152,7 +156,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/tarihYanlis"
@@ -200,7 +205,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/cogYanlisEditText"
@@ -210,7 +216,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/cogYanlis"
@@ -258,7 +265,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/felYanlisEditText"
@@ -268,7 +276,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/felYanlis"
@@ -317,7 +326,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/dinYanlisEditText"
@@ -327,7 +337,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/dinYanlis"
@@ -377,7 +388,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/matYanlisEditText"
@@ -387,7 +399,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/matYanlis"
@@ -435,7 +448,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/geometriYanlisEditText"
@@ -445,7 +459,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/geometriYanlis"
@@ -494,7 +509,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/fizYanlisEditText"
@@ -504,7 +520,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/fizYanlis"
@@ -551,7 +568,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/kimyaYanlisEditText"
@@ -560,7 +578,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/kimyaYanlis"
@@ -605,7 +624,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints=""
                         android:hint="@string/do_ru"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <EditText
                         android:id="@+id/biyolojiYanlisEditText"
@@ -614,7 +634,8 @@
                         android:layout_margin="10dp"
                         android:autofillHints="Yanlış"
                         android:hint="@string/yanl"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="2" />
 
                     <Button
                         android:id="@+id/biyolojiYanlis"
