@@ -194,6 +194,44 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kay_t_olan_ki_i" />
+
+                <TextView
+                    android:id="@+id/kullanımBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kullan_m_ko_ullar_n"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/gizBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gizlilik_politikas_n"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/cerezBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/erez_politikas_n"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kabul_etmi_olur" />
+            </LinearLayout>
+
+
             <Button
                 android:id="@+id/signUpButton"
                 style="@style/Widget.Material3.Button.ElevatedButton"

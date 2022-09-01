@@ -79,4 +79,9 @@
     <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
     <string name="deneme_t_rleri">Deneme Türleri</string>
     <string name="ifreni_mi_unuttun">Şifreni mi Unuttun?</string>
+    <string name="kay_t_olan_ki_i">Kayıt Olan Kişi:</string>
+    <string name="kullan_m_ko_ullar_n"><u>Kullanım Koşullarını</u></string>
+    <string name="gizlilik_politikas_n"><u>Gizlilik Politikasını</u></string>
+    <string name="erez_politikas_n"><u>Çerez Politikasını</u></string>
+    <string name="kabul_etmi_olur">Kabul Etmiş Olur</string>
 </resources>

@@ -49,6 +49,34 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val passwordEditText = binding.passwordRegisterEditText
         val nameAndSurnameEditText = binding.nameAndSurnameEditText
         val kurumKoduEditText = binding.kurumKoduEditText
+        val kullanici = binding.kullanMBtn
+        val gizlilik = binding.gizBtn
+        val cerez = binding.cerezBtn
+
+        kullanici.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(
+                "link",
+                "https://docs.google.com/document/d/1tyzuyrPt69jPBO9tue90yF2k6YDDXn8h3qk8ZnIIlKY/edit?usp=sharing"
+            )
+            this.startActivity(intent)
+        }
+        gizlilik.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(
+                "link",
+                "https://docs.google.com/document/d/109IUuF9I3SUpKFkIBi5V6Zlr3t0kTsjxXZ_I3RNeVvY/edit?usp=sharing"
+            )
+            this.startActivity(intent)
+        }
+        cerez.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(
+                "link",
+                "https://docs.google.com/document/d/1uusMxq2wnLpUUE9s1WpCFSgKFjabai27hIdJkgskOFg/edit?usp=sharing"
+            )
+            this.startActivity(intent)
+        }
 
         signUpButton.setOnClickListener {
             Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
