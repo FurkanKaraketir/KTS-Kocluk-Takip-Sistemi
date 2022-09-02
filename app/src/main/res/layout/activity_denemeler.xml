@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,82 +7,112 @@
     android:orientation="vertical"
     tools:context=".DenemelerActivity">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/dutiesCard"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/studiesTextView"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:text="@string/denemeler" />
 
-            <LinearLayout
-                android:id="@+id/denemeSpinnerLayout"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/dutiesCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                app:cardCornerRadius="10dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zaman_aral"
-                    android:textSize="18sp" />
-
-                <Spinner
-                    android:id="@+id/denemeSpinner"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
-            </LinearLayout>
+                    android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/denemeTurSpinnerLayout"
+                    <TextView
+                        android:id="@+id/studiesTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:text="@string/denemeler" />
+
+                    <LinearLayout
+                        android:id="@+id/denemeSpinnerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zaman_aral"
+                            android:textSize="18sp" />
+
+                        <Spinner
+                            android:id="@+id/denemeSpinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:spinnerMode="dialog"
+                            android:tooltipText="Alan Seçimi Yapınız" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/denemeTurSpinnerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/deneme_t_rleri"
+                            android:textSize="18sp" />
+
+                        <Spinner
+                            android:id="@+id/denemeTurSpinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:spinnerMode="dialog"
+                            android:tooltipText="Alan Seçimi Yapınız" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/denemelerRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:layout_below="@id/dutiesCard"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/deneme_t_rleri"
-                    android:textSize="18sp" />
+            </androidx.recyclerview.widget.RecyclerView>
 
-                <Spinner
-                    android:id="@+id/denemeTurSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
-            </LinearLayout>
+        </RelativeLayout>
 
-        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/denemeAddButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp"
+        android:contentDescription="@string/statusicon"
+        android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:visibility="gone">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
 
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/denemelerRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-</LinearLayout>
+</RelativeLayout>

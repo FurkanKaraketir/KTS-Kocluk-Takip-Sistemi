@@ -25,6 +25,7 @@ import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityMainBinding
 import com.kodgem.coachingapp.models.Student
 import com.kodgem.coachingapp.models.Study
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -149,19 +150,31 @@ class MainActivity : AppCompatActivity() {
 
 
             if (it.get("personType").toString() == "Student") {
+
+                val cal = Calendar.getInstance()
+                val f = SimpleDateFormat("EEEE")
+                val str = f.format(Date())
+
+                if (str == it.get("calismaGondermeGunu").toString()) {
+                    addStudyButton.visibility = View.VISIBLE
+
+                } else {
+                    addStudyButton.visibility = View.GONE
+
+                }
+
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
                 studentDenemeButton.visibility = View.VISIBLE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 istatistikButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.GONE
-                addStudyButton.visibility = View.VISIBLE
 
                 sayacButton.visibility = View.VISIBLE
                 gorevButton.visibility = View.VISIBLE
 
                 contentTextView.text = "Bu Haftaki Çalışmalarım"
-                val cal = Calendar.getInstance()
+
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
                 cal.clear(Calendar.MINUTE)
