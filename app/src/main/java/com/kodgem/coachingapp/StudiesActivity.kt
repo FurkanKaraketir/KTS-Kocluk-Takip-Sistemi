@@ -53,10 +53,16 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         val studyZamanSpinner = binding.studyZamanAraligiSpinner
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
-
+        val hedefTeacherButton = binding.hedefTeacherButton
         val studyAdapter = ArrayAdapter(
             this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
         )
+
+        hedefTeacherButton.setOnClickListener {
+            val intent2 = Intent(this, GoalsActivity::class.java)
+            intent2.putExtra("studentID", studentID)
+            this.startActivity(intent2)
+        }
 
         studentID = intent.getStringExtra("studentID").toString()
 

@@ -10,7 +10,6 @@
         android:id="@+id/studiesCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         app:cardCornerRadius="10dp">
 
 
@@ -51,35 +50,50 @@
                     android:tooltipText="Alan Seçimi Yapınız" />
             </LinearLayout>
 
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/denemeTeacherButton"
-                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                android:layout_height="match_parent">
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:text="@string/denemeler"
-                    android:textSize="15sp"
-                    app:icon="@drawable/ic_baseline_book_24" />
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/gorevTeacherButton"
-                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:text="@string/g_revler"
-                    android:textSize="15sp"
-                    app:icon="@drawable/ic_baseline_bookmark_24" />
+                    <Button
+                        android:id="@+id/denemeTeacherButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:text="@string/denemeler"
+                        android:textSize="15sp"
+                        app:icon="@drawable/ic_baseline_book_24" />
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/gorevTeacherButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:text="@string/g_revler"
+                        android:textSize="15sp"
+                        app:icon="@drawable/ic_baseline_bookmark_24" />
+                    <Button
+                        android:id="@+id/hedefTeacherButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:text="Haftalık Hedefler"
+                        android:textSize="15sp"
+                        app:icon="@drawable/ic_baseline_outlined_flag_24" />
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
 
         </LinearLayout>
 

@@ -85,4 +85,8 @@
     <string name="erez_politikas_n"><u>Çerez Politikasını</u></string>
     <string name="kabul_etmi_olur">Kabul Etmiş Olur</string>
     <string name="di_er">Diğer</string>
+    <string name="bu_haftaki_toplam_al_ma">Bu Haftaki Toplam Çalışma:</string>
+    <string name="hedef_toplam_soru">Hedef Toplam Soru:</string>
+    <string name="hedef_toplam_al_ma">Hedef Toplam Çalışma:</string>
+    <string name="haftal_k_hedefler">Haftalık Hedefler</string>
 </resources>

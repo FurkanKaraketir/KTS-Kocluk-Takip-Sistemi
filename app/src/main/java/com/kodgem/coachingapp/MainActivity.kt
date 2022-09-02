@@ -239,17 +239,19 @@ class MainActivity : AppCompatActivity() {
 
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { it2, _ ->
+                    .whereEqualTo("teacher", auth.uid.toString())
+                    .addSnapshotListener { documents, _ ->
 
                         studentList.clear()
-                        val documents = it2!!.documents
-                        for (document in documents) {
-                            val studentName = document.get("nameAndSurname").toString()
-                            val teacher = document.get("teacher").toString()
-                            val id = document.get("id").toString()
-                            val currentStudent = Student(studentName, teacher, id)
-                            studentList.add(currentStudent)
+                        if (documents != null) {
+                            for (document in documents) {
+                                val studentName = document.get("nameAndSurname").toString()
+                                val teacher = document.get("teacher").toString()
+                                val id = document.get("id").toString()
+                                val currentStudent = Student(studentName, teacher, id)
+                                studentList.add(currentStudent)
 
+                            }
                         }
                         studentList.sortBy { a ->
                             a.studentName
