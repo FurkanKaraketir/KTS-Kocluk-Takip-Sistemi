@@ -16,8 +16,6 @@ import com.kodgem.coachingapp.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private val alanlar = arrayOf("Dil", "Eşit Ağırlık", "Sözel", "Sayısal")
-    private val gunler =
-        arrayOf("Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar")
     private val dersler = ArrayList<String>()
 
     private lateinit var documentID: String
@@ -55,9 +53,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val kullanici = binding.kullanMBtn
         val gizlilik = binding.gizBtn
         val cerez = binding.cerezBtn
-        val daySpinner = binding.daySpinner
-        val daySpinnerLayout = binding.daySpinnerLayout
-
         kullanici.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
@@ -160,11 +155,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this@RegisterActivity, android.R.layout.simple_spinner_item, alanlar
         )
 
-        val dayAdapter = ArrayAdapter(
-            this@RegisterActivity, android.R.layout.simple_spinner_item, gunler
-        )
-
-
 
         db.collection("Lessons").addSnapshotListener { value, _ ->
             if (value != null) {
@@ -180,50 +170,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             }
         }
 
-
-
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        daySpinner.adapter = dayAdapter
-        daySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-                when (p2) {
-                    0 -> {
-                        secilenGun = "Monday"
-                    }
-                    1 -> {
-                        secilenGun = "Tuesday"
-
-                    }
-                    2 -> {
-                        secilenGun = "Wednesday"
-
-                    }
-                    3 -> {
-                        secilenGun = "Thursday"
-
-                    }
-                    4 -> {
-                        secilenGun = "Friday"
-
-                    }
-                    5 -> {
-                        secilenGun = "Saturday"
-
-                    }
-                    6 -> {
-                        secilenGun = "Sunday"
-
-                    }
-                }
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-        }
-
         studentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         studentSpinner.adapter = studentAdapter
         studentSpinner.onItemSelectedListener = this
@@ -235,7 +181,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             teacherSpinnerLayout.visibility = View.GONE
             textInputClass.visibility = View.VISIBLE
             studentSpinnerLayout.visibility = View.VISIBLE
-            daySpinnerLayout.visibility = View.VISIBLE
         }
 
         teacherButton.setOnClickListener {
@@ -244,7 +189,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             selection = 2
             teacherSpinnerLayout.visibility = View.VISIBLE
             studentSpinnerLayout.visibility = View.GONE
-            daySpinnerLayout.visibility = View.GONE
         }
 
 

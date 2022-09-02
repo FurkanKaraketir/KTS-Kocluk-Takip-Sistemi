@@ -162,29 +162,6 @@
                     android:tooltipText="Alan Seçimi Yapınız" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/daySpinnerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Çalışma Gönderme Günü:"
-                    android:textSize="18sp" />
-
-                <Spinner
-                    android:id="@+id/daySpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
-            </LinearLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/TextInputRegisterEmail"
