@@ -3,10 +3,12 @@ package com.kodgem.coachingapp
 //noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.PopupMenu
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -49,7 +51,17 @@ class DenemelerActivity : AppCompatActivity() {
         recyclerView = binding.denemelerRecyclerView
         spinner = binding.denemeSpinner
         val turSpinner = binding.denemeTurSpinner
+        val denemeAddButton = binding.denemeAddButton
+
         layoutManager = GridLayoutManager(applicationContext, 2)
+
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            if (it.get("personType").toString() == "Student") {
+                denemeAddButton.visibility = View.VISIBLE
+            } else {
+                denemeAddButton.visibility = View.GONE
+            }
+        }
 
         val denemeAdapter = ArrayAdapter(
             this@DenemelerActivity, R.layout.simple_spinner_item, zamanAraliklari
@@ -346,7 +358,27 @@ class DenemelerActivity : AppCompatActivity() {
             }
 
         }
+        denemeAddButton.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(com.kodgem.coachingapp.R.menu.subject_context)
+            popup.show()
 
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == com.kodgem.coachingapp.R.id.TYT) {
+                    val intent = Intent(this, EnterTytActivity::class.java)
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == com.kodgem.coachingapp.R.id.AYT) {
+                    val intent = Intent(this, EnterTytActivity::class.java)
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
 
     }
 }

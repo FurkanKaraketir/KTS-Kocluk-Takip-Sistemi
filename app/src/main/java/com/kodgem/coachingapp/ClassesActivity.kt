@@ -271,27 +271,21 @@ class ClassesActivity : AppCompatActivity() {
         deneme.setOnClickListener {
             val popup = PopupMenu(applicationContext, it)
             //inflate menu with layout mainmenu
-            popup.inflate(R.menu.deneme_context)
+            popup.inflate(R.menu.subject_context)
             popup.show()
 
             popup.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.TYT) {
-                    val intent = Intent(this, EnterTytActivity::class.java)
-                    intent.putExtra("dersAdi", "Deneme")
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Diğer")
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
 
                 if (item.itemId == R.id.AYT) {
-                    val intent = Intent(this, EnterTytActivity::class.java)
-                    intent.putExtra("dersAdi", "Deneme")
-                    intent.putExtra("studyType", "AYT")
-                    this.startActivity(intent)
-                }
-                if (item.itemId == R.id.denemeTahlili) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
-                    intent.putExtra("dersAdi", "Deneme")
-                    intent.putExtra("studyType", "DenemeTahlili")
+                    intent.putExtra("dersAdi", "Diğer")
+                    intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
                 false

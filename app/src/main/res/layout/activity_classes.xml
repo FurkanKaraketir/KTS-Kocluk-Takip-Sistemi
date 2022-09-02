@@ -148,7 +148,7 @@
                         android:layout_width="320dp"
                         android:layout_height="60dp"
                         android:layout_margin="15dp"
-                        android:text="@string/deneme"
+                        android:text="@string/di_er"
                         android:textSize="18sp" />
                 </LinearLayout>
 
