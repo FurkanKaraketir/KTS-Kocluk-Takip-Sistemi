@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GoalEnterActivity">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/hedefTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:text="Haftalık Hedef Ekle/Düzenle">
+
+        </TextView>
+
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/hedefDersSpinnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hedefTitle"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ders_se_imi_yap_n_z"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/hedefDersSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"
+            android:tooltipText="Alan Seçimi Yapınız" />
+    </LinearLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputHedefToplamCalisma"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hedefDersSpinnerLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:hint="@string/hedef_toplam_al_ma">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/hedefToplamCalismaEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="6" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputHedefToplamSoru"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TextInputHedefToplamCalisma"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:hint="@string/hedef_toplam_soru">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/hedefToplamSoruEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="6" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/goalSave"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_baseline_save_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TextInputHedefToplamSoru"
+        android:contentDescription="@string/save" />
+
+</RelativeLayout>

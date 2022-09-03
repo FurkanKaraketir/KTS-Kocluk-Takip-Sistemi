@@ -1,6 +1,7 @@
 package com.kodgem.coachingapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
@@ -31,6 +32,7 @@ class GoalsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val recyclerView = binding.recyclerGoal
+        val addGoalButton = binding.addGoalButton
 
         auth = Firebase.auth
         db = Firebase.firestore
@@ -38,6 +40,7 @@ class GoalsActivity : AppCompatActivity() {
         val intent = intent
         val studentID = intent.getStringExtra("studentID").toString()
         val layoutManager = LinearLayoutManager(this)
+
 
         recyclerView.layoutManager = layoutManager
         recyclerAdapter = GoalsRecyclerAdapter(goalList)
@@ -73,6 +76,12 @@ class GoalsActivity : AppCompatActivity() {
 
                 }
 
+        }
+
+        addGoalButton.setOnClickListener {
+            val gonder = Intent(this,GoalEnterActivity::class.java)
+            gonder.putExtra("studentID",studentID)
+            this.startActivity(gonder)
         }
 
     }

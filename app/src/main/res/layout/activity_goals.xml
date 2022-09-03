@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/titleCard"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="90dp"
         app:cardCornerRadius="10dp">
 
         <RelativeLayout
@@ -17,11 +17,21 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/title_template"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/haftal_k_hedefler">
+
+            </TextView>
+            <TextView
+                android:layout_margin="5dp"
+                android:layout_below="@id/title_template"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/ge_en_haftan_n_sonu_lar">
 
             </TextView>
         </RelativeLayout>
@@ -37,5 +47,15 @@
         android:layout_below="@id/titleCard">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:id="@+id/addGoalButton"
+        android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/t_r" />
 
 </RelativeLayout>
