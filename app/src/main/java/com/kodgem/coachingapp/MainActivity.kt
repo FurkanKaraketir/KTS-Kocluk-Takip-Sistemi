@@ -25,7 +25,6 @@ import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityMainBinding
 import com.kodgem.coachingapp.models.Student
 import com.kodgem.coachingapp.models.Study
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -152,16 +151,9 @@ class MainActivity : AppCompatActivity() {
             if (it.get("personType").toString() == "Student") {
 
                 val cal = Calendar.getInstance()
-                val f = SimpleDateFormat("EEEE")
-                val str = f.format(Date())
 
-                if (str == it.get("calismaGondermeGunu").toString()) {
-                    addStudyButton.visibility = View.VISIBLE
+                addStudyButton.visibility = View.VISIBLE
 
-                } else {
-                    addStudyButton.visibility = View.GONE
-
-                }
 
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE

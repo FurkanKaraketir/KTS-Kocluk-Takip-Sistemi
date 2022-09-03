@@ -26,7 +26,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private var grade = 0
     private var selection = 0
     private var branch = ""
-    private var secilenGun = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,7 +208,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "subjectType" to branch,
                         "kurumKodu" to kurumKodu,
                         "teacher" to "",
-                        "calismaGondermeGunu" to secilenGun
                     )
 
                     db.collection("User").document(documentID).set(user).addOnSuccessListener {
