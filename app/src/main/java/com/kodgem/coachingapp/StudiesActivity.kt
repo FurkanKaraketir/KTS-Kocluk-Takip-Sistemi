@@ -74,7 +74,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 filteredList = ArrayList()
                 if (p0.toString() != "") {
                     for (item in studyList) {
-                        if (item.studyName.lowercase(Locale.getDefault())
+                        if (item.studyDersAdi.lowercase(Locale.getDefault())
                                 .contains(p0.toString().lowercase(Locale.getDefault()))
                         ) {
                             filteredList.add(item)
@@ -255,7 +255,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupStudyRecyclerView(list: ArrayList<Study>) {
-        val layoutManager = LinearLayoutManager(applicationContext)
+        val layoutManager = GridLayoutManager(applicationContext,2)
 
         recyclerViewStudies.layoutManager = layoutManager
 
