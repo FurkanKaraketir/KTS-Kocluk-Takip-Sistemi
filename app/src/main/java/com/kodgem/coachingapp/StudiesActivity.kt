@@ -5,11 +5,14 @@ import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +39,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private lateinit var binding: ActivityStudiesBinding
     private lateinit var secilenZamanAraligi: String
     private lateinit var studentID: String
+    var filteredList = ArrayList<Study>()
     private val zamanAraliklari =
         arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
@@ -47,6 +51,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         setContentView(binding.root)
         auth = Firebase.auth
         db = Firebase.firestore
+        recyclerViewStudies = binding.recyclerViewStudies
 
         layoutManager = GridLayoutManager(applicationContext, 2)
         val intent = intent
@@ -54,9 +59,37 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
+        val calismaAra = binding.searchStudy
         val studyAdapter = ArrayAdapter(
             this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
         )
+
+
+        calismaAra.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                filteredList = ArrayList()
+                if (p0.toString() != "") {
+                    for (item in studyList) {
+                        if (item.studyName.lowercase(Locale.getDefault())
+                                .contains(p0.toString().lowercase(Locale.getDefault()))
+                        ) {
+                            filteredList.add(item)
+                        }
+                    }
+                    setupStudyRecyclerView(filteredList)
+                } else {
+                    setupStudyRecyclerView(studyList)
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
 
         hedefTeacherButton.setOnClickListener {
             val intent2 = Intent(this, GoalsActivity::class.java)
@@ -88,12 +121,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         secilenZamanAraligi = zamanAraliklari[position]
 
-        recyclerViewStudies = binding.recyclerViewStudies
-        recyclerViewStudies.layoutManager = layoutManager
-        recyclerViewStudiesAdapter = StudiesRecyclerAdapter(studyList, secilenZamanAraligi)
-        recyclerViewStudies.adapter = recyclerViewStudiesAdapter
-        recyclerViewStudiesAdapter.notifyDataSetChanged()
-
+        setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -221,6 +249,20 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
+
+    }
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun setupStudyRecyclerView(list: ArrayList<Study>) {
+        val layoutManager = LinearLayoutManager(applicationContext)
+
+        recyclerViewStudies.layoutManager = layoutManager
+
+        recyclerViewStudiesAdapter = StudiesRecyclerAdapter(list, secilenZamanAraligi)
+
+        recyclerViewStudies.adapter = recyclerViewStudiesAdapter
+        recyclerViewStudiesAdapter.notifyDataSetChanged()
 
     }
 }

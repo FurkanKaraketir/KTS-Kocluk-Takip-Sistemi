@@ -53,6 +53,7 @@
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -80,6 +81,7 @@
                         android:text="@string/g_revler"
                         android:textSize="15sp"
                         app:icon="@drawable/ic_baseline_bookmark_24" />
+
                     <Button
                         android:id="@+id/hedefTeacherButton"
                         style="@style/Widget.Material3.Button.ElevatedButton.Icon"
@@ -87,7 +89,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:text="Haftalık Hedefler"
+                        android:text="@string/haftal_k_hedefler"
                         android:textSize="15sp"
                         app:icon="@drawable/ic_baseline_outlined_flag_24" />
                 </LinearLayout>
@@ -100,11 +102,21 @@
 
     </androidx.cardview.widget.CardView>
 
+    <EditText
+        android:id="@+id/search_study"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/studiesCard"
+        android:layout_margin="10dp"
+        android:autofillHints="Çalışma Ara"
+        android:hint="@string/al_ma_ara"
+        android:inputType="text" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewStudies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/studiesCard">
+        android:layout_below="@id/search_study">
 
     </androidx.recyclerview.widget.RecyclerView>
 
