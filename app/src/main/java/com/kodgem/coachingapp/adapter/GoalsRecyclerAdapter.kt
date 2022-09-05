@@ -9,9 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kodgem.coachingapp.R
 import com.kodgem.coachingapp.databinding.GoalGridRowBinding
-import com.kodgem.coachingapp.databinding.StudyGridRowBinding
 import com.kodgem.coachingapp.models.Goal
-import com.kodgem.coachingapp.models.Study
 import java.util.*
 import kotlin.collections.ArrayList
 

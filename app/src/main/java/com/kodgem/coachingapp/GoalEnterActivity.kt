@@ -39,24 +39,25 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val dersAdiSpinner = binding.hedefDersSpinner
 
 
-        db.collection("Lessons").orderBy("dersAdi",Query.Direction.ASCENDING).addSnapshotListener { value, _ ->
-            if (value != null) {
-                for (document in value) {
-                    dersler.add(document.get("dersAdi").toString())
+        db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
+                if (value != null) {
+                    for (document in value) {
+                        dersler.add(document.get("dersAdi").toString())
+                    }
+
+
+                    val studentAdapter = ArrayAdapter(
+                        this@GoalEnterActivity, R.layout.simple_spinner_item, dersler
+                    )
+
+                    studentAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                    dersAdiSpinner.adapter = studentAdapter
+                    dersAdiSpinner.onItemSelectedListener = this
+
+
                 }
-
-
-                val studentAdapter = ArrayAdapter(
-                    this@GoalEnterActivity, R.layout.simple_spinner_item, dersler
-                )
-
-                studentAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-                dersAdiSpinner.adapter = studentAdapter
-                dersAdiSpinner.onItemSelectedListener = this
-
-
             }
-        }
 
 
         val documentID = UUID.randomUUID()
@@ -80,15 +81,14 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
                         db.collection("School").document(kurumKodu).collection("Student")
                             .document(studentID).collection("HaftalikHedefler")
-                            .whereEqualTo("dersAdi", secilenDers)
-                            .addSnapshotListener { value, _ ->
+                            .whereEqualTo("dersAdi", secilenDers).addSnapshotListener { value, _ ->
 
                                 if (value != null) {
                                     if (!value.isEmpty) {
                                         for (document in value) {
                                             db.collection("School").document(kurumKodu)
-                                                .collection("Student")
-                                                .document(studentID).collection("HaftalikHedefler")
+                                                .collection("Student").document(studentID)
+                                                .collection("HaftalikHedefler")
                                                 .document(document.id).set(data)
                                                 .addOnSuccessListener {
                                                     finish()
@@ -96,8 +96,8 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                                         }
                                     } else {
                                         db.collection("School").document(kurumKodu)
-                                            .collection("Student")
-                                            .document(studentID).collection("HaftalikHedefler")
+                                            .collection("Student").document(studentID)
+                                            .collection("HaftalikHedefler")
                                             .document(documentID.toString()).set(data)
                                             .addOnSuccessListener {
                                                 finish()
@@ -105,8 +105,8 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                                     }
                                 } else {
                                     db.collection("School").document(kurumKodu)
-                                        .collection("Student")
-                                        .document(studentID).collection("HaftalikHedefler")
+                                        .collection("Student").document(studentID)
+                                        .collection("HaftalikHedefler")
                                         .document(documentID.toString()).set(data)
                                         .addOnSuccessListener {
                                             finish()

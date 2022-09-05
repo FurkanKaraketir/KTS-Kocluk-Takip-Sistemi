@@ -12,7 +12,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -255,7 +254,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupStudyRecyclerView(list: ArrayList<Study>) {
-        val layoutManager = GridLayoutManager(applicationContext,2)
+        val layoutManager = GridLayoutManager(applicationContext, 2)
 
         recyclerViewStudies.layoutManager = layoutManager
 

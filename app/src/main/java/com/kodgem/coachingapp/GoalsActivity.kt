@@ -4,16 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kodgem.coachingapp.adapter.GoalsRecyclerAdapter
-import com.kodgem.coachingapp.adapter.StudiesRecyclerAdapter
 import com.kodgem.coachingapp.databinding.ActivityGoalsBinding
 import com.kodgem.coachingapp.models.Goal
 
@@ -79,8 +76,8 @@ class GoalsActivity : AppCompatActivity() {
         }
 
         addGoalButton.setOnClickListener {
-            val gonder = Intent(this,GoalEnterActivity::class.java)
-            gonder.putExtra("studentID",studentID)
+            val gonder = Intent(this, GoalEnterActivity::class.java)
+            gonder.putExtra("studentID", studentID)
             this.startActivity(gonder)
         }
 
