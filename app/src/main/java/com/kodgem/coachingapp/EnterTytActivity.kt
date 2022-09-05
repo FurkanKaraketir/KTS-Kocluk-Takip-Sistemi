@@ -320,6 +320,7 @@ class EnterTytActivity : AppCompatActivity() {
                     val toplamNet =
                         turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
                     val deneme = hashMapOf(
+                        "id" to documentID,
                         "denemeTür" to studyType,
                         "denemeAdi" to denemeAdiEditText.text.toString(),
                         "turkceNet" to turkceNet,
