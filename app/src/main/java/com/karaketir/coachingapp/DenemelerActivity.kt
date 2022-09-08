@@ -35,7 +35,7 @@ class DenemelerActivity : AppCompatActivity() {
     private var denemeList = ArrayList<Deneme>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
-    private lateinit var secilenZamanAraligi: String
+    private var secilenZamanAraligi = ""
     private lateinit var studentID: String
     private val zamanAraliklari =
         arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")

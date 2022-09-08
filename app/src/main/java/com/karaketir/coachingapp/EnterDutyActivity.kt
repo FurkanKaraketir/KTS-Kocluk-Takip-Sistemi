@@ -28,9 +28,9 @@ class EnterDutyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEnterDutyBinding
     private var dersAdlari = ArrayList<String>()
     private var konuAdlari = ArrayList<String>()
-    private lateinit var secilenDers: String
-    private lateinit var secilenTur: String
-    private lateinit var secilenKonu: String
+    private var secilenDers = ""
+    private var secilenTur = ""
+    private var secilenKonu = ""
     private var turler = arrayOf("TYT", "AYT")
 
     @SuppressLint("SetTextI18n")

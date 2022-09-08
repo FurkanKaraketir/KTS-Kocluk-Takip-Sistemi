@@ -36,8 +36,8 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
-    private lateinit var secilenZamanAraligi: String
-    private lateinit var studentID: String
+    private var secilenZamanAraligi = ""
+    private var studentID = ""
     var filteredList = ArrayList<Study>()
     private val zamanAraliklari =
         arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")

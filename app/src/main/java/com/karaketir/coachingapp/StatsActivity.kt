@@ -29,7 +29,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var layoutManager: GridLayoutManager
-    private lateinit var secilenZamanAraligi: String
+    private var secilenZamanAraligi = ""
     private lateinit var recyclerViewStats: RecyclerView
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
     private var dersSoruHash = hashMapOf<String, Float>()

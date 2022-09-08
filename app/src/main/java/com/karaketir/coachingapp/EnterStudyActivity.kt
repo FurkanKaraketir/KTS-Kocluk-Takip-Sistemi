@@ -24,8 +24,8 @@ class EnterStudyActivity : AppCompatActivity() {
     private var konuAdlari = ArrayList<String>()
 
     private lateinit var db: FirebaseFirestore
-    private lateinit var secilenKonu: String
-    private lateinit var secilenDocumentID: String
+    private var secilenKonu = ""
+    private var secilenDocumentID = ""
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
