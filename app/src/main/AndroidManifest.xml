@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CoachingApp"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.gms.ads.ca-app-pub-3786123641227695~5799085302"
+            android:value="ca-app-pub-3786123641227695~5799085302"/>
         <activity
             android:name=".GoalEnterActivity"
             android:exported="false"

@@ -56,7 +56,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
                 "link",
-                "https://docs.google.com/document/d/1tyzuyrPt69jPBO9tue90yF2k6YDDXn8h3qk8ZnIIlKY/edit?usp=sharing"
+                "https://www.furkankaraketir.com/post/kullan%C4%B1m-ko%C5%9Fullar%C4%B1"
             )
             this.startActivity(intent)
         }
@@ -64,7 +64,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
                 "link",
-                "https://docs.google.com/document/d/109IUuF9I3SUpKFkIBi5V6Zlr3t0kTsjxXZ_I3RNeVvY/edit?usp=sharing"
+                "https://www.furkankaraketir.com/post/gizlilik-politikas%C4%B1"
             )
             this.startActivity(intent)
         }
@@ -72,7 +72,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
                 "link",
-                "https://docs.google.com/document/d/1uusMxq2wnLpUUE9s1WpCFSgKFjabai27hIdJkgskOFg/edit?usp=sharing"
+                "https://www.furkankaraketir.com/post/%C3%A7erez-politikas%C4%B1"
             )
             this.startActivity(intent)
         }

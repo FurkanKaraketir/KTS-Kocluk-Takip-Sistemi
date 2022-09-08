@@ -221,10 +221,4 @@ class DenemeGraphActivity : AppCompatActivity() {
         anyChartView.setChart(cartesian)
 
     }
-
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
 }
