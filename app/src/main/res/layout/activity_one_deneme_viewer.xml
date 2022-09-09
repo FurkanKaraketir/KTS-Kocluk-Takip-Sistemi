@@ -3,22 +3,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".OneDenemeViewerActivity">
 
     <androidx.cardview.widget.CardView
+        app:cardCornerRadius="10dp"
         android:layout_width="match_parent"
-        android:layout_height="90dp">
+        android:layout_height="100dp">
 
-        <TextView
-            android:id="@+id/oneDenemeTitle"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        </TextView>
+            <TextView
+                android:id="@+id/oneDenemeTitle"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/oneDenemeBody"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/grafik_halinde_g_rmek_in_herhangi_bir_derse_t_klay_n">
+
+            </TextView>
+
+
+        </LinearLayout>
+
 
     </androidx.cardview.widget.CardView>
 

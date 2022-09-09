@@ -3,6 +3,7 @@
 package com.karaketir.coachingapp
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
@@ -46,6 +47,9 @@ class DenemeGraphActivity : AppCompatActivity() {
         zamanAraligi = intent.getStringExtra("zamanAraligi").toString()
         val denemeOwnerID = intent.getStringExtra("denemeOwnerID")
         dersAdi = intent.getStringExtra("dersAdi").toString()
+
+
+
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -177,6 +181,9 @@ class DenemeGraphActivity : AppCompatActivity() {
 
 
         }
+
+        Toast.makeText(this, "Grafiği Görmek İçin Sağ Üsteki Butona Basın", Toast.LENGTH_LONG)
+            .show()
 
         val showBtn = binding.showBtn
         showBtn.setOnClickListener {
