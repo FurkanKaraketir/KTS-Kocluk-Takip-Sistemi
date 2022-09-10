@@ -179,8 +179,7 @@
                     android:id="@+id/myStudents"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_margin="10dp"
                     android:visibility="gone"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -191,8 +190,7 @@
                     android:id="@+id/previousStudies"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_margin="10dp"
                     android:visibility="gone">
 
 
