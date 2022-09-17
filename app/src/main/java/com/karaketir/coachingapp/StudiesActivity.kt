@@ -5,8 +5,6 @@ import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -20,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.models.Study
@@ -29,16 +28,15 @@ import java.util.*
 class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var recyclerViewStudiesAdapter: StudiesRecyclerAdapter
+    private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
 
     private lateinit var recyclerViewStudies: RecyclerView
-    private var studyList = ArrayList<Study>()
+    private var studyList = ArrayList<com.karaketir.coachingapp.models.Class>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
     private var studentID = ""
-    var filteredList = ArrayList<Study>()
     private val zamanAraliklari =
         arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
@@ -58,37 +56,11 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
-        val calismaAra = binding.searchStudy
         val studyAdapter = ArrayAdapter(
             this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
         )
 
 
-        calismaAra.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                filteredList = ArrayList()
-                if (p0.toString() != "") {
-                    for (item in studyList) {
-                        if (item.studyDersAdi.lowercase(Locale.getDefault())
-                                .contains(p0.toString().lowercase(Locale.getDefault()))
-                        ) {
-                            filteredList.add(item)
-                        }
-                    }
-                    setupStudyRecyclerView(filteredList)
-                } else {
-                    setupStudyRecyclerView(studyList)
-                }
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-        })
 
         hedefTeacherButton.setOnClickListener {
             val intent2 = Intent(this, GoalsActivity::class.java)
@@ -193,56 +165,19 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
         }
 
-
-        var kurumKodu: Int
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("Studies")
-                .whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi)
-                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
-                    if (value != null) {
-                        studyList.clear()
-                        if (!value.isEmpty) {
-                            for (document in value) {
-                                val studyName = document.get("konuAdi").toString()
-                                val sure = document.get("toplamCalisma").toString()
-                                val studyDersAdi = document.get("dersAdi").toString()
-                                val studyTur = document.get("tür").toString()
-                                val soruSayisi = document.get("çözülenSoru").toString()
-                                val timestamp = document.get("timestamp") as Timestamp
-
-                                val currentStudy = Study(
-                                    studyName,
-                                    sure,
-                                    studentID,
-                                    studyDersAdi,
-                                    studyTur,
-                                    soruSayisi,
-                                    timestamp
-                                )
-                                studyList.add(currentStudy)
-                            }
-
-                            recyclerViewStudiesAdapter.notifyDataSetChanged()
-
-                        } else {
-                            studyList.clear()
-                            recyclerViewStudiesAdapter.notifyDataSetChanged()
-
-                        }
-
-
-                    } else {
-                        studyList.clear()
-                        recyclerViewStudiesAdapter.notifyDataSetChanged()
-
+        db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
+                if (value != null) {
+                    studyList.clear()
+                    for (i in value) {
+                        val currentClass = com.karaketir.coachingapp.models.Class(
+                            i.id, studentID, baslangicTarihi, bitisTarihi, secilenZamanAraligi
+                        )
+                        studyList.add(currentClass)
                     }
-
+                    recyclerViewStudiesAdapter.notifyDataSetChanged()
                 }
-
-        }
+            }
 
 
     }
@@ -253,12 +188,12 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun setupStudyRecyclerView(list: ArrayList<Study>) {
+    private fun setupStudyRecyclerView(list: ArrayList<com.karaketir.coachingapp.models.Class>) {
         val layoutManager = GridLayoutManager(applicationContext, 2)
 
         recyclerViewStudies.layoutManager = layoutManager
 
-        recyclerViewStudiesAdapter = StudiesRecyclerAdapter(list, secilenZamanAraligi)
+        recyclerViewStudiesAdapter = ClassesAdapter(list)
 
         recyclerViewStudies.adapter = recyclerViewStudiesAdapter
         recyclerViewStudiesAdapter.notifyDataSetChanged()
