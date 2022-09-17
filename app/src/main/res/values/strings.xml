@@ -95,4 +95,6 @@
     <string name="grafik_halinde_g_rmek_in_herhangi_bir_derse_t_klay_n">(Grafik Halinde Görmek İçin Herhangi Bir Derse Tıklayın)</string>
     <string name="al_ma_zaman_aral">Çalışma Zaman Aralığı</string>
     <string name="konu_al_ma_grafi_i">Konu - Çalışma Grafiği</string>
+    <string name="deneme_ekle">Deneme Ekle</string>
+    <string name="deneme_t_r">Deneme Türü</string>
 </resources>

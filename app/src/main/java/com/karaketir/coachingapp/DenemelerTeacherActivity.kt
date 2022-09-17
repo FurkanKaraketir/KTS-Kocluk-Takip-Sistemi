@@ -1,6 +1,7 @@
 package com.karaketir.coachingapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +31,15 @@ class DenemelerTeacherActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
 
         val recyclerView = binding.recyclerViewDenemeler
+        val addDenemeButton = binding.addDeneme
         val recyclerViewAdapter = DenemelerTeacherRecyclerAdapter(denemelerList)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = recyclerViewAdapter
+
+        addDenemeButton.setOnClickListener {
+            val intent = Intent(this, AddDenemeTeacherActivity::class.java)
+            this.startActivity(intent)
+        }
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()

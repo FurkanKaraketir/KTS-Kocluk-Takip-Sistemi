@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AddDenemeTeacherActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:cardCornerRadius="10dp">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/deneme_ekle" />
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputDenemeAdi"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:hint="@string/deneme_ad">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/denemeAdiEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="40" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/denemeTurSpinnerLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/deneme_t_r" />
+
+        <Spinner
+            android:id="@+id/denemeTurSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"
+            android:tooltipText="Alan Seçimi Yapınız" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/denemeTarihSecButton"
+        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="@string/biti_tarihi_se"
+        android:textSize="18sp"
+        app:icon="@drawable/ic_baseline_timer_24" />
+
+    <Button
+        android:id="@+id/saveDeneme"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="@string/deneme_kaydet"
+        android:textSize="18sp" />
+
+
+</LinearLayout>
