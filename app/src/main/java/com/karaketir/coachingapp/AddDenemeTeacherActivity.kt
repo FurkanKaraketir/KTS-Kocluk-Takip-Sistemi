@@ -86,6 +86,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
                         .document(auth.uid.toString()).collection("Denemeler").document(documentID)
                         .set(data).addOnSuccessListener {
                             Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+                            finish()
                         }
 
                 }
