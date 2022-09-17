@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         val studySearchEditText = binding.searchStudyEditText
         val studentDenemeButton = binding.studentDenemeButton
         val istatistikButton = binding.koclukStatsBtn
+        val hedeflerStudentButton = binding.hedefStudentButton
 
         auth = Firebase.auth
         db = Firebase.firestore
@@ -83,7 +84,11 @@ class MainActivity : AppCompatActivity() {
         recyclerViewPreviousStudies = binding.previousStudies
         recyclerViewMyStudents = binding.myStudents
 
-
+        hedeflerStudentButton.setOnClickListener {
+            val intent2 = Intent(this, GoalsActivity::class.java)
+            intent2.putExtra("studentID", auth.currentUser?.uid.toString())
+            this.startActivity(intent2)
+        }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -158,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
                 studentDenemeButton.visibility = View.VISIBLE
+                hedeflerStudentButton.visibility = View.VISIBLE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 istatistikButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.GONE
@@ -218,6 +224,7 @@ class MainActivity : AppCompatActivity() {
 
             } else if (it.get("personType").toString() == "Teacher") {
                 studySearchEditText.visibility = View.GONE
+                hedeflerStudentButton.visibility = View.GONE
                 searchEditText.visibility = View.VISIBLE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE

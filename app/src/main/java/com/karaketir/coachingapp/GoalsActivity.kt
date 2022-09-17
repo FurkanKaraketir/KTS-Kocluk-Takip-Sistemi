@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -46,6 +47,12 @@ class GoalsActivity : AppCompatActivity() {
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             val kurumKodu = it.get("kurumKodu").toString()
+
+            if (it.get("personType") == "Student") {
+                addGoalButton.visibility = View.GONE
+            } else {
+                addGoalButton.visibility = View.VISIBLE
+            }
 
             db.collection("School").document(kurumKodu).collection("Student").document(studentID)
                 .collection("HaftalikHedefler").addSnapshotListener { value, _ ->

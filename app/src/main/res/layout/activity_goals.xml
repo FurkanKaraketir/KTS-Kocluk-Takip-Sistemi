@@ -25,12 +25,13 @@
                 android:text="@string/haftal_k_hedefler">
 
             </TextView>
+
             <TextView
-                android:layout_margin="5dp"
-                android:layout_below="@id/title_template"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/title_template"
                 android:layout_centerInParent="true"
+                android:layout_margin="5dp"
                 android:text="@string/ge_en_haftan_n_sonu_lar">
 
             </TextView>
@@ -49,13 +50,14 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addGoalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:id="@+id/addGoalButton"
-        android:src="@drawable/ic_baseline_add_circle_outline_24"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:contentDescription="@string/t_r" />
+        android:layout_margin="30dp"
+        android:contentDescription="@string/t_r"
+        android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:visibility="gone" />
 
 </RelativeLayout>

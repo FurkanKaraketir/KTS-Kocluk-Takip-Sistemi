@@ -90,6 +90,18 @@
                                 app:icon="@drawable/ic_baseline_bookmark_24" />
 
                             <Button
+                                android:id="@+id/hedefStudentButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="10dp"
+                                android:text="@string/haftal_k_hedefler"
+                                android:textSize="15sp"
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_baseline_outlined_flag_24" />
+
+                            <Button
                                 android:id="@+id/sayacButton"
                                 style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                                 android:layout_width="wrap_content"
