@@ -2,8 +2,13 @@
 
 package com.karaketir.coachingapp
 
+//noinspection SuspiciousImport
+import android.R
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
@@ -14,8 +19,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityEnterTytBinding
 import java.util.*
+import kotlin.collections.ArrayList
 
-class EnterTytActivity : AppCompatActivity() {
+class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var binding: ActivityEnterTytBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -40,6 +46,8 @@ class EnterTytActivity : AppCompatActivity() {
     private var kimyaYanlisDegeri = 0
     private var biyolojiDogruDegeri = 0
     private var biyolojiYanlisDegeri = 0
+    private var denemeAdi = ""
+    private var denemeList = ArrayList<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +57,53 @@ class EnterTytActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = Firebase.auth
-
         db = Firebase.firestore
+        val denemeAdiSpinner = binding.denemeAdiSpinner
+
+        val cal = Calendar.getInstance()
+        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+        cal.clear(Calendar.MINUTE)
+        cal.clear(Calendar.SECOND)
+        cal.clear(Calendar.MILLISECOND)
+
+
         val studyType = intent.getStringExtra("studyType")
+
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            val kurumKodu = it.get("kurumKodu").toString().toInt()
+
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .document(auth.uid.toString()).get().addOnSuccessListener { ogrenci ->
+                    val ogretmenID = ogrenci.get("teacher").toString()
+
+                    db.collection("School").document(kurumKodu.toString()).collection("Teacher")
+                        .document(ogretmenID).collection("Denemeler")
+                        .whereGreaterThan("bitisTarihi", cal.time).whereEqualTo("tür", studyType)
+                        .addSnapshotListener { value, error ->
+                            if (error != null) {
+                                println(error.localizedMessage)
+                            }
+                            denemeList.clear()
+                            if (value != null) {
+
+                                for (deneme in value) {
+                                    denemeList.add(deneme.get("denemeAdi").toString())
+                                }
+                                val denemeAdapter = ArrayAdapter(
+                                    this@EnterTytActivity, R.layout.simple_spinner_item, denemeList
+                                )
+                                denemeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                                denemeAdiSpinner.adapter = denemeAdapter
+                                denemeAdiSpinner.onItemSelectedListener = this
+                            }
+
+                        }
+
+                }
+
+        }
+
         val documentID = UUID.randomUUID().toString()
 
         val button = binding.denemeKaydetButton
@@ -99,7 +151,9 @@ class EnterTytActivity : AppCompatActivity() {
         val biyolojiYanlis = binding.biyolojiYanlis
         val biyolojiYanlisEdit = binding.biyolojiYanlisEditText
 
-        val denemeAdiEditText = binding.denemeAdiEditText
+
+
+
         fizYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
@@ -302,69 +356,71 @@ class EnterTytActivity : AppCompatActivity() {
                 } else {
                     0
                 }
-                if (denemeAdiEditText.text.isNotEmpty()) {
-                    denemeAdiEditText.error = null
-                    button.isClickable = false
-                    val turkceNet = turkceDogruDegeri - (turkceYanlisDegeri * 0.25f)
-                    val tarihNet = tarihDogruDegeri - (tarihYanlisDegeri * 0.25f)
-                    val cogNet = cogDogruDegeri - (cogYanlisDegeri * 0.25f)
-                    val felNet = felsefeDogruDegeri - (felsefeYanlisDegeri * 0.25f)
-                    val dinNet = dinDogruDegeri - (dinYanlisDegeri * 0.25f)
-                    val matNet = matDogruDegeri - (matYanlisDegeri * 0.25f)
-                    val fizNet = fizikDogruDegeri - (fizikYanlisDegeri * 0.25f)
-                    val kimyaNet = kimyaDogruDegeri - (kimyaYanlisDegeri * 0.25f)
-                    val biyoNet = biyolojiDogruDegeri - (biyolojiYanlisDegeri * 0.25f)
-                    val geoNet = geoDogruDegeri - (geoYanlisDegeri * 0.25f)
+
+                button.isClickable = false
+                val turkceNet = turkceDogruDegeri - (turkceYanlisDegeri * 0.25f)
+                val tarihNet = tarihDogruDegeri - (tarihYanlisDegeri * 0.25f)
+                val cogNet = cogDogruDegeri - (cogYanlisDegeri * 0.25f)
+                val felNet = felsefeDogruDegeri - (felsefeYanlisDegeri * 0.25f)
+                val dinNet = dinDogruDegeri - (dinYanlisDegeri * 0.25f)
+                val matNet = matDogruDegeri - (matYanlisDegeri * 0.25f)
+                val fizNet = fizikDogruDegeri - (fizikYanlisDegeri * 0.25f)
+                val kimyaNet = kimyaDogruDegeri - (kimyaYanlisDegeri * 0.25f)
+                val biyoNet = biyolojiDogruDegeri - (biyolojiYanlisDegeri * 0.25f)
+                val geoNet = geoDogruDegeri - (geoYanlisDegeri * 0.25f)
 
 
-                    val toplamNet =
-                        turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
-                    val deneme = hashMapOf(
-                        "id" to documentID,
-                        "denemeTür" to studyType,
-                        "denemeAdi" to denemeAdiEditText.text.toString(),
-                        "turkceNet" to turkceNet,
-                        "tarihNet" to tarihNet,
-                        "cogNet" to cogNet,
-                        "felNet" to felNet,
-                        "dinNet" to dinNet,
-                        "matNet" to matNet,
-                        "fizNet" to fizNet,
-                        "kimyaNet" to kimyaNet,
-                        "biyoNet" to biyoNet,
-                        "geoNet" to geoNet,
-                        "denemeTarihi" to Timestamp.now(),
-                        "toplamNet" to toplamNet
-                    )
+                val toplamNet =
+                    turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
+                val deneme = hashMapOf(
+                    "id" to documentID,
+                    "denemeTür" to studyType,
+                    "denemeAdi" to denemeAdi,
+                    "turkceNet" to turkceNet,
+                    "tarihNet" to tarihNet,
+                    "cogNet" to cogNet,
+                    "felNet" to felNet,
+                    "dinNet" to dinNet,
+                    "matNet" to matNet,
+                    "fizNet" to fizNet,
+                    "kimyaNet" to kimyaNet,
+                    "biyoNet" to biyoNet,
+                    "geoNet" to geoNet,
+                    "denemeTarihi" to Timestamp.now(),
+                    "toplamNet" to toplamNet
+                )
 
-                    db.collection(
-                        "School"
-                    ).document(
-                        kurumKodu.toString()
-                    ).collection(
-                        "Student"
-                    ).document(
-                        auth.uid.toString()
-                    ).collection(
-                        "Denemeler"
-                    ).document(
-                        documentID
-                    ).set(
-                        deneme
-                    ).addOnSuccessListener {
-                        Toast.makeText(
-                            this, "İşlem Başarılı", Toast.LENGTH_SHORT
-                        ).show()
-                        finish()
-                    }
-
-                } else {
-                    denemeAdiEditText.error = "Bu Alan Boş Bırakılamaz"
+                db.collection(
+                    "School"
+                ).document(
+                    kurumKodu.toString()
+                ).collection(
+                    "Student"
+                ).document(
+                    auth.uid.toString()
+                ).collection(
+                    "Denemeler"
+                ).document(
+                    documentID
+                ).set(
+                    deneme
+                ).addOnSuccessListener {
+                    Toast.makeText(
+                        this, "İşlem Başarılı", Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
                 }
 
 
             }
         }
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        denemeAdi = denemeList[p2]
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
     }
 }
 

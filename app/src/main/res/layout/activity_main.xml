@@ -123,6 +123,15 @@
                                 app:icon="@drawable/ic_baseline_people_outline_24">
 
                             </Button>
+                            <Button
+                                android:id="@+id/teacherDenemeButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/denemeler"
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_baseline_book_24" />
 
                             <Button
                                 android:id="@+id/koclukStatsBtn"

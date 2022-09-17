@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         val searchEditText = binding.searchStudentMainActivityEditText
         val studySearchEditText = binding.searchStudyEditText
         val studentDenemeButton = binding.studentDenemeButton
+        val teacherDenemeButton = binding.teacherDenemeButton
         val istatistikButton = binding.koclukStatsBtn
         val hedeflerStudentButton = binding.hedefStudentButton
 
@@ -163,6 +164,7 @@ class MainActivity : AppCompatActivity() {
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
                 studentDenemeButton.visibility = View.VISIBLE
+                teacherDenemeButton.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.VISIBLE
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 istatistikButton.visibility = View.GONE
@@ -228,6 +230,7 @@ class MainActivity : AppCompatActivity() {
                 searchEditText.visibility = View.VISIBLE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE
+                teacherDenemeButton.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
                 addStudyButton.visibility = View.GONE
                 istatistikButton.visibility = View.VISIBLE
@@ -274,6 +277,10 @@ class MainActivity : AppCompatActivity() {
         studentDenemeButton.setOnClickListener {
             val intent = Intent(this, DenemelerActivity::class.java)
             intent.putExtra("studentID", auth.uid.toString())
+            this.startActivity(intent)
+        }
+        teacherDenemeButton.setOnClickListener {
+            val intent = Intent(this, DenemelerTeacherActivity::class.java)
             this.startActivity(intent)
         }
 
