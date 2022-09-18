@@ -22,6 +22,22 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var recyclerViewDenemeKonulariRecyclerAdapter: DenemeKonulariRecyclerAdapter
     private lateinit var recyclerViewDenemeYanlisKonu: RecyclerView
+    private var paragrafKonuList = arrayOf(
+        "Paragraf Tamamlama",
+        "Cümle Yerleştirme",
+        "Cümlelerin Yerini Değiştirme",
+        "Cümleleri Sıralama",
+        "Anlatım Teknikleri (Öyküleme, Betimleme...)",
+        "Düşünceyi Geliştirme Yolları (Tanık Gösterme, Örnekleme...)",
+        "Bakış Açıları (Gözlemci, Kahraman...)",
+        "Yapı (Giriş, Gelişme, Sonuç)",
+        "Ana Düşünce (Ne Anlatılmak İsteniyor?)",
+        "Yardımcı Düşünce (Olumsuz Soru Kökleri)",
+        "Düşüncenin Akışını Bozan Cümle",
+        "Paragraf Hangi Soruya Karşılık Yazılmıştır?",
+        "Başlık",
+        "Paragrafı İkiye Bölme"
+    )
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +106,12 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
                             konuList.add(document.get("konuAdi").toString())
 
                         }
+                        for (i in paragrafKonuList) {
+                            konuList.add(i)
+                        }
+
+                        konuList.sortBy { it }
+
                         recyclerViewDenemeYanlisKonu.setItemViewCacheSize(konuList.size)
 
                         recyclerViewDenemeKonulariRecyclerAdapter.notifyDataSetChanged()
