@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 26
         targetSdk 33
-        versionCode 24
-        versionName "v0.9.24"
+        versionCode 25
+        versionName "v0.9.25"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,9 +51,13 @@ dependencies {
 
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
 
-    implementation ('com.google.firebase:firebase-auth-ktx'){
+    implementation('com.google.firebase:firebase-auth-ktx') {
         exclude module: "play-services-safetynet"
     }
+
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+
+
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'com.google.firebase:firebase-analytics-ktx'

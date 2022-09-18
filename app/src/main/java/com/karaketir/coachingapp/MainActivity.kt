@@ -9,6 +9,7 @@ import android.transition.TransitionManager
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,7 @@ import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
 import com.karaketir.coachingapp.models.Student
 import com.karaketir.coachingapp.models.Study
+
 import java.util.*
 
 
@@ -57,9 +59,12 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
         val nameAndSurnameTextView = binding.nameAndSurnameTextView
         val transitionsContainer = binding.transitionsContainer
         val sayacContainer = binding.sayacContainer
