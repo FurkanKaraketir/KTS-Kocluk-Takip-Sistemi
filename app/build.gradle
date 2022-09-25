@@ -17,10 +17,10 @@ android {
 
     defaultConfig {
         applicationId "com.karaketir.coachingapp"
-        minSdk 26
+        minSdk 22
         targetSdk 33
-        versionCode 25
-        versionName "v0.9.25"
+        versionCode 26
+        versionName "v0.9.26"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
