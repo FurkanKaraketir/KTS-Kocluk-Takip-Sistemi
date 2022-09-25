@@ -97,6 +97,11 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                 denemeAdiSpinner.adapter = denemeAdapter
                                 denemeAdiSpinner.onItemSelectedListener = this
                             }
+                            if (denemeList.isEmpty()) {
+                                denemeList.add("Deneme Yok")
+                                Toast.makeText(this, "Deneme Bulunmamaktadır", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
 
                         }
 
