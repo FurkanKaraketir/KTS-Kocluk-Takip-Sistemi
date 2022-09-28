@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,9 +18,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
-import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
-import com.karaketir.coachingapp.models.Study
 import java.util.*
 
 
@@ -38,7 +35,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private var secilenZamanAraligi = ""
     private var studentID = ""
     private val zamanAraliklari =
-        arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+        arrayOf("Bugün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
 
     @SuppressLint("NotifyDataSetChanged")
@@ -101,7 +98,15 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         cal.clear(Calendar.MILLISECOND)
 
         when (position) {
+
             0 -> {
+                baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+            1 -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
 
@@ -110,7 +115,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 bitisTarihi = cal.time
 
             }
-            1 -> {
+            2 -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
 
@@ -120,7 +125,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
 
             }
-            2 -> {
+            3 -> {
 
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -138,7 +143,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
 
             }
-            3 -> {
+            4 -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -154,7 +159,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 baslangicTarihi = cal.time
 
             }
-            4 -> {
+            5 -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
 
@@ -163,6 +168,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 bitisTarihi = cal.time
 
             }
+
         }
 
         db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
@@ -170,12 +176,48 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 if (value != null) {
                     studyList.clear()
                     for (i in value) {
-                        val currentClass = com.karaketir.coachingapp.models.Class(
-                            i.id, studentID, baslangicTarihi, bitisTarihi, secilenZamanAraligi
-                        )
-                        studyList.add(currentClass)
+                        var iCalisma = 0
+                        var iCozulen = 0
+                        db.collection("User").document(auth.uid.toString()).get()
+                            .addOnSuccessListener {
+                                val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student").document(studentID).collection("Studies")
+                                    .whereEqualTo("dersAdi", i.id)
+                                    .whereGreaterThan("timestamp", baslangicTarihi)
+                                    .whereLessThan("timestamp", bitisTarihi)
+                                    .addSnapshotListener { value, error ->
+                                        if (error != null) {
+                                            println(error.localizedMessage)
+                                        }
+
+                                        if (value != null) {
+                                            for (study in value) {
+                                                iCalisma += study.get("toplamCalisma").toString()
+                                                    .toInt()
+                                                iCozulen += study.get("çözülenSoru").toString()
+                                                    .toInt()
+                                            }
+                                        }
+                                        val currentClass = com.karaketir.coachingapp.models.Class(
+                                            i.id,
+                                            studentID,
+                                            baslangicTarihi,
+                                            bitisTarihi,
+                                            secilenZamanAraligi,
+                                            iCozulen,
+                                            iCalisma
+                                        )
+                                        studyList.add(currentClass)
+
+                                        recyclerViewStudiesAdapter.notifyDataSetChanged()
+
+                                    }
+
+                            }
+
+
                     }
-                    recyclerViewStudiesAdapter.notifyDataSetChanged()
                 }
             }
 

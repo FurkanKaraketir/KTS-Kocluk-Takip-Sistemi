@@ -148,7 +148,8 @@ class StudentGraphActivity : AppCompatActivity() {
                                         studyDersAdi!!,
                                         studyTur!!,
                                         soruSayisi!!,
-                                        timestamp
+                                        timestamp,
+                                        document.id
                                     )
 
 
@@ -201,7 +202,8 @@ class StudentGraphActivity : AppCompatActivity() {
                                         studyDersAdi!!,
                                         studyTur!!,
                                         soruSayisi!!,
-                                        timestamp
+                                        timestamp,
+                                        document.id
                                     )
 
                                     konular.add(currentDocument)

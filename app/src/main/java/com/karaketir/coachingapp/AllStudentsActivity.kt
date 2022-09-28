@@ -78,7 +78,9 @@ class AllStudentsActivity : AppCompatActivity() {
                             val studentName = document.get("nameAndSurname").toString()
                             val teacher = document.get("teacher").toString()
                             val studentID = document.get("id").toString()
-                            val currentStudent = Student(studentName, teacher, studentID)
+                            val studentGrade = document.get("grade").toString().toInt()
+                            val currentStudent =
+                                Student(studentName, teacher, studentID, studentGrade)
                             studentList.add(currentStudent)
                         }
                         studentList.sortBy { it.studentName }

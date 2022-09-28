@@ -38,6 +38,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputDenemeSinif"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:hint="@string/deneme_s_n_f_d_zeyi">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/denemeSinifEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="2" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <LinearLayout
         android:id="@+id/denemeTurSpinnerLayout"
         android:layout_width="wrap_content"
@@ -57,7 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:spinnerMode="dialog"
-            android:tooltipText="Alan Seçimi Yapınız" />
+            android:tooltipText="Alan Seçimi Yapınız"
+            tools:ignore="UnusedAttribute" />
     </LinearLayout>
 
     <Button

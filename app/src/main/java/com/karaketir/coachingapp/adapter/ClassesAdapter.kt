@@ -1,5 +1,6 @@
 package com.karaketir.coachingapp.adapter
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ class ClassesAdapter(private val classList: ArrayList<com.karaketir.coachingapp.
         return ClassHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ClassHolder, position: Int) {
         with(holder) {
             db = FirebaseFirestore.getInstance()
@@ -45,6 +47,8 @@ class ClassesAdapter(private val classList: ArrayList<com.karaketir.coachingapp.
                 intent.putExtra("secilenZamanAraligi", classList[position].secilenZamanAraligi)
                 holder.itemView.context.startActivity(intent)
             }
+            binding.toplamCalismaTextView.text = classList[position].toplamCalisma.toString() + "dk"
+            binding.soruSayisiTextView.text = classList[position].cozulenSoru.toString() + " Soru"
 
 
         }

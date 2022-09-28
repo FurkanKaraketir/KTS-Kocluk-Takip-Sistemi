@@ -97,4 +97,5 @@
     <string name="konu_al_ma_grafi_i">Konu - Çalışma Grafiği</string>
     <string name="deneme_ekle">Deneme Ekle</string>
     <string name="deneme_t_r">Deneme Türü</string>
+    <string name="deneme_s_n_f_d_zeyi">Deneme Sınıf Düzeyi</string>
 </resources>

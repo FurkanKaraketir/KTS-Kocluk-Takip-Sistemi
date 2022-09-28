@@ -123,6 +123,7 @@
                                 app:icon="@drawable/ic_baseline_people_outline_24">
 
                             </Button>
+
                             <Button
                                 android:id="@+id/teacherDenemeButton"
                                 style="@style/Widget.Material3.Button.ElevatedButton.Icon"
@@ -183,18 +184,34 @@
                 android:layout_below="@id/searchStudyEditText"
                 android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/searchStudentMainActivityEditText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:autofillHints="StudentName"
-                    android:hint="@string/renci_ara"
-                    android:inputType="text"
-                    android:maxLength="40"
-                    android:visibility="gone">
+                    android:orientation="horizontal">
 
-                </EditText>
+                    <TextView
+                        android:id="@+id/studentCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="10dp"
+                        android:text="" />
+
+                    <EditText
+                        android:id="@+id/searchStudentMainActivityEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:autofillHints="StudentName"
+                        android:hint="@string/renci_ara"
+                        android:inputType="text"
+                        android:maxLength="40"
+                        android:visibility="visible">
+
+                    </EditText>
+
+                </LinearLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/myStudents"

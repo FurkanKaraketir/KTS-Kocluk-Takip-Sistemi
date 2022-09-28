@@ -9,6 +9,7 @@ class Study(
     var studyDersAdi: String,
     var dersTur: String,
     var soruSayisi: String,
-    val timestamp: Timestamp
+    val timestamp: Timestamp,
+    var studyID: String
 
 )

@@ -49,30 +49,27 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val passwordEditText = binding.passwordRegisterEditText
         val nameAndSurnameEditText = binding.nameAndSurnameEditText
         val kurumKoduEditText = binding.kurumKoduEditText
-        val kullanici = binding.kullanMBtn
+        val kullanici = binding.kullanimBtn
         val gizlilik = binding.gizBtn
         val cerez = binding.cerezBtn
         kullanici.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link",
-                "https://www.furkankaraketir.com/post/kullan%C4%B1m-ko%C5%9Fullar%C4%B1"
+                "link", "https://www.furkankaraketir.com/post/kullan%C4%B1m-ko%C5%9Fullar%C4%B1"
             )
             this.startActivity(intent)
         }
         gizlilik.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link",
-                "https://www.furkankaraketir.com/post/gizlilik-politikas%C4%B1"
+                "link", "https://www.furkankaraketir.com/post/gizlilik-politikas%C4%B1"
             )
             this.startActivity(intent)
         }
         cerez.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link",
-                "https://www.furkankaraketir.com/post/%C3%A7erez-politikas%C4%B1"
+                "link", "https://www.furkankaraketir.com/post/%C3%A7erez-politikas%C4%B1"
             )
             this.startActivity(intent)
         }

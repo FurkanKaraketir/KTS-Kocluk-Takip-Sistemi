@@ -208,7 +208,7 @@
                     android:text="@string/kay_t_olan_ki_i" />
 
                 <TextView
-                    android:id="@+id/kullanımBtn"
+                    android:id="@+id/kullanimBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/kullan_m_ko_ullar_n"

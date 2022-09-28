@@ -116,7 +116,8 @@ class ActivityStudiesByClasses : AppCompatActivity() {
                                     studyDersAdi,
                                     studyTur,
                                     soruSayisi,
-                                    timestamp
+                                    timestamp,
+                                    document.id
                                 )
                                 studyList.add(currentStudy)
                             }

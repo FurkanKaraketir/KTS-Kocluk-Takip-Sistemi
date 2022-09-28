@@ -215,7 +215,8 @@ class MainActivity : AppCompatActivity() {
                                 studyDersAdi,
                                 studyTur,
                                 soruSayisi,
-                                timestamp
+                                timestamp,
+                                document.id
                             )
 
                             studyList.add(currentStudy)
@@ -252,13 +253,16 @@ class MainActivity : AppCompatActivity() {
                         studentList.clear()
                         if (documents != null) {
                             for (document in documents) {
+                                val studentGrade = document.get("grade").toString().toInt()
                                 val studentName = document.get("nameAndSurname").toString()
                                 val teacher = document.get("teacher").toString()
                                 val id = document.get("id").toString()
-                                val currentStudent = Student(studentName, teacher, id)
+                                val currentStudent = Student(studentName, teacher, id, studentGrade)
                                 studentList.add(currentStudent)
 
                             }
+                            binding.studentCountTextView.text =
+                                "Öğrenci Sayısı: " + studentList.size
                         }
                         studentList.sortBy { a ->
                             a.studentName

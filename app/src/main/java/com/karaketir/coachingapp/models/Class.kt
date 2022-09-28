@@ -7,5 +7,7 @@ class Class(
     var studentID: String,
     var baslangicTarihi: Date,
     var bitisTarihi: Date,
-    var secilenZamanAraligi: String
+    var secilenZamanAraligi: String,
+    var cozulenSoru: Int,
+    var toplamCalisma: Int
 )

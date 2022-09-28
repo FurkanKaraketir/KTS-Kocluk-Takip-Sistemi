@@ -6,6 +6,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,11 +46,14 @@ open class StudiesRecyclerAdapter(
                 if (it.get("personType").toString() == "Student") {
 
                     binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
-                    binding.studyGridRowStudyMinuteTextView.visibility = View.GONE
-                    binding.studyGridRowStudyCountTextView.visibility = View.GONE
+                    binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
+                    binding.studyGridRowStudyCountTextView.visibility = View.VISIBLE
                     binding.studyTurText.text = studyList[position].dersTur
                     binding.studyDersText.text = studyList[position].studyDersAdi
-
+                    binding.studyGridRowStudyMinuteTextView.text =
+                        studyList[position].studyCount + "dk"
+                    binding.studyGridRowStudyCountTextView.text =
+                        studyList[position].soruSayisi + " Soru"
                 } else {
                     if (position < studyList.size) {
 
@@ -61,7 +65,6 @@ open class StudiesRecyclerAdapter(
                             studyList[position].studyCount + "dk"
                         binding.studyGridRowStudyCountTextView.text =
                             studyList[position].soruSayisi + " Soru"
-                        binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
                         binding.studyTurText.text = studyList[position].dersTur
                         binding.studyDersText.text = studyList[position].studyDersAdi
 
@@ -108,6 +111,37 @@ open class StudiesRecyclerAdapter(
                         }
                     }
                 }
+
+            }
+
+            studyList[position].studyID
+
+            binding.studyDeleteButton.setOnClickListener {
+
+                val deleteStudyDialog = AlertDialog.Builder(holder.itemView.context)
+                deleteStudyDialog.setTitle("Çalışma Sil")
+                deleteStudyDialog.setMessage("Bu Çalışmayı Silmek İstediğinizden Emin misiniz?")
+
+                deleteStudyDialog.setPositiveButton("Sil") { _, _ ->
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+
+                        val kurumKodu = it.get("kurumKodu").toString()
+                        db.collection("School").document(kurumKodu).collection("Student")
+                            .document(studyList[position].studyOwnerID).collection("Studies")
+                            .document(studyList[position].studyID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                    }
+                }
+                deleteStudyDialog.setNegativeButton("İptal") { _, _ ->
+
+                }
+
+                deleteStudyDialog.show()
+
 
             }
 

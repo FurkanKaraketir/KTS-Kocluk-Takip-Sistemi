@@ -34,6 +34,7 @@ open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) 
             auth = FirebaseAuth.getInstance()
 
             binding.studentNameTextView.text = studentList[position].studentName
+            binding.studentGradeTextView.text = studentList[position].grade.toString()
 
             binding.studentAddButton.visibility = View.GONE
             binding.studentDeleteButton.visibility = View.VISIBLE

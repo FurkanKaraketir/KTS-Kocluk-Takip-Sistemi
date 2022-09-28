@@ -41,6 +41,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
 
 
         val denemeAdiEditText = binding.denemeAdiEditText
+        val denemeSinifEditText = binding.denemeSinifEditText
         val denemeTuruSpinner = binding.denemeTurSpinner
         val denemeSave = binding.saveDeneme
         val tarihSecButton = binding.denemeTarihSecButton
@@ -72,22 +73,31 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
             if (denemeAdiEditText.text.toString().isNotEmpty()) {
                 denemeAdiEditText.error = null
 
-                val data = hashMapOf(
-                    "denemeAdi" to denemeAdiEditText.text.toString(),
-                    "id" to documentID,
-                    "bitisTarihi" to c.time,
-                    "tür" to secilenTur
-                )
+                if (denemeSinifEditText.text.toString().isNotEmpty()) {
+                    denemeSinifEditText.error = null
+                    val data = hashMapOf(
+                        "denemeAdi" to denemeAdiEditText.text.toString(),
+                        "grade" to denemeSinifEditText.text.toString().toInt(),
+                        "id" to documentID,
+                        "bitisTarihi" to c.time,
+                        "tür" to secilenTur
+                    )
 
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu").toString().toInt()
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                        val kurumKodu = it.get("kurumKodu").toString().toInt()
 
-                    db.collection("School").document(kurumKodu.toString()).collection("Teacher")
-                        .document(auth.uid.toString()).collection("Denemeler").document(documentID)
-                        .set(data).addOnSuccessListener {
-                            Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-                            finish()
-                        }
+                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
+                            .document(auth.uid.toString()).collection("Denemeler")
+                            .document(documentID).set(data).addOnSuccessListener {
+                                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+
+                    }
+
+
+                } else {
+                    denemeSinifEditText.error = "Bu Alan Boş Bırakılamaz"
 
                 }
 
