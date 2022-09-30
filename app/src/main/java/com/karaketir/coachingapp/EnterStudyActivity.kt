@@ -125,249 +125,77 @@ class EnterStudyActivity : AppCompatActivity() {
                 if (currentTestsMinutesEditText.text.toString().isNotEmpty()) {
                     currentTestsMinutesEditText.error = null
 
-                    if (currentMinutesEditText.text.toString()
-                            .toInt() + currentTestsMinutesEditText.text.toString().toInt() < 40
-                    ) {
+                    if (currentTestsEditText.text.toString().isNotEmpty()) {
+                        currentTestsEditText.error = null
+                        val study = hashMapOf(
+                            "id" to documentID,
+                            "timestamp" to Timestamp.now(),
+                            "konuAnlatımı" to currentMinutesEditText.text.toString().toInt(),
+                            "konuTestiDK" to currentTestsMinutesEditText.text.toString()
+                                .toInt(),
+                            "dersAdi" to dersAdi,
+                            "tür" to subjectType,
+                            "konuAdi" to secilenKonu,
+                            "toplamCalisma" to currentMinutesEditText.text.toString()
+                                .toInt() + currentTestsMinutesEditText.text.toString().toInt(),
+                            "çözülenSoru" to currentTestsEditText.text.toString().toInt()
+                        )
+
+                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                        val baslangicTarihi = cal.time
+
+
+                        cal.add(Calendar.WEEK_OF_YEAR, 1)
+                        val bitisTarihi = cal.time
                         Toast.makeText(
-                            this, "40dk'dan Az Olan Çalışmaları Ekleyemezsin!", Toast.LENGTH_LONG
+                            this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT
                         ).show()
-                        studySaveButton.isClickable = true
-                    } else {
-                        if (currentTestsEditText.text.toString().isNotEmpty()) {
-                            currentTestsEditText.error = null
-                            val study = hashMapOf(
-                                "id" to documentID,
-                                "timestamp" to Timestamp.now(),
-                                "konuAnlatımı" to currentMinutesEditText.text.toString().toInt(),
-                                "konuTestiDK" to currentTestsMinutesEditText.text.toString()
-                                    .toInt(),
-                                "dersAdi" to dersAdi,
-                                "tür" to subjectType,
-                                "konuAdi" to secilenKonu,
-                                "toplamCalisma" to currentMinutesEditText.text.toString()
-                                    .toInt() + currentTestsMinutesEditText.text.toString().toInt(),
-                                "çözülenSoru" to currentTestsEditText.text.toString().toInt()
-                            )
+                        var kurumKodu: Int
+                        db.collection("User").document(auth.uid.toString()).get()
+                            .addOnSuccessListener { it2 ->
+                                kurumKodu = it2.get("kurumKodu").toString().toInt()
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student").document(auth.uid.toString())
+                                    .collection("Studies").whereEqualTo("konuAdi", secilenKonu)
+                                    .whereGreaterThan("timestamp", baslangicTarihi)
+                                    .whereLessThan("timestamp", bitisTarihi)
+                                    .addSnapshotListener { value, _ ->
 
-                            cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                            val baslangicTarihi = cal.time
-
-
-                            cal.add(Calendar.WEEK_OF_YEAR, 1)
-                            val bitisTarihi = cal.time
-                            Toast.makeText(
-                                this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT
-                            ).show()
-                            var kurumKodu: Int
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener { it2 ->
-                                    kurumKodu = it2.get("kurumKodu").toString().toInt()
-                                    db.collection("School").document(kurumKodu.toString())
-                                        .collection("Student").document(auth.uid.toString())
-                                        .collection("Studies").whereEqualTo("konuAdi", secilenKonu)
-                                        .whereGreaterThan("timestamp", baslangicTarihi)
-                                        .whereLessThan("timestamp", bitisTarihi)
-                                        .addSnapshotListener { value, _ ->
-
-                                            if (!stopper) {
-                                                if (value != null) {
-                                                    if (!value.isEmpty) {
-                                                        for (document in value) {
-                                                            val studyUpdate = hashMapOf(
-                                                                "id" to document.id,
-                                                                "timestamp" to Timestamp.now(),
-                                                                "konuAnlatımı" to currentMinutesEditText.text.toString()
-                                                                    .toInt() + document.get("konuAnlatımı")
-                                                                    .toString().toInt(),
-                                                                "konuTestiDK" to currentTestsMinutesEditText.text.toString()
-                                                                    .toInt() + document.get("konuTestiDK")
-                                                                    .toString().toInt(),
-                                                                "tür" to subjectType,
-                                                                "dersAdi" to dersAdi,
-                                                                "konuAdi" to secilenKonu,
-                                                                "toplamCalisma" to currentMinutesEditText.text.toString()
-                                                                    .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                    .toInt() + document.get("konuAnlatımı")
-                                                                    .toString()
-                                                                    .toInt() + document.get("konuTestiDK")
-                                                                    .toString().toInt(),
-                                                                "çözülenSoru" to currentTestsEditText.text.toString()
-                                                                    .toInt() + document.get("çözülenSoru")
-                                                                    .toString().toInt()
-                                                            )
-                                                            stopper = true
-
-                                                            db.collection("School")
-                                                                .document(kurumKodu.toString())
-                                                                .collection("Student")
-                                                                .document(auth.uid.toString())
-                                                                .collection("Studies")
-                                                                .document(document.id)
-                                                                .update(studyUpdate as Map<String, Any>)
-                                                                .addOnSuccessListener {
-
-                                                                    if (!stopper2) {
-                                                                        db.collection("School")
-                                                                            .document(kurumKodu.toString())
-                                                                            .collection("Student")
-                                                                            .document(auth.uid.toString())
-                                                                            .collection("Duties")
-                                                                            .whereGreaterThan(
-                                                                                "bitisZamani",
-                                                                                Timestamp.now()
-                                                                            ).whereEqualTo(
-                                                                                "dersAdi", dersAdi
-                                                                            ).whereEqualTo(
-                                                                                "tür", subjectType
-                                                                            ).whereEqualTo(
-                                                                                "konuAdi",
-                                                                                secilenKonu
-                                                                            )
-                                                                            .addSnapshotListener { value5, e5 ->
-
-
-                                                                                if (!stopper2) {
-                                                                                    if (e5 != null) println(
-                                                                                        e5.localizedMessage
-                                                                                    )
-
-                                                                                    if (value5 != null) {
-                                                                                        for (document5 in value5) {
-
-
-                                                                                            val gorevUpdate =
-                                                                                                hashMapOf(
-                                                                                                    "toplamCalisma" to document5.get(
-                                                                                                        "toplamCalisma"
-                                                                                                    )
-                                                                                                        .toString()
-                                                                                                        .toInt() - (currentMinutesEditText.text.toString()
-                                                                                                        .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                                        .toInt()),
-                                                                                                    "çözülenSoru" to document5.get(
-                                                                                                        "çözülenSoru"
-                                                                                                    )
-                                                                                                        .toString()
-                                                                                                        .toInt() - currentTestsEditText.text.toString()
-                                                                                                        .toInt()
-                                                                                                )
-
-                                                                                            if (!stopper2) {
-                                                                                                stopper2 =
-                                                                                                    true
-
-                                                                                                db.collection(
-                                                                                                    "School"
-                                                                                                )
-                                                                                                    .document(
-                                                                                                        kurumKodu.toString()
-                                                                                                    )
-                                                                                                    .collection(
-                                                                                                        "Student"
-                                                                                                    )
-                                                                                                    .document(
-                                                                                                        auth.uid.toString()
-                                                                                                    )
-                                                                                                    .collection(
-                                                                                                        "Duties"
-                                                                                                    )
-                                                                                                    .document(
-                                                                                                        document5.id
-                                                                                                    )
-                                                                                                    .update(
-                                                                                                        gorevUpdate as Map<String, Any>
-                                                                                                    )
-                                                                                                    .addOnSuccessListener {
-
-                                                                                                        if (document5.get(
-                                                                                                                "toplamCalisma"
-                                                                                                            )
-                                                                                                                .toString()
-                                                                                                                .toInt() - (currentMinutesEditText.text.toString()
-                                                                                                                .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                                                .toInt()) <= 0 && document5.get(
-                                                                                                                "çözülenSoru"
-                                                                                                            )
-                                                                                                                .toString()
-                                                                                                                .toInt() - currentTestsEditText.text.toString()
-                                                                                                                .toInt() <= 0
-                                                                                                        ) {
-                                                                                                            db.collection(
-                                                                                                                "School"
-                                                                                                            )
-                                                                                                                .document(
-                                                                                                                    kurumKodu.toString()
-                                                                                                                )
-                                                                                                                .collection(
-                                                                                                                    "Student"
-                                                                                                                )
-                                                                                                                .document(
-                                                                                                                    auth.uid.toString()
-                                                                                                                )
-                                                                                                                .collection(
-                                                                                                                    "Duties"
-                                                                                                                )
-                                                                                                                .document(
-                                                                                                                    document5.id
-                                                                                                                )
-                                                                                                                .update(
-                                                                                                                    "tamamlandi",
-                                                                                                                    true
-                                                                                                                )
-                                                                                                                .addOnSuccessListener {
-                                                                                                                    stopper2 =
-                                                                                                                        true
-
-                                                                                                                    Toast.makeText(
-                                                                                                                        this,
-                                                                                                                        "İşlem Başarılı!",
-                                                                                                                        Toast.LENGTH_SHORT
-                                                                                                                    )
-                                                                                                                        .show()
-                                                                                                                    finish()
-                                                                                                                }
-                                                                                                        } else {
-                                                                                                            stopper2 =
-                                                                                                                true
-                                                                                                            Toast.makeText(
-                                                                                                                this,
-                                                                                                                "İşlem Başarılı!",
-                                                                                                                Toast.LENGTH_SHORT
-                                                                                                            )
-                                                                                                                .show()
-                                                                                                            finish()
-                                                                                                        }
-
-                                                                                                    }
-
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-
-
-                                                                            }
-                                                                    }
-                                                                    Toast.makeText(
-                                                                        this,
-                                                                        "İşlem Başarılı!",
-                                                                        Toast.LENGTH_SHORT
-                                                                    ).show()
-                                                                    finish()
-
-
-                                                                }
-
-
-                                                        }
-                                                    } else {
+                                        if (!stopper) {
+                                            if (value != null) {
+                                                if (!value.isEmpty) {
+                                                    for (document in value) {
+                                                        val studyUpdate = hashMapOf(
+                                                            "id" to document.id,
+                                                            "timestamp" to Timestamp.now(),
+                                                            "konuAnlatımı" to currentMinutesEditText.text.toString()
+                                                                .toInt() + document.get("konuAnlatımı")
+                                                                .toString().toInt(),
+                                                            "konuTestiDK" to currentTestsMinutesEditText.text.toString()
+                                                                .toInt() + document.get("konuTestiDK")
+                                                                .toString().toInt(),
+                                                            "tür" to subjectType,
+                                                            "dersAdi" to dersAdi,
+                                                            "konuAdi" to secilenKonu,
+                                                            "toplamCalisma" to currentMinutesEditText.text.toString()
+                                                                .toInt() + currentTestsMinutesEditText.text.toString()
+                                                                .toInt() + document.get("konuAnlatımı")
+                                                                .toString()
+                                                                .toInt() + document.get("konuTestiDK")
+                                                                .toString().toInt(),
+                                                            "çözülenSoru" to currentTestsEditText.text.toString()
+                                                                .toInt() + document.get("çözülenSoru")
+                                                                .toString().toInt()
+                                                        )
                                                         stopper = true
+
                                                         db.collection("School")
                                                             .document(kurumKodu.toString())
                                                             .collection("Student")
                                                             .document(auth.uid.toString())
                                                             .collection("Studies")
-                                                            .document(documentID).set(study)
+                                                            .document(document.id)
+                                                            .update(studyUpdate as Map<String, Any>)
                                                             .addOnSuccessListener {
 
                                                                 if (!stopper2) {
@@ -384,7 +212,8 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                         ).whereEqualTo(
                                                                             "tür", subjectType
                                                                         ).whereEqualTo(
-                                                                            "konuAdi", secilenKonu
+                                                                            "konuAdi",
+                                                                            secilenKonu
                                                                         )
                                                                         .addSnapshotListener { value5, e5 ->
 
@@ -511,7 +340,6 @@ class EnterStudyActivity : AppCompatActivity() {
 
                                                                         }
                                                                 }
-
                                                                 Toast.makeText(
                                                                     this,
                                                                     "İşlem Başarılı!",
@@ -523,106 +351,139 @@ class EnterStudyActivity : AppCompatActivity() {
                                                             }
 
 
-                                                            .addOnFailureListener {
-                                                                println(it.localizedMessage)
-                                                            }
-
-
                                                     }
-
-
                                                 } else {
-
+                                                    stopper = true
                                                     db.collection("School")
                                                         .document(kurumKodu.toString())
                                                         .collection("Student")
                                                         .document(auth.uid.toString())
-                                                        .collection("Studies").document(documentID)
-                                                        .set(study).addOnSuccessListener {
+                                                        .collection("Studies")
+                                                        .document(documentID).set(study)
+                                                        .addOnSuccessListener {
 
-                                                            db.collection("School")
-                                                                .document(kurumKodu.toString())
-                                                                .collection("Student")
-                                                                .document(auth.uid.toString())
-                                                                .collection("Duties")
-                                                                .whereGreaterThan(
-                                                                    "bitisZamani", Timestamp.now()
-                                                                ).whereEqualTo("dersAdi", dersAdi)
-                                                                .whereEqualTo("tür", subjectType)
-                                                                .whereEqualTo(
-                                                                    "konuAdi", secilenKonu
-                                                                )
-                                                                .addSnapshotListener { value5, e5 ->
-                                                                    if (e5 != null) println(e5.localizedMessage)
+                                                            if (!stopper2) {
+                                                                db.collection("School")
+                                                                    .document(kurumKodu.toString())
+                                                                    .collection("Student")
+                                                                    .document(auth.uid.toString())
+                                                                    .collection("Duties")
+                                                                    .whereGreaterThan(
+                                                                        "bitisZamani",
+                                                                        Timestamp.now()
+                                                                    ).whereEqualTo(
+                                                                        "dersAdi", dersAdi
+                                                                    ).whereEqualTo(
+                                                                        "tür", subjectType
+                                                                    ).whereEqualTo(
+                                                                        "konuAdi", secilenKonu
+                                                                    )
+                                                                    .addSnapshotListener { value5, e5 ->
 
-                                                                    if (!stopper2) {
-                                                                        if (value5 != null) {
-                                                                            for (document5 in value5) {
 
-                                                                                stopper2 = true
-                                                                                val gorevUpdate =
-                                                                                    hashMapOf(
-                                                                                        "toplamCalisma" to document5.get(
-                                                                                            "toplamCalisma"
-                                                                                        ).toString()
-                                                                                            .toInt() - (currentMinutesEditText.text.toString()
-                                                                                            .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                            .toInt()),
-                                                                                        "çözülenSoru" to document5.get(
-                                                                                            "çözülenSoru"
-                                                                                        ).toString()
-                                                                                            .toInt() - currentTestsEditText.text.toString()
-                                                                                            .toInt()
-                                                                                    )
-                                                                                db.collection("School")
-                                                                                    .document(
-                                                                                        kurumKodu.toString()
-                                                                                    )
-                                                                                    .collection("Student")
-                                                                                    .document(auth.uid.toString())
-                                                                                    .collection("Duties")
-                                                                                    .document(
-                                                                                        document5.id
-                                                                                    ).update(
-                                                                                        gorevUpdate as Map<String, Any>
-                                                                                    )
-                                                                                    .addOnSuccessListener {
-                                                                                        if (document5.get(
+                                                                        if (!stopper2) {
+                                                                            if (e5 != null) println(
+                                                                                e5.localizedMessage
+                                                                            )
+
+                                                                            if (value5 != null) {
+                                                                                for (document5 in value5) {
+
+
+                                                                                    val gorevUpdate =
+                                                                                        hashMapOf(
+                                                                                            "toplamCalisma" to document5.get(
                                                                                                 "toplamCalisma"
                                                                                             )
                                                                                                 .toString()
                                                                                                 .toInt() - (currentMinutesEditText.text.toString()
                                                                                                 .toInt() + currentTestsMinutesEditText.text.toString()
-                                                                                                .toInt()) <= 0 && document5.get(
+                                                                                                .toInt()),
+                                                                                            "çözülenSoru" to document5.get(
                                                                                                 "çözülenSoru"
                                                                                             )
                                                                                                 .toString()
                                                                                                 .toInt() - currentTestsEditText.text.toString()
-                                                                                                .toInt() <= 0
-                                                                                        ) {
-                                                                                            db.collection(
-                                                                                                "School"
+                                                                                                .toInt()
+                                                                                        )
+
+                                                                                    if (!stopper2) {
+                                                                                        stopper2 =
+                                                                                            true
+
+                                                                                        db.collection(
+                                                                                            "School"
+                                                                                        )
+                                                                                            .document(
+                                                                                                kurumKodu.toString()
                                                                                             )
-                                                                                                .document(
-                                                                                                    kurumKodu.toString()
-                                                                                                )
-                                                                                                .collection(
-                                                                                                    "Student"
-                                                                                                )
-                                                                                                .document(
-                                                                                                    auth.uid.toString()
-                                                                                                )
-                                                                                                .collection(
-                                                                                                    "Duties"
-                                                                                                )
-                                                                                                .document(
-                                                                                                    document5.id
-                                                                                                )
-                                                                                                .update(
-                                                                                                    "tamamlandi",
-                                                                                                    true
-                                                                                                )
-                                                                                                .addOnSuccessListener {
+                                                                                            .collection(
+                                                                                                "Student"
+                                                                                            )
+                                                                                            .document(
+                                                                                                auth.uid.toString()
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Duties"
+                                                                                            )
+                                                                                            .document(
+                                                                                                document5.id
+                                                                                            )
+                                                                                            .update(
+                                                                                                gorevUpdate as Map<String, Any>
+                                                                                            )
+                                                                                            .addOnSuccessListener {
+
+                                                                                                if (document5.get(
+                                                                                                        "toplamCalisma"
+                                                                                                    )
+                                                                                                        .toString()
+                                                                                                        .toInt() - (currentMinutesEditText.text.toString()
+                                                                                                        .toInt() + currentTestsMinutesEditText.text.toString()
+                                                                                                        .toInt()) <= 0 && document5.get(
+                                                                                                        "çözülenSoru"
+                                                                                                    )
+                                                                                                        .toString()
+                                                                                                        .toInt() - currentTestsEditText.text.toString()
+                                                                                                        .toInt() <= 0
+                                                                                                ) {
+                                                                                                    db.collection(
+                                                                                                        "School"
+                                                                                                    )
+                                                                                                        .document(
+                                                                                                            kurumKodu.toString()
+                                                                                                        )
+                                                                                                        .collection(
+                                                                                                            "Student"
+                                                                                                        )
+                                                                                                        .document(
+                                                                                                            auth.uid.toString()
+                                                                                                        )
+                                                                                                        .collection(
+                                                                                                            "Duties"
+                                                                                                        )
+                                                                                                        .document(
+                                                                                                            document5.id
+                                                                                                        )
+                                                                                                        .update(
+                                                                                                            "tamamlandi",
+                                                                                                            true
+                                                                                                        )
+                                                                                                        .addOnSuccessListener {
+                                                                                                            stopper2 =
+                                                                                                                true
+
+                                                                                                            Toast.makeText(
+                                                                                                                this,
+                                                                                                                "İşlem Başarılı!",
+                                                                                                                Toast.LENGTH_SHORT
+                                                                                                            )
+                                                                                                                .show()
+                                                                                                            finish()
+                                                                                                        }
+                                                                                                } else {
+                                                                                                    stopper2 =
+                                                                                                        true
                                                                                                     Toast.makeText(
                                                                                                         this,
                                                                                                         "İşlem Başarılı!",
@@ -631,44 +492,174 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                                         .show()
                                                                                                     finish()
                                                                                                 }
-                                                                                        } else {
 
-                                                                                            finish()
-                                                                                        }
+                                                                                            }
+
                                                                                     }
-
-
+                                                                                }
                                                                             }
                                                                         }
 
-                                                                    }
 
+                                                                    }
+                                                            }
+
+                                                            Toast.makeText(
+                                                                this,
+                                                                "İşlem Başarılı!",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                            finish()
+
+
+                                                        }
+
+
+                                                        .addOnFailureListener {
+                                                            println(it.localizedMessage)
+                                                        }
+
+
+                                                }
+
+
+                                            } else {
+
+                                                db.collection("School")
+                                                    .document(kurumKodu.toString())
+                                                    .collection("Student")
+                                                    .document(auth.uid.toString())
+                                                    .collection("Studies").document(documentID)
+                                                    .set(study).addOnSuccessListener {
+
+                                                        db.collection("School")
+                                                            .document(kurumKodu.toString())
+                                                            .collection("Student")
+                                                            .document(auth.uid.toString())
+                                                            .collection("Duties")
+                                                            .whereGreaterThan(
+                                                                "bitisZamani", Timestamp.now()
+                                                            ).whereEqualTo("dersAdi", dersAdi)
+                                                            .whereEqualTo("tür", subjectType)
+                                                            .whereEqualTo(
+                                                                "konuAdi", secilenKonu
+                                                            )
+                                                            .addSnapshotListener { value5, e5 ->
+                                                                if (e5 != null) println(e5.localizedMessage)
+
+                                                                if (!stopper2) {
+                                                                    if (value5 != null) {
+                                                                        for (document5 in value5) {
+
+                                                                            stopper2 = true
+                                                                            val gorevUpdate =
+                                                                                hashMapOf(
+                                                                                    "toplamCalisma" to document5.get(
+                                                                                        "toplamCalisma"
+                                                                                    ).toString()
+                                                                                        .toInt() - (currentMinutesEditText.text.toString()
+                                                                                        .toInt() + currentTestsMinutesEditText.text.toString()
+                                                                                        .toInt()),
+                                                                                    "çözülenSoru" to document5.get(
+                                                                                        "çözülenSoru"
+                                                                                    ).toString()
+                                                                                        .toInt() - currentTestsEditText.text.toString()
+                                                                                        .toInt()
+                                                                                )
+                                                                            db.collection("School")
+                                                                                .document(
+                                                                                    kurumKodu.toString()
+                                                                                )
+                                                                                .collection("Student")
+                                                                                .document(auth.uid.toString())
+                                                                                .collection("Duties")
+                                                                                .document(
+                                                                                    document5.id
+                                                                                ).update(
+                                                                                    gorevUpdate as Map<String, Any>
+                                                                                )
+                                                                                .addOnSuccessListener {
+                                                                                    if (document5.get(
+                                                                                            "toplamCalisma"
+                                                                                        )
+                                                                                            .toString()
+                                                                                            .toInt() - (currentMinutesEditText.text.toString()
+                                                                                            .toInt() + currentTestsMinutesEditText.text.toString()
+                                                                                            .toInt()) <= 0 && document5.get(
+                                                                                            "çözülenSoru"
+                                                                                        )
+                                                                                            .toString()
+                                                                                            .toInt() - currentTestsEditText.text.toString()
+                                                                                            .toInt() <= 0
+                                                                                    ) {
+                                                                                        db.collection(
+                                                                                            "School"
+                                                                                        )
+                                                                                            .document(
+                                                                                                kurumKodu.toString()
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Student"
+                                                                                            )
+                                                                                            .document(
+                                                                                                auth.uid.toString()
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Duties"
+                                                                                            )
+                                                                                            .document(
+                                                                                                document5.id
+                                                                                            )
+                                                                                            .update(
+                                                                                                "tamamlandi",
+                                                                                                true
+                                                                                            )
+                                                                                            .addOnSuccessListener {
+                                                                                                Toast.makeText(
+                                                                                                    this,
+                                                                                                    "İşlem Başarılı!",
+                                                                                                    Toast.LENGTH_SHORT
+                                                                                                )
+                                                                                                    .show()
+                                                                                                finish()
+                                                                                            }
+                                                                                    } else {
+
+                                                                                        finish()
+                                                                                    }
+                                                                                }
+
+
+                                                                        }
+                                                                    }
 
                                                                 }
 
 
-                                                        }.addOnFailureListener {
-                                                            println(it.localizedMessage)
-                                                        }
-                                                }
+                                                            }
 
+
+                                                    }.addOnFailureListener {
+                                                        println(it.localizedMessage)
+                                                    }
                                             }
-                                            Toast.makeText(
-                                                this, "İşlem Başarılı", Toast.LENGTH_SHORT
-                                            ).show()
-
-                                            finish()
-
 
                                         }
-                                }
+                                        Toast.makeText(
+                                            this, "İşlem Başarılı", Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        finish()
 
 
-                        } else {
-                            currentTestsEditText.error = "Bu Alanı Boş Bırakamazsın!"
-                            studySaveButton.isClickable = true
+                                    }
+                            }
 
-                        }
+
+                    } else {
+                        currentTestsEditText.error = "Bu Alanı Boş Bırakamazsın!"
+                        studySaveButton.isClickable = true
+
                     }
 
 

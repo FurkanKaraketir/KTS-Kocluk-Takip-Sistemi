@@ -1,14 +1,24 @@
 package com.karaketir.coachingapp.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.DenemelerTeacherRowBinding
+import com.karaketir.coachingapp.models.DenemeTeacher
 
-class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<String>) :
+class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTeacher>) :
     RecyclerView.Adapter<DenemelerTeacherRecyclerAdapter.DenemeHolder>() {
+
+    private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+
+
     class DenemeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = DenemelerTeacherRowBinding.bind(itemView)
 
@@ -22,7 +32,40 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<String>)
 
     override fun onBindViewHolder(holder: DenemeHolder, position: Int) {
         with(holder) {
-            binding.denemeAdiTeacherTextView.text = denemeList[position]
+
+            db = FirebaseFirestore.getInstance()
+            auth = FirebaseAuth.getInstance()
+
+
+            binding.denemeAdiTeacherTextView.text = denemeList[position].denemeAdi
+            binding.deleteDenemeTeacherButton.setOnClickListener {
+
+                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+
+
+                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteAlertDialog.setTitle("Deneme Sil")
+                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+
+                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
+                            .document(auth.uid.toString()).collection("Denemeler")
+                            .document(denemeList[position].denemeID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }
+                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
+
+                    }
+                    deleteAlertDialog.show()
+
+
+                }
+
+            }
         }
 
     }

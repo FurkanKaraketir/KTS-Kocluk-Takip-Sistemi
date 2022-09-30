@@ -106,9 +106,12 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
                             konuList.add(document.get("konuAdi").toString())
 
                         }
-                        for (i in paragrafKonuList) {
-                            konuList.add(i)
+                        if (dersAdi == "Türkçe-Edebiyat") {
+                            for (i in paragrafKonuList) {
+                                konuList.add(i)
+                            }
                         }
+
 
                         konuList.sortBy { it }
 

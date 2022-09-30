@@ -1,13 +1,9 @@
 package com.karaketir.coachingapp
 
 //noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +18,7 @@ import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import java.util.*
 
 
-class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class StudiesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
@@ -34,11 +30,9 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
     private var studentID = ""
-    private val zamanAraliklari =
-        arrayOf("Bugün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var layoutManager: GridLayoutManager
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStudiesBinding.inflate(layoutInflater)
@@ -49,64 +43,36 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
         layoutManager = GridLayoutManager(applicationContext, 2)
         val intent = intent
-        val studyZamanSpinner = binding.studyZamanAraligiSpinner
+        studentID = intent.getStringExtra("studentID").toString()
+        secilenZamanAraligi = intent.getStringExtra("secilenZaman").toString()
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
-        val studyAdapter = ArrayAdapter(
-            this@StudiesActivity, R.layout.simple_spinner_item, zamanAraliklari
-        )
-
-
-
-        hedefTeacherButton.setOnClickListener {
-            val intent2 = Intent(this, GoalsActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            this.startActivity(intent2)
-        }
-
-        studentID = intent.getStringExtra("studentID").toString()
-
-        studyAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-        studyZamanSpinner.adapter = studyAdapter
-        studyZamanSpinner.onItemSelectedListener = this
-
-
-        denemelerButton.setOnClickListener {
-            val intent2 = Intent(this, DenemelerActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            this.startActivity(intent2)
-        }
-
-        gorevlerButton.setOnClickListener {
-            val intent2 = Intent(this, DutiesActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            this.startActivity(intent2)
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-        secilenZamanAraligi = zamanAraliklari[position]
-
+        val toplamSureText = binding.toplamSureText
+        val toplamSoruText = binding.toplamSoruText
+        val nameTextView = binding.studentNameForTeacher
         setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+        db.collection("User").document(studentID).get().addOnSuccessListener {
+            val name = it.get("nameAndSurname").toString()
+            nameTextView.text = name
 
+        }
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)
         cal.clear(Calendar.MILLISECOND)
 
-        when (position) {
+        when (secilenZamanAraligi) {
 
-            0 -> {
+            "Bugün" -> {
                 baslangicTarihi = cal.time
 
 
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
-            1 -> {
+            "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
 
@@ -115,7 +81,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 bitisTarihi = cal.time
 
             }
-            2 -> {
+            "Geçen Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
 
@@ -125,7 +91,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
 
             }
-            3 -> {
+            "Bu Ay" -> {
 
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -143,7 +109,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
 
             }
-            4 -> {
+            "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -159,7 +125,7 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 baslangicTarihi = cal.time
 
             }
-            5 -> {
+            "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
 
@@ -170,6 +136,8 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
 
         }
+        var toplamSure = 0
+        var toplamSoru = 0
 
         db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
             .addSnapshotListener { value, _ ->
@@ -199,6 +167,8 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                                                     .toInt()
                                             }
                                         }
+                                        toplamSoru += iCozulen
+                                        toplamSure += iCalisma
                                         val currentClass = com.karaketir.coachingapp.models.Class(
                                             i.id,
                                             studentID,
@@ -208,6 +178,9 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                                             iCozulen,
                                             iCalisma
                                         )
+                                        toplamSureText.text = toplamSure.toString() + "dk"
+                                        toplamSoruText.text = "$toplamSoru Soru"
+
                                         studyList.add(currentClass)
 
                                         recyclerViewStudiesAdapter.notifyDataSetChanged()
@@ -222,10 +195,28 @@ class StudiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
 
 
-    }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
 
+        hedefTeacherButton.setOnClickListener {
+            val intent2 = Intent(this, GoalsActivity::class.java)
+            intent2.putExtra("studentID", studentID)
+            this.startActivity(intent2)
+        }
+
+
+
+
+        denemelerButton.setOnClickListener {
+            val intent2 = Intent(this, DenemelerActivity::class.java)
+            intent2.putExtra("studentID", studentID)
+            this.startActivity(intent2)
+        }
+
+        gorevlerButton.setOnClickListener {
+            val intent2 = Intent(this, DutiesActivity::class.java)
+            intent2.putExtra("studentID", studentID)
+            this.startActivity(intent2)
+        }
     }
 
 

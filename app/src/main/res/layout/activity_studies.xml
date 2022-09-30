@@ -28,27 +28,16 @@
                 android:gravity="center"
                 android:text="@string/al_malar" />
 
-            <LinearLayout
-                android:id="@+id/teacherSpinnerLayout"
-                android:layout_width="match_parent"
+
+            <TextView
+                android:id="@+id/studentNameForTeacher"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
                 android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zaman_aral"
-                    android:textSize="18sp" />
-
-                <Spinner
-                    android:id="@+id/studyZamanAraligiSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
-            </LinearLayout>
+                android:text="" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -95,6 +84,36 @@
                 </LinearLayout>
 
             </HorizontalScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/toplam" />
+
+                <TextView
+                    android:id="@+id/toplamSureText"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/toplamSoruText"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+            </LinearLayout>
 
 
         </LinearLayout>

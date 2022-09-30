@@ -1,5 +1,7 @@
 package com.karaketir.coachingapp
 
+//noinspection SuspiciousImport
+import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +9,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -39,6 +44,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var studyList = ArrayList<Study>()
+    private var secilenZaman = "Bugün"
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
+    private val zamanAraliklari =
+        arrayOf("Bugün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
 
@@ -83,7 +92,11 @@ class MainActivity : AppCompatActivity() {
         val teacherDenemeButton = binding.teacherDenemeButton
         val istatistikButton = binding.koclukStatsBtn
         val hedeflerStudentButton = binding.hedefStudentButton
-
+        val gradeSpinner = binding.gradeSpinner
+        val gradeSpinnerLayout = binding.gradeSpinnerLayout
+        val kocOgretmenTextView = binding.kocOgretmenTextView
+        val teacherSpinnerLayout = binding.teacherSpinnerLayout
+        val teacherSpinner = binding.studyZamanAraligiSpinner
         auth = Firebase.auth
         db = Firebase.firestore
 
@@ -164,8 +177,27 @@ class MainActivity : AppCompatActivity() {
                 val cal = Calendar.getInstance()
 
                 addStudyButton.visibility = View.VISIBLE
+                kocOgretmenTextView.visibility = View.VISIBLE
 
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(auth.uid.toString()).get().addOnSuccessListener { student ->
+                        val kocID = student.get("teacher").toString()
+                        if (kocID.isEmpty()) {
+                            kocOgretmenTextView.text = "Koç Öğretmenin Bulunmuyor"
+                        } else {
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Teacher").document(kocID).get()
+                                .addOnSuccessListener { teacher ->
+                                    kocOgretmenTextView.text =
+                                        "Koç Öğretmenin: " + teacher.get("nameAndSurname")
+                                            .toString()
+                                }
 
+                        }
+                    }
+
+                gradeSpinnerLayout.visibility = View.GONE
+                teacherSpinnerLayout.visibility = View.GONE
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
                 studentDenemeButton.visibility = View.VISIBLE
@@ -234,6 +266,8 @@ class MainActivity : AppCompatActivity() {
                 studySearchEditText.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.GONE
                 searchEditText.visibility = View.VISIBLE
+                teacherSpinnerLayout.visibility = View.VISIBLE
+                kocOgretmenTextView.visibility = View.GONE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE
                 teacherDenemeButton.visibility = View.VISIBLE
@@ -241,37 +275,104 @@ class MainActivity : AppCompatActivity() {
                 addStudyButton.visibility = View.GONE
                 istatistikButton.visibility = View.VISIBLE
                 gorevButton.visibility = View.GONE
+                gradeSpinnerLayout.visibility = View.VISIBLE
                 contentTextView.text = "Öğrencilerim"
 
+                val gradeAdapter = ArrayAdapter(
+                    this@MainActivity, R.layout.simple_spinner_item, gradeList
+                )
+                gradeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                gradeSpinner.adapter = gradeAdapter
+                gradeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        val secilenGrade = gradeList[p2]
+                        if (secilenGrade == "Bütün Sınıflar") {
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
+                                .addSnapshotListener { documents, _ ->
 
+                                    studentList.clear()
+                                    if (documents != null) {
+                                        for (document in documents) {
+                                            val studentGrade =
+                                                document.get("grade").toString().toInt()
+                                            val studentName =
+                                                document.get("nameAndSurname").toString()
+                                            val teacher = document.get("teacher").toString()
+                                            val id = document.get("id").toString()
+                                            val currentStudent =
+                                                Student(studentName, teacher, id, studentGrade)
+                                            studentList.add(currentStudent)
 
+                                        }
+                                        binding.studentCountTextView.text =
+                                            "Öğrenci Sayısı: " + studentList.size
+                                    }
+                                    studentList.sortBy { a ->
+                                        a.studentName
+                                    }
+                                    setupStudentRecyclerView(studentList)
 
-                db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .whereEqualTo("teacher", auth.uid.toString())
-                    .addSnapshotListener { documents, _ ->
+                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
-                        studentList.clear()
-                        if (documents != null) {
-                            for (document in documents) {
-                                val studentGrade = document.get("grade").toString().toInt()
-                                val studentName = document.get("nameAndSurname").toString()
-                                val teacher = document.get("teacher").toString()
-                                val id = document.get("id").toString()
-                                val currentStudent = Student(studentName, teacher, id, studentGrade)
-                                studentList.add(currentStudent)
+                                }
+                        } else {
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
+                                .whereEqualTo("grade", secilenGrade.toInt())
+                                .addSnapshotListener { documents, _ ->
 
-                            }
-                            binding.studentCountTextView.text =
-                                "Öğrenci Sayısı: " + studentList.size
+                                    studentList.clear()
+                                    if (documents != null) {
+                                        for (document in documents) {
+                                            val studentGrade =
+                                                document.get("grade").toString().toInt()
+                                            val studentName =
+                                                document.get("nameAndSurname").toString()
+                                            val teacher = document.get("teacher").toString()
+                                            val id = document.get("id").toString()
+                                            val currentStudent =
+                                                Student(studentName, teacher, id, studentGrade)
+                                            studentList.add(currentStudent)
+
+                                        }
+                                        binding.studentCountTextView.text =
+                                            "Öğrenci Sayısı: " + studentList.size
+                                    }
+                                    studentList.sortBy { a ->
+                                        a.studentName
+                                    }
+                                    setupStudentRecyclerView(studentList)
+
+                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+
+                                }
                         }
-                        studentList.sortBy { a ->
-                            a.studentName
-                        }
-                        setupStudentRecyclerView(studentList)
+                    }
 
-                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
 
                     }
+
+                }
+
+
+                val tarihAdapter = ArrayAdapter(
+                    this@MainActivity, R.layout.simple_spinner_item, zamanAraliklari
+                )
+                tarihAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                teacherSpinner.adapter = tarihAdapter
+                teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        secilenZaman = zamanAraliklari[p2]
+                        setupStudentRecyclerView(studentList)
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                    }
+
+                }
+
 
             }
 
@@ -343,7 +444,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerViewMyStudents.layoutManager = layoutManager
 
-        recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(list)
+        recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(list, secilenZaman)
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 

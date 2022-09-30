@@ -57,6 +57,39 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/teacherSpinnerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zaman_aral"
+                            android:textSize="18sp" />
+
+                        <Spinner
+                            android:id="@+id/studyZamanAraligiSpinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:spinnerMode="dialog"
+                            android:tooltipText="Alan Seçimi Yapınız"
+                            tools:ignore="UnusedAttribute" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/kocOgretmenTextView"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/ko_retmenin"
+                        android:visibility="gone" />
+
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -210,8 +243,31 @@
 
                     </EditText>
 
+
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/gradeSpinnerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/s_n_f"
+                        android:textSize="18sp" />
+
+                    <Spinner
+                        android:id="@+id/gradeSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dialog"
+                        android:tooltipText="Alan Seçimi Yapınız"
+                        tools:ignore="UnusedAttribute" />
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/myStudents"

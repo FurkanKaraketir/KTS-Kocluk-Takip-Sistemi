@@ -46,6 +46,8 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                         db.collection("School").document(kurumKodu.toString()).collection("Student")
                             .document(studentList[position].id)
                             .update("teacher", auth.uid.toString())
+                        db.collection("User").document(studentList[position].id)
+                            .update("teacher", auth.uid.toString())
                     }
                     addStudent.setNegativeButton("İPTAL") { _, _ ->
 

@@ -118,7 +118,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
+                    android:tooltipText="Alan Seçimi Yapınız"
+                    tools:ignore="UnusedAttribute" />
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -159,7 +160,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız" />
+                    android:tooltipText="Alan Seçimi Yapınız"
+                    tools:ignore="UnusedAttribute" />
             </LinearLayout>
 
 

@@ -12,12 +12,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.DenemelerTeacherRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityDenemelerTeacherBinding
+import com.karaketir.coachingapp.models.DenemeTeacher
 
 class DenemelerTeacherActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDenemelerTeacherBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private var denemelerList = ArrayList<String>()
+    private var denemelerList = ArrayList<DenemeTeacher>()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +53,9 @@ class DenemelerTeacherActivity : AppCompatActivity() {
                         if (value != null) {
                             denemelerList.clear()
                             for (deneme in value) {
-                                denemelerList.add(deneme.get("denemeAdi").toString())
+                                val currentDeneme =
+                                    DenemeTeacher(deneme.get("denemeAdi").toString(), deneme.id)
+                                denemelerList.add(currentDeneme)
                             }
                             recyclerViewAdapter.notifyDataSetChanged()
                         }

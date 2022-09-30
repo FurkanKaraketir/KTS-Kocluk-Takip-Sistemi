@@ -72,6 +72,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             val kurumKodu = it.get("kurumKodu").toString().toInt()
+            val grade = it.get("grade").toString().toInt()
 
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .document(auth.uid.toString()).get().addOnSuccessListener { ogrenci ->
@@ -80,7 +81,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     db.collection("School").document(kurumKodu.toString()).collection("Teacher")
                         .document(ogretmenID).collection("Denemeler")
                         .whereGreaterThan("bitisTarihi", cal.time).whereEqualTo("tür", studyType)
-                        .addSnapshotListener { value, error ->
+                        .whereEqualTo("grade", grade).addSnapshotListener { value, error ->
                             if (error != null) {
                                 println(error.localizedMessage)
                             }

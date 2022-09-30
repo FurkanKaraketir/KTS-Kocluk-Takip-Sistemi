@@ -12,9 +12,12 @@ import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
+import java.util.*
+import kotlin.collections.ArrayList
 
-open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) :
-    RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
+open class StudentsRecyclerAdapter(
+    private val studentList: ArrayList<Student>, private val secilenZaman: String
+) : RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
@@ -62,9 +65,51 @@ open class StudentsRecyclerAdapter(private val studentList: ArrayList<Student>) 
 
             binding.studentCard.setOnClickListener {
                 val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
+                intent.putExtra("secilenZaman", secilenZaman)
                 intent.putExtra("studentID", studentList[position].id)
                 holder.itemView.context.startActivity(intent)
             }
+
+            val cal = Calendar.getInstance()
+            cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+            cal.clear(Calendar.MINUTE)
+            cal.clear(Calendar.SECOND)
+            cal.clear(Calendar.MILLISECOND)
+
+            val baslangicTarihi = cal.time
+
+
+            cal.add(Calendar.DAY_OF_YEAR, 1)
+            val bitisTarihi = cal.time
+
+            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                val kurumKodu = it.get("kurumKodu").toString().toInt()
+
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentList[position].id).collection("Studies")
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, error ->
+                        if (error != null) {
+                            println(error.localizedMessage)
+                        }
+
+                        if (value != null) {
+
+                            if (value.isEmpty) {
+                                binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                            } else {
+                                binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                            }
+
+                        } else {
+                            binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                        }
+
+                    }
+
+            }
+
         }
     }
 

@@ -1,10 +1,12 @@
 package com.karaketir.coachingapp.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -56,6 +58,32 @@ class DenemelerRecyclerAdapter(
                 intent.putExtra("denemeStudentID", denemeList[position].denemeStudentID)
                 intent.putExtra("denemeTür", denemeList[position].denemeTur)
                 holder.itemView.context.startActivity(intent)
+            }
+            binding.denemeDeleteStudentButton.setOnClickListener {
+                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+
+                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteAlertDialog.setTitle("Deneme Sil")
+                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(denemeList[position].denemeStudentID).collection("Denemeler")
+                            .document(denemeList[position].denemeID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }
+
+                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
+
+                    }
+                    deleteAlertDialog.show()
+
+
+                }
             }
         }
 
