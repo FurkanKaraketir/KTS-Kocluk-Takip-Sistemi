@@ -63,6 +63,13 @@ class DenemeGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+            "Dün" -> {
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+
+            }
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time

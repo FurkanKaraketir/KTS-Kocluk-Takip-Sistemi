@@ -34,6 +34,28 @@
 
     </EditText>
 
+    <LinearLayout
+        android:id="@+id/gradeAllSpinnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/s_n_f"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/gradeAllSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"
+            android:tooltipText="Alan Seçimi Yapınız"
+            tools:ignore="UnusedAttribute" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAllStudents"
         android:layout_width="match_parent"

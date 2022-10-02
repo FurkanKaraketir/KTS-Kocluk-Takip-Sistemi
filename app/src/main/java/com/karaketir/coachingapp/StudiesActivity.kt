@@ -4,6 +4,8 @@ package com.karaketir.coachingapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
+import com.karaketir.coachingapp.services.FcmNotificationsSenderService
 import java.util.*
 
 
@@ -51,6 +54,10 @@ class StudiesActivity : AppCompatActivity() {
         val toplamSureText = binding.toplamSureText
         val toplamSoruText = binding.toplamSoruText
         val nameTextView = binding.studentNameForTeacher
+        val goodButton = binding.goodButton
+        val middleButton = binding.middleButton
+        val badButton = binding.badButton
+
         setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -71,6 +78,13 @@ class StudiesActivity : AppCompatActivity() {
 
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
+            }
+            "Dün" -> {
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+
             }
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
@@ -178,7 +192,10 @@ class StudiesActivity : AppCompatActivity() {
                                             iCozulen,
                                             iCalisma
                                         )
-                                        toplamSureText.text = toplamSure.toString() + "dk"
+                                        val toplamSureSaat = toplamSure.toFloat() / 60
+                                        toplamSureText.text = toplamSure.toString() + "dk " + "(${
+                                            toplamSureSaat.format(2)
+                                        } Saat)"
                                         toplamSoruText.text = "$toplamSoru Soru"
 
                                         studyList.add(currentClass)
@@ -196,6 +213,66 @@ class StudiesActivity : AppCompatActivity() {
 
 
 
+        goodButton.setOnClickListener {
+
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Çalışma Durumu")
+            alertDialog.setMessage("Çalışma Durumunu İyi Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("İyi") { _, _ ->
+                val notificationsSender = FcmNotificationsSenderService(
+                    "/topics/$studentID",
+                    "Çalışmanızın Durumu",
+                    "Çalışmanızın Durumu İyi Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    this
+                )
+                notificationsSender.sendNotifications()
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+            }
+            alertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            alertDialog.show()
+
+        }
+        middleButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Çalışma Durumu")
+            alertDialog.setMessage("Çalışma Durumunu Orta Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("Orta") { _, _ ->
+                val notificationsSender = FcmNotificationsSenderService(
+                    "/topics/$studentID",
+                    "Çalışmanızın Durumu",
+                    "Çalışmanızın Durumu Orta Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    this
+                )
+                notificationsSender.sendNotifications()
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+            }
+            alertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            alertDialog.show()
+        }
+        badButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Çalışma Durumu")
+            alertDialog.setMessage("Çalışma Durumunu Kötü Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("Kötü") { _, _ ->
+                val notificationsSender = FcmNotificationsSenderService(
+                    "/topics/$studentID",
+                    "Çalışmanızın Durumu",
+                    "Çalışmanızın Durumu Kötü Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    this
+                )
+                notificationsSender.sendNotifications()
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+
+            }
+            alertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            alertDialog.show()
+        }
 
         hedefTeacherButton.setOnClickListener {
             val intent2 = Intent(this, GoalsActivity::class.java)
@@ -232,4 +309,7 @@ class StudiesActivity : AppCompatActivity() {
         recyclerViewStudiesAdapter.notifyDataSetChanged()
 
     }
+
+    private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+
 }

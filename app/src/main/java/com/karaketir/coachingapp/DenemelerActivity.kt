@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,7 +39,7 @@ class DenemelerActivity : AppCompatActivity() {
     private var secilenZamanAraligi = ""
     private lateinit var studentID: String
     private val zamanAraliklari =
-        arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+        arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private val turler = arrayOf("Tüm Denemeler", "TYT", "AYT")
     private lateinit var layoutManager: GridLayoutManager
 
@@ -94,6 +95,19 @@ class DenemelerActivity : AppCompatActivity() {
 
                 when (position) {
                     0 -> {
+                        baslangicTarihi = cal.time
+
+
+                        cal.add(Calendar.DAY_OF_YEAR, 1)
+                        bitisTarihi = cal.time
+                    }
+                    1 -> {
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.DAY_OF_YEAR, -1)
+                        baslangicTarihi = cal.time
+                    }
+                    2 -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         baslangicTarihi = cal.time
 
@@ -102,7 +116,7 @@ class DenemelerActivity : AppCompatActivity() {
                         bitisTarihi = cal.time
 
                     }
-                    1 -> {
+                    3 -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         bitisTarihi = cal.time
 
@@ -112,7 +126,7 @@ class DenemelerActivity : AppCompatActivity() {
 
 
                     }
-                    2 -> {
+                    4 -> {
 
                         cal = Calendar.getInstance()
                         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -130,7 +144,7 @@ class DenemelerActivity : AppCompatActivity() {
 
 
                     }
-                    3 -> {
+                    5 -> {
                         cal = Calendar.getInstance()
                         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -147,7 +161,7 @@ class DenemelerActivity : AppCompatActivity() {
 
                     }
 
-                    4 -> {
+                    6 -> {
                         cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                         baslangicTarihi = cal.time
 
@@ -359,25 +373,43 @@ class DenemelerActivity : AppCompatActivity() {
 
         }
         denemeAddButton.setOnClickListener {
-            val popup = PopupMenu(applicationContext, it)
-            //inflate menu with layout mainmenu
-            popup.inflate(com.karaketir.coachingapp.R.menu.subject_context)
-            popup.show()
 
-            popup.setOnMenuItemClickListener { item ->
-                if (item.itemId == com.karaketir.coachingapp.R.id.TYT) {
-                    val intent = Intent(this, EnterTytActivity::class.java)
-                    intent.putExtra("studyType", "TYT")
-                    this.startActivity(intent)
-                }
+            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { user ->
+                val kurumKodu = user.get("kurumKodu").toString().toInt()
 
-                if (item.itemId == com.karaketir.coachingapp.R.id.AYT) {
-                    val intent = Intent(this, EnterTytActivity::class.java)
-                    intent.putExtra("studyType", "AYT")
-                    this.startActivity(intent)
-                }
-                false
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).get().addOnSuccessListener { student ->
+                        val teacherID = student.get("teacher").toString()
+                        if (teacherID.isNotEmpty()) {
+                            val popup = PopupMenu(applicationContext, it)
+                            //inflate menu with layout mainmenu
+                            popup.inflate(com.karaketir.coachingapp.R.menu.subject_context)
+                            popup.show()
+
+                            popup.setOnMenuItemClickListener { item ->
+                                if (item.itemId == com.karaketir.coachingapp.R.id.TYT) {
+                                    val intent = Intent(this, EnterTytActivity::class.java)
+                                    intent.putExtra("studyType", "TYT")
+                                    this.startActivity(intent)
+                                }
+
+                                if (item.itemId == com.karaketir.coachingapp.R.id.AYT) {
+                                    val intent = Intent(this, EnterTytActivity::class.java)
+                                    intent.putExtra("studyType", "AYT")
+                                    this.startActivity(intent)
+                                }
+                                false
+                            }
+                        } else {
+                            Toast.makeText(
+                                this, "Koç Öğretmeniniz Bulunmamaktadır.", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
             }
+
+
         }
 
     }

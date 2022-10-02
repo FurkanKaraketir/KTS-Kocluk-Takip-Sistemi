@@ -37,7 +37,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var statsList = ArrayList<Statistic>()
     private var ogrenciSayisi = 0
     private val zamanAraliklari =
-        arrayOf("Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+        arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +87,19 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         when (position) {
             0 -> {
+                baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+            1 -> {
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+            }
+            2 -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
 
@@ -95,7 +108,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 bitisTarihi = cal.time
 
             }
-            1 -> {
+            3 -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
 
@@ -105,7 +118,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
             }
-            2 -> {
+            4 -> {
 
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -123,7 +136,7 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
             }
-            3 -> {
+            5 -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -139,13 +152,15 @@ class StatsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 baslangicTarihi = cal.time
 
             }
-            4 -> {
+
+            6 -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
 
 
                 cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 bitisTarihi = cal.time
+
             }
         }
 

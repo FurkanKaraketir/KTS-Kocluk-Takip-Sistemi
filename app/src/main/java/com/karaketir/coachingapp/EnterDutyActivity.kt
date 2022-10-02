@@ -205,30 +205,66 @@ class EnterDutyActivity : AppCompatActivity() {
 
                                         if (!value.isEmpty) {
 
-                                            for (document in value) {
+                                            if (!stopper) {
+                                                for (document in value) {
 
-                                                val dutyUpdate = hashMapOf(
+                                                    val dutyUpdate = hashMapOf(
 
-                                                    "eklenmeTarihi" to Timestamp.now(),
-                                                    "toplamCalisma" to gorevToplamCalisma.text.toString()
-                                                        .toInt() + document.get("toplamCalisma")
-                                                        .toString().toInt(),
-                                                    "çözülenSoru" to gorevCozulenSoru.text.toString()
-                                                        .toInt() + document.get("çözülenSoru")
-                                                        .toString().toInt(),
-                                                    "bitisZamani" to c.time,
-                                                    "tamamlandi" to false
+                                                        "eklenmeTarihi" to Timestamp.now(),
+                                                        "toplamCalisma" to gorevToplamCalisma.text.toString()
+                                                            .toInt(),
+                                                        "çözülenSoru" to gorevCozulenSoru.text.toString()
+                                                            .toInt(),
+                                                        "bitisZamani" to c.time,
+                                                        "tamamlandi" to false
 
-                                                )
+                                                    )
 
-                                                stopper = true
+                                                    if (!stopper) {
+                                                        stopper = true
+
+                                                        db.collection("School")
+                                                            .document(kurumKodu.toString())
+                                                            .collection("Student")
+                                                            .document(studentID)
+                                                            .collection("Duties")
+                                                            .document(document.id)
+                                                            .update(dutyUpdate as Map<String, Any>)
+                                                            .addOnSuccessListener {
+
+                                                                if (!sended) {
+                                                                    val notificationsSender =
+                                                                        FcmNotificationsSenderService(
+                                                                            "/topics/$studentID",
+                                                                            "Yeni Görev",
+                                                                            "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                                            this
+                                                                        )
+                                                                    notificationsSender.sendNotifications()
+
+                                                                    Toast.makeText(
+                                                                        this,
+                                                                        "İşlem Başarılı",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                    sended = true
+                                                                }
+
+                                                                finish()
+                                                            }
+
+                                                    }
+                                                }
+                                            }
+
+
+                                        } else {
+                                            if (!stopper) {
                                                 db.collection("School")
                                                     .document(kurumKodu.toString())
                                                     .collection("Student").document(studentID)
-                                                    .collection("Duties").document(document.id)
-                                                    .update(dutyUpdate as Map<String, Any>)
-                                                    .addOnSuccessListener {
-
+                                                    .collection("Duties").document(documentID)
+                                                    .set(duty).addOnSuccessListener {
                                                         if (!sended) {
                                                             val notificationsSender =
                                                                 FcmNotificationsSenderService(
@@ -237,6 +273,7 @@ class EnterDutyActivity : AppCompatActivity() {
                                                                     "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
                                                                     this
                                                                 )
+                                                            stopper = true
                                                             notificationsSender.sendNotifications()
 
                                                             Toast.makeText(
@@ -249,62 +286,9 @@ class EnterDutyActivity : AppCompatActivity() {
 
                                                         finish()
                                                     }
-
-
                                             }
-
-                                        } else {
-                                            db.collection("School").document(kurumKodu.toString())
-                                                .collection("Student").document(studentID)
-                                                .collection("Duties").document(documentID).set(duty)
-                                                .addOnSuccessListener {
-                                                    if (!sended) {
-                                                        val notificationsSender =
-                                                            FcmNotificationsSenderService(
-                                                                "/topics/$studentID",
-                                                                "Yeni Görev",
-                                                                "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
-                                                                this
-                                                            )
-                                                        notificationsSender.sendNotifications()
-
-                                                        Toast.makeText(
-                                                            this,
-                                                            "İşlem Başarılı",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                        sended = true
-                                                    }
-
-                                                    finish()
-                                                }
                                         }
 
-                                    } else {
-
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Student").document(studentID)
-                                            .collection("Duties").document(documentID).set(duty)
-                                            .addOnSuccessListener {
-                                                if (!sended) {
-                                                    val notificationsSender =
-                                                        FcmNotificationsSenderService(
-                                                            "/topics/$studentID",
-                                                            "Yeni Görev",
-                                                            "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
-                                                            this
-                                                        )
-                                                    notificationsSender.sendNotifications()
-
-                                                    Toast.makeText(
-                                                        this, "İşlem Başarılı", Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    sended = true
-                                                }
-                                                finish()
-
-
-                                            }
                                     }
                                 }
                             }

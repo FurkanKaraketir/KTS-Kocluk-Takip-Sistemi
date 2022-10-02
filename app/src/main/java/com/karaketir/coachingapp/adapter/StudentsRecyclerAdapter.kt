@@ -70,18 +70,96 @@ open class StudentsRecyclerAdapter(
                 holder.itemView.context.startActivity(intent)
             }
 
-            val cal = Calendar.getInstance()
+            var cal = Calendar.getInstance()
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
             cal.clear(Calendar.MINUTE)
             cal.clear(Calendar.SECOND)
             cal.clear(Calendar.MILLISECOND)
 
-            val baslangicTarihi = cal.time
+            var baslangicTarihi = cal.time
+            var bitisTarihi = cal.time
 
 
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            val bitisTarihi = cal.time
+            when (secilenZaman) {
+
+                "Bugün" -> {
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.DAY_OF_YEAR, 1)
+                    bitisTarihi = cal.time
+                }
+                "Dün" -> {
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.DAY_OF_YEAR, -1)
+                    baslangicTarihi = cal.time
+
+                }
+                "Bu Hafta" -> {
+                    cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.WEEK_OF_YEAR, 1)
+                    bitisTarihi = cal.time
+
+                }
+                "Geçen Hafta" -> {
+                    cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                    bitisTarihi = cal.time
+
+
+                    cal.add(Calendar.DAY_OF_YEAR, -7)
+                    baslangicTarihi = cal.time
+
+
+                }
+                "Bu Ay" -> {
+
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    cal.set(Calendar.DAY_OF_MONTH, 1)
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.MONTH, 1)
+                    bitisTarihi = cal.time
+
+
+                }
+                "Geçen Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    cal.set(Calendar.DAY_OF_MONTH, 1)
+                    bitisTarihi = cal.time
+
+
+                    cal.add(Calendar.MONTH, -1)
+                    baslangicTarihi = cal.time
+
+                }
+                "Tüm Zamanlar" -> {
+                    cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                    baslangicTarihi = cal.time
+
+
+                    cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                    bitisTarihi = cal.time
+
+                }
+            }
 
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 val kurumKodu = it.get("kurumKodu").toString().toInt()

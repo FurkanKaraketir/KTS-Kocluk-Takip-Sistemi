@@ -35,6 +35,7 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
+
                         <TextView
                             android:id="@+id/helloTextView"
                             style="@style/TextAppearance.AppCompat.Title"
@@ -53,6 +54,13 @@
                             android:layout_marginStart="5dp"
                             android:text=""
                             android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/okulLogo"
+                            android:src="@drawable/logo"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="10dp" />
 
 
                     </LinearLayout>
@@ -321,5 +329,18 @@
         android:src="@drawable/ic_baseline_highlight_off_24">
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/okulName"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:gravity="center"
+            android:text="@string/recep_tayyip_erdo_an_anadolu_mam_hatip_lisesi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Body1"/>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

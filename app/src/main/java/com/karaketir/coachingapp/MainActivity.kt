@@ -1,9 +1,11 @@
 package com.karaketir.coachingapp
 
 //noinspection SuspiciousImport
+
 import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -31,7 +33,6 @@ import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
 import com.karaketir.coachingapp.models.Student
 import com.karaketir.coachingapp.models.Study
-
 import java.util.*
 
 
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private var secilenZaman = "Bugün"
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
     private val zamanAraliklari =
-        arrayOf("Bugün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+        arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
 
@@ -97,9 +98,23 @@ class MainActivity : AppCompatActivity() {
         val kocOgretmenTextView = binding.kocOgretmenTextView
         val teacherSpinnerLayout = binding.teacherSpinnerLayout
         val teacherSpinner = binding.studyZamanAraligiSpinner
+        val okulLogo = binding.okulLogo
+        val okulName = binding.okulName
+
+        okulLogo.setOnClickListener {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
+            startActivity(browserIntent)
+        }
+
+        okulName.setOnClickListener {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
+            startActivity(browserIntent)
+        }
+
         auth = Firebase.auth
         db = Firebase.firestore
-
         recyclerViewPreviousStudies = binding.previousStudies
         recyclerViewMyStudents = binding.myStudents
 

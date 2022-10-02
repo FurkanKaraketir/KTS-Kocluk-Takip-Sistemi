@@ -100,4 +100,8 @@
     <string name="deneme_s_n_f_d_zeyi">Deneme Sınıf Düzeyi</string>
     <string name="ko_retmenin">Koç Öğretmenin:</string>
     <string name="toplam">Toplam:</string>
+    <string name="yi">İyi</string>
+    <string name="orta">Orta</string>
+    <string name="k_t">Kötü</string>
+    <string name="recep_tayyip_erdo_an_anadolu_mam_hatip_lisesi">Recep Tayyip Erdoğan Anadolu İmam-Hatip Lisesi</string>
 </resources>

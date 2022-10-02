@@ -57,6 +57,7 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
                 }
             }
+            binding.studentGradeTextView.text = studentList[position].grade.toString()
 
 
         }
