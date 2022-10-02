@@ -141,11 +141,10 @@ class EnterStudyActivity : AppCompatActivity() {
                             "çözülenSoru" to currentTestsEditText.text.toString().toInt()
                         )
 
-                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         val baslangicTarihi = cal.time
 
 
-                        cal.add(Calendar.WEEK_OF_YEAR, 1)
+                        cal.add(Calendar.DAY_OF_YEAR, 1)
                         val bitisTarihi = cal.time
                         Toast.makeText(
                             this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT
