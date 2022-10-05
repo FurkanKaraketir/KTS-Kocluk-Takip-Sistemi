@@ -27,6 +27,22 @@ class ClassesActivity : AppCompatActivity() {
         val felsefe = binding.felsefe
         val din = binding.din
         val deneme = binding.deneme
+        val paragrafButton = binding.paragrafButton
+        val problemButton = binding.problemButton
+
+
+        paragrafButton.setOnClickListener {
+            val intent = Intent(this, AddPrgrphPrblmActivity::class.java)
+            intent.putExtra("dersAdi", "Paragraf")
+            this.startActivity(intent)
+        }
+
+        problemButton.setOnClickListener {
+            val intent = Intent(this, AddPrgrphPrblmActivity::class.java)
+            intent.putExtra("dersAdi", "Problem")
+            this.startActivity(intent)
+        }
+
 
         mathButton.setOnClickListener {
 

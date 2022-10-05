@@ -53,6 +53,24 @@
                     android:orientation="vertical">
 
                     <Button
+                        android:id="@+id/problemButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="15dp"
+                        android:text="@string/problem"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/paragrafButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="15dp"
+                        android:text="@string/paragraf"
+                        android:textSize="18sp" />
+
+                    <Button
                         android:id="@+id/mathButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="320dp"

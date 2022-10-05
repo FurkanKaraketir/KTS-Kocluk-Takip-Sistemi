@@ -24,7 +24,7 @@
     <string name="fizik">Fizik</string>
     <string name="ka_dakika_konu_al_t_n">Kaç Dakika Konu Çalıştın?</string>
     <string name="ka_tane_soru_zd_n">Kaç Tane Soru Çözdün?</string>
-    <string name="ka_dakika_testi_zd_n">Kaç Dakika Testi Çözdün?</string>
+    <string name="ka_dakika_testi_zd_n">Kaç Dakika Test Çözdün?</string>
     <string name="konu">Konu:</string>
     <string name="b_tt">BİTTİ</string>
     <string name="saya">Sayaç</string>
@@ -104,4 +104,6 @@
     <string name="orta">Orta</string>
     <string name="k_t">Kötü</string>
     <string name="recep_tayyip_erdo_an_anadolu_mam_hatip_lisesi">Recep Tayyip Erdoğan Anadolu İmam-Hatip Lisesi</string>
+    <string name="problem">Problem</string>
+    <string name="paragraf">Paragraf</string>
 </resources>

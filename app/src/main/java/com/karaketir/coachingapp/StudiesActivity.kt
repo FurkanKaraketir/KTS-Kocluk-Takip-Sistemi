@@ -19,6 +19,7 @@ import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class StudiesActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class StudiesActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewStudies: RecyclerView
     private var studyList = ArrayList<com.karaketir.coachingapp.models.Class>()
+    private var classList = ArrayList<String>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
@@ -157,7 +159,12 @@ class StudiesActivity : AppCompatActivity() {
             .addSnapshotListener { value, _ ->
                 if (value != null) {
                     studyList.clear()
+                    classList.clear()
                     for (i in value) {
+                        classList.add(i.id)
+                    }
+
+                    for (i in classList) {
                         var iCalisma = 0
                         var iCozulen = 0
                         db.collection("User").document(auth.uid.toString()).get()
@@ -165,7 +172,7 @@ class StudiesActivity : AppCompatActivity() {
                                 val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
                                 db.collection("School").document(kurumKodu.toString())
                                     .collection("Student").document(studentID).collection("Studies")
-                                    .whereEqualTo("dersAdi", i.id)
+                                    .whereEqualTo("dersAdi", i)
                                     .whereGreaterThan("timestamp", baslangicTarihi)
                                     .whereLessThan("timestamp", bitisTarihi)
                                     .addSnapshotListener { value, error ->
@@ -184,7 +191,7 @@ class StudiesActivity : AppCompatActivity() {
                                         toplamSoru += iCozulen
                                         toplamSure += iCalisma
                                         val currentClass = com.karaketir.coachingapp.models.Class(
-                                            i.id,
+                                            i,
                                             studentID,
                                             baslangicTarihi,
                                             bitisTarihi,
@@ -205,9 +212,9 @@ class StudiesActivity : AppCompatActivity() {
                                     }
 
                             }
-
-
                     }
+
+
                 }
             }
 

@@ -7,6 +7,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
+    private val handler = Handler(Looper.getMainLooper())
+
     private var studyList = ArrayList<Study>()
     private var secilenZaman = "Bugün"
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
@@ -98,9 +102,10 @@ class MainActivity : AppCompatActivity() {
         val kocOgretmenTextView = binding.kocOgretmenTextView
         val teacherSpinnerLayout = binding.teacherSpinnerLayout
         val teacherSpinner = binding.studyZamanAraligiSpinner
-        val okulLogo = binding.okulLogo
+        val okulLogo = binding.logoLayout
         val okulName = binding.okulName
 
+        var grade = 0
         okulLogo.setOnClickListener {
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
@@ -115,6 +120,12 @@ class MainActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         db = Firebase.firestore
+
+        nameAndSurnameTextView.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         recyclerViewPreviousStudies = binding.previousStudies
         recyclerViewMyStudents = binding.myStudents
 
@@ -179,7 +190,7 @@ class MainActivity : AppCompatActivity() {
 
         var visible = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            nameAndSurnameTextView.text = it.get("nameAndSurname").toString()
+            nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
             val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
             TransitionManager.beginDelayedTransition(transitionsContainer)
@@ -190,7 +201,7 @@ class MainActivity : AppCompatActivity() {
             if (it.get("personType").toString() == "Student") {
 
                 val cal = Calendar.getInstance()
-
+                grade = it.get("grade").toString().toInt()
                 addStudyButton.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.VISIBLE
 
@@ -451,6 +462,16 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
+        if (grade == 12 || grade == 0) {
+            handler.post(object : Runnable {
+                override fun run() {
+                    // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
+                    handler.postDelayed(this, 1000)
+                    updateTime()
+                }
+            })
+        }
+
 
     }
 
@@ -480,4 +501,30 @@ class MainActivity : AppCompatActivity() {
         this.startActivity(intent)
         finish()
     }
+
+    @SuppressLint("SetTextI18n")
+    fun updateTime() {
+        // Set Current Date
+        val currentDate = Calendar.getInstance()
+
+        val eventDate = Calendar.getInstance()
+        eventDate[Calendar.YEAR] = 2023
+        eventDate[Calendar.MONTH] = 5 // 0-11 so 1 less
+        eventDate[Calendar.DAY_OF_MONTH] = 17
+        eventDate[Calendar.HOUR] = 10
+        eventDate[Calendar.MINUTE] = 15
+        eventDate[Calendar.SECOND] = 0
+
+        val diff = eventDate.timeInMillis - currentDate.timeInMillis
+
+        val days = diff / (24 * 60 * 60 * 1000)
+        val hours = diff / (1000 * 60 * 60) % 24
+        val minutes = diff / (1000 * 60) % 60
+        val seconds = (diff / 1000) % 60
+
+        binding.YKSsayac.text = "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+
+    }
+
 }

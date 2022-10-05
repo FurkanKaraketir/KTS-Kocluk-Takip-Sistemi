@@ -15,7 +15,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityEnterStudyBinding
 import java.util.*
-import com.google.firebase.Timestamp
 
 @Suppress("UNCHECKED_CAST")
 class EnterStudyActivity : AppCompatActivity() {
@@ -96,6 +95,9 @@ class EnterStudyActivity : AppCompatActivity() {
         val currentTestsMinutesEditText = binding.currentTestsMinutesEditText
         val currentTestsEditText = binding.currentTestsEditText
 
+
+
+
         subjectTypeTitle.text = "Tür: $subjectType"
 
         textInputCurrentMinutes.hint = "Kaç Dakika Konu Çalıştın?"
@@ -108,17 +110,19 @@ class EnterStudyActivity : AppCompatActivity() {
         textInputCurrentTests.helperText = "Bu Konuda Kaç Tane Sorusu Çözdün?"
 
         studySaveButton.setOnClickListener {
+            studySaveButton.isClickable = false
             var stopper = false
             var stopper2 = false
             val cal = Calendar.getInstance()
+            val studyTime = Calendar.getInstance()
+            studyTime.add(Calendar.HOUR_OF_DAY, -3)
+
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
             cal.clear(Calendar.MINUTE)
             cal.clear(Calendar.SECOND)
             cal.clear(Calendar.MILLISECOND)
 
-
-            studySaveButton.isClickable = false
             if (currentMinutesEditText.text.toString().isNotEmpty()) {
                 currentMinutesEditText.error = null
 
@@ -129,10 +133,9 @@ class EnterStudyActivity : AppCompatActivity() {
                         currentTestsEditText.error = null
                         val study = hashMapOf(
                             "id" to documentID,
-                            "timestamp" to Timestamp.now(),
+                            "timestamp" to studyTime.time,
                             "konuAnlatımı" to currentMinutesEditText.text.toString().toInt(),
-                            "konuTestiDK" to currentTestsMinutesEditText.text.toString()
-                                .toInt(),
+                            "konuTestiDK" to currentTestsMinutesEditText.text.toString().toInt(),
                             "dersAdi" to dersAdi,
                             "tür" to subjectType,
                             "konuAdi" to secilenKonu,
@@ -166,7 +169,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                     for (document in value) {
                                                         val studyUpdate = hashMapOf(
                                                             "id" to document.id,
-                                                            "timestamp" to Timestamp.now(),
+                                                            "timestamp" to studyTime.time,
                                                             "konuAnlatımı" to currentMinutesEditText.text.toString()
                                                                 .toInt() + document.get("konuAnlatımı")
                                                                 .toString().toInt(),
@@ -205,14 +208,13 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                         .collection("Duties")
                                                                         .whereGreaterThan(
                                                                             "bitisZamani",
-                                                                            Timestamp.now()
+                                                                            studyTime.time
                                                                         ).whereEqualTo(
                                                                             "dersAdi", dersAdi
                                                                         ).whereEqualTo(
                                                                             "tür", subjectType
                                                                         ).whereEqualTo(
-                                                                            "konuAdi",
-                                                                            secilenKonu
+                                                                            "konuAdi", secilenKonu
                                                                         )
                                                                         .addSnapshotListener { value5, e5 ->
 
@@ -357,9 +359,8 @@ class EnterStudyActivity : AppCompatActivity() {
                                                         .document(kurumKodu.toString())
                                                         .collection("Student")
                                                         .document(auth.uid.toString())
-                                                        .collection("Studies")
-                                                        .document(documentID).set(study)
-                                                        .addOnSuccessListener {
+                                                        .collection("Studies").document(documentID)
+                                                        .set(study).addOnSuccessListener {
 
                                                             if (!stopper2) {
                                                                 db.collection("School")
@@ -369,7 +370,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                     .collection("Duties")
                                                                     .whereGreaterThan(
                                                                         "bitisZamani",
-                                                                        Timestamp.now()
+                                                                        studyTime.time
                                                                     ).whereEqualTo(
                                                                         "dersAdi", dersAdi
                                                                     ).whereEqualTo(
@@ -412,10 +413,9 @@ class EnterStudyActivity : AppCompatActivity() {
 
                                                                                         db.collection(
                                                                                             "School"
+                                                                                        ).document(
+                                                                                            kurumKodu.toString()
                                                                                         )
-                                                                                            .document(
-                                                                                                kurumKodu.toString()
-                                                                                            )
                                                                                             .collection(
                                                                                                 "Student"
                                                                                             )
@@ -535,15 +535,13 @@ class EnterStudyActivity : AppCompatActivity() {
                                                             .document(kurumKodu.toString())
                                                             .collection("Student")
                                                             .document(auth.uid.toString())
-                                                            .collection("Duties")
-                                                            .whereGreaterThan(
-                                                                "bitisZamani", Timestamp.now()
+                                                            .collection("Duties").whereGreaterThan(
+                                                                "bitisZamani", studyTime.time
                                                             ).whereEqualTo("dersAdi", dersAdi)
                                                             .whereEqualTo("tür", subjectType)
                                                             .whereEqualTo(
                                                                 "konuAdi", secilenKonu
-                                                            )
-                                                            .addSnapshotListener { value5, e5 ->
+                                                            ).addSnapshotListener { value5, e5 ->
                                                                 if (e5 != null) println(e5.localizedMessage)
 
                                                                 if (!stopper2) {
@@ -580,23 +578,20 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                 .addOnSuccessListener {
                                                                                     if (document5.get(
                                                                                             "toplamCalisma"
-                                                                                        )
-                                                                                            .toString()
+                                                                                        ).toString()
                                                                                             .toInt() - (currentMinutesEditText.text.toString()
                                                                                             .toInt() + currentTestsMinutesEditText.text.toString()
                                                                                             .toInt()) <= 0 && document5.get(
                                                                                             "çözülenSoru"
-                                                                                        )
-                                                                                            .toString()
+                                                                                        ).toString()
                                                                                             .toInt() - currentTestsEditText.text.toString()
                                                                                             .toInt() <= 0
                                                                                     ) {
                                                                                         db.collection(
                                                                                             "School"
+                                                                                        ).document(
+                                                                                            kurumKodu.toString()
                                                                                         )
-                                                                                            .document(
-                                                                                                kurumKodu.toString()
-                                                                                            )
                                                                                             .collection(
                                                                                                 "Student"
                                                                                             )
