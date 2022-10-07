@@ -462,15 +462,14 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
-        if (grade == 12 || grade == 0) {
-            handler.post(object : Runnable {
-                override fun run() {
-                    // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
-                    handler.postDelayed(this, 1000)
-                    updateTime()
-                }
-            })
-        }
+
+        handler.post(object : Runnable {
+            override fun run() {
+                // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
+                handler.postDelayed(this, 1000)
+                updateTime(grade)
+            }
+        })
 
 
     }
@@ -503,15 +502,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    fun updateTime() {
-        // Set Current Date
+    fun updateTime(grade: Int) {
+
         val currentDate = Calendar.getInstance()
 
         val eventDate = Calendar.getInstance()
-        eventDate[Calendar.YEAR] = 2023
+        when (grade) {
+            12, 0 -> {
+                eventDate[Calendar.YEAR] = 2023
+            }
+            11 -> {
+                eventDate[Calendar.YEAR] = 2024
+            }
+            10 -> {
+                eventDate[Calendar.YEAR] = 2025
+            }
+            9 -> {
+                eventDate[Calendar.YEAR] = 2026
+            }
+        }
         eventDate[Calendar.MONTH] = 5 // 0-11 so 1 less
         eventDate[Calendar.DAY_OF_MONTH] = 17
-        eventDate[Calendar.HOUR] = 10
+        eventDate[Calendar.HOUR_OF_DAY] = 10
         eventDate[Calendar.MINUTE] = 15
         eventDate[Calendar.SECOND] = 0
 

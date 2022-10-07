@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 33
-        versionName "v0.9.33"
+        versionCode 34
+        versionName "v0.9.34"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

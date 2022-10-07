@@ -158,11 +158,15 @@ class EnterStudyActivity : AppCompatActivity() {
                                 kurumKodu = it2.get("kurumKodu").toString().toInt()
                                 db.collection("School").document(kurumKodu.toString())
                                     .collection("Student").document(auth.uid.toString())
-                                    .collection("Studies").whereEqualTo("konuAdi", secilenKonu)
+                                    .collection("Studies").whereEqualTo("dersAdi", dersAdi)
+                                    .whereEqualTo("tür", subjectType)
+                                    .whereEqualTo("konuAdi", secilenKonu)
                                     .whereGreaterThan("timestamp", baslangicTarihi)
                                     .whereLessThan("timestamp", bitisTarihi)
-                                    .addSnapshotListener { value, _ ->
-
+                                    .addSnapshotListener { value, error ->
+                                        if (error != null) {
+                                            println(error.localizedMessage)
+                                        }
                                         if (!stopper) {
                                             if (value != null) {
                                                 if (!value.isEmpty) {

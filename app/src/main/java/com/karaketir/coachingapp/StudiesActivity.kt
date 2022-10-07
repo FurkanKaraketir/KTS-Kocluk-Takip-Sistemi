@@ -56,9 +56,11 @@ class StudiesActivity : AppCompatActivity() {
         val toplamSureText = binding.toplamSureText
         val toplamSoruText = binding.toplamSoruText
         val nameTextView = binding.studentNameForTeacher
-        val goodButton = binding.goodButton
-        val middleButton = binding.middleButton
-        val badButton = binding.badButton
+        val fiveStarButton = binding.fiveStarButton
+        val fourStarButton = binding.fourStarButton
+        val treeStarButton = binding.threeStarButton
+        val twoStarButton = binding.twoStarButton
+        val oneStarButton = binding.oneStarButton
 
         setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
@@ -220,16 +222,16 @@ class StudiesActivity : AppCompatActivity() {
 
 
 
-        goodButton.setOnClickListener {
+        fiveStarButton.setOnClickListener {
 
             val alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu İyi Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("İyi") { _, _ ->
+            alertDialog.setMessage("Çalışma Durumunu 5 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("5 Yıldız") { _, _ ->
                 val notificationsSender = FcmNotificationsSenderService(
                     "/topics/$studentID",
                     "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu İyi Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    "Çalışmanızın Durumu 5 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
                     this
                 )
                 notificationsSender.sendNotifications()
@@ -241,15 +243,15 @@ class StudiesActivity : AppCompatActivity() {
             alertDialog.show()
 
         }
-        middleButton.setOnClickListener {
+        fourStarButton.setOnClickListener {
             val alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu Orta Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("Orta") { _, _ ->
+            alertDialog.setMessage("Çalışma Durumunu 4 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("4 Yıldız") { _, _ ->
                 val notificationsSender = FcmNotificationsSenderService(
                     "/topics/$studentID",
                     "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu Orta Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    "Çalışmanızın Durumu 4 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
                     this
                 )
                 notificationsSender.sendNotifications()
@@ -260,15 +262,58 @@ class StudiesActivity : AppCompatActivity() {
             }
             alertDialog.show()
         }
-        badButton.setOnClickListener {
+
+        treeStarButton.setOnClickListener {
             val alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu Kötü Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("Kötü") { _, _ ->
+            alertDialog.setMessage("Çalışma Durumunu 3 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("3 Yıldız") { _, _ ->
                 val notificationsSender = FcmNotificationsSenderService(
                     "/topics/$studentID",
                     "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu Kötü Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    "Çalışmanızın Durumu 3 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    this
+                )
+                notificationsSender.sendNotifications()
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+
+            }
+            alertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            alertDialog.show()
+        }
+
+        twoStarButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Çalışma Durumu")
+            alertDialog.setMessage("Çalışma Durumunu 2 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("2 Yıldız") { _, _ ->
+                val notificationsSender = FcmNotificationsSenderService(
+                    "/topics/$studentID",
+                    "Çalışmanızın Durumu",
+                    "Çalışmanızın Durumu 2 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                    this
+                )
+                notificationsSender.sendNotifications()
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+
+            }
+            alertDialog.setNegativeButton("İptal") { _, _ ->
+
+            }
+            alertDialog.show()
+        }
+
+        oneStarButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Çalışma Durumu")
+            alertDialog.setMessage("Çalışma Durumunu 1 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+            alertDialog.setPositiveButton("1 Yıldız") { _, _ ->
+                val notificationsSender = FcmNotificationsSenderService(
+                    "/topics/$studentID",
+                    "Çalışmanızın Durumu",
+                    "Çalışmanızın Durumu 1 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
                     this
                 )
                 notificationsSender.sendNotifications()

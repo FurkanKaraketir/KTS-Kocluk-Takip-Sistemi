@@ -3,9 +3,11 @@
 package com.karaketir.coachingapp.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -47,6 +49,7 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
             var kurumKodu: Int
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 kurumKodu = it.get("kurumKodu").toString().toInt()
+
                 binding.dutyKonuAdiTextView.text = dutyList[position].konuAdi
                 binding.dutyTurText.text = dutyList[position].tur
                 binding.dutyDersText.text = dutyList[position].dersAdi
@@ -85,6 +88,43 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
                         }
 
                     }
+
+                if (it.get("personType").toString() == "Student") {
+                    binding.deleteDutyButton.visibility = View.GONE
+                } else {
+                    binding.deleteDutyButton.visibility = View.VISIBLE
+                }
+
+                binding.deleteDutyButton.setOnClickListener {
+                    val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteDutyDialog.setTitle("Görev Sil")
+                    deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
+
+                    deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
+                        db.collection("User").document(auth.uid.toString()).get()
+                            .addOnSuccessListener {
+
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student").document(dutyList[position].studyOwnerID)
+                                    .collection("Duties").document(dutyList[position].dutyID)
+                                    .delete().addOnSuccessListener {
+                                        Toast.makeText(
+                                            holder.itemView.context,
+                                            "İşlem Başarılı!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                            }
+                    }
+                    deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
+
+                    }
+
+                    deleteDutyDialog.show()
+                }
+
+
             }
 
 
