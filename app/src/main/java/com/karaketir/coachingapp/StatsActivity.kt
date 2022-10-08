@@ -4,6 +4,8 @@ package com.karaketir.coachingapp
 import android.R
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -31,6 +33,7 @@ class StatsActivity : AppCompatActivity() {
     private lateinit var bitisTarihi: Date
     private lateinit var layoutManager: GridLayoutManager
     private var secilenZamanAraligi = ""
+    private val handler = Handler(Looper.getMainLooper())
     private var secilenGrade = ""
     private lateinit var recyclerViewStats: RecyclerView
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
@@ -446,6 +449,34 @@ class StatsActivity : AppCompatActivity() {
 
         }
 
+        handler.post(object : Runnable {
+            override fun run() {
+                // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
+                handler.postDelayed(this, 2000)
+                showSum()
+            }
+        })
+
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showSum() {
+        var toplamSure = 0f
+        var toplamSoru = 0f
+        if (statsList.isNotEmpty()){
+            for (i in statsList){
+                toplamSure += i.toplamCalisma.toFloat()
+                toplamSoru += i.cozulenSoru.toFloat()
+            }
+        }
+
+
+        val toplamSureSaat = toplamSure / 60
+        binding.toplamSure.text = toplamSure.format(2) + "dk " + "(${
+            toplamSureSaat.format(2)
+        } Saat)"
+        binding.toplamSoru.text = "${toplamSoru.format(2)} Soru"
     }
 
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)

@@ -53,9 +53,8 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/paragrafSaveButton"
-        style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"

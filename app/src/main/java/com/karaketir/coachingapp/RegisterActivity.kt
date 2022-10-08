@@ -100,23 +100,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                         0
                                     }
 
-                                    val kurumList = ArrayList<String>()
-                                    db.collection("School").addSnapshotListener { kurumlar, _ ->
-                                        if (kurumlar != null) {
-                                            for (kurum in kurumlar) {
-                                                kurumList.add(kurum.id)
-                                            }
-                                            if (kurumKoduEditText.text.toString() in kurumList) {
-                                                signUp(
-                                                    emailEditText.text.toString(),
-                                                    passwordEditText.text.toString(),
-                                                    kurumKoduEditText.text.toString().toInt()
-                                                )
-                                            } else {
-                                                kurumKoduEditText.error = "Kurum Kodunuz Hatalı"
-                                            }
-                                        }
-                                    }
+                                    signUp(
+                                        emailEditText.text.toString(),
+                                        passwordEditText.text.toString(),
+                                        kurumKoduEditText.text.toString().toInt()
+                                    )
 
 
                                 } else {

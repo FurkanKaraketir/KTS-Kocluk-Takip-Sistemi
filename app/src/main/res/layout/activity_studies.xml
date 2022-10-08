@@ -97,6 +97,7 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/toplam" />
 
                 <TextView
@@ -104,7 +105,8 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
                     android:text="" />
 
                 <TextView
@@ -112,6 +114,7 @@
                     style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="" />
             </LinearLayout>
 
@@ -142,32 +145,32 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
                         </LinearLayout>
@@ -194,29 +197,28 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
-
                         </LinearLayout>
 
 
@@ -241,23 +243,22 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
-
 
                         </LinearLayout>
 
@@ -283,17 +284,16 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
-
                         </LinearLayout>
 
 
@@ -318,8 +318,8 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:contentDescription="@string/add_something"
                                 android:src="@drawable/baseline_stars_24" />
                         </LinearLayout>

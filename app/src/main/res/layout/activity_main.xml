@@ -252,9 +252,11 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/search_bar_teacher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/studentCountTextView"
@@ -273,7 +275,7 @@
                         android:hint="@string/renci_ara"
                         android:inputType="text"
                         android:maxLength="40"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                     </EditText>
 

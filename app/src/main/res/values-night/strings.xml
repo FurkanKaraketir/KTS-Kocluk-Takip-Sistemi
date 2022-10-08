@@ -106,4 +106,7 @@
     <string name="recep_tayyip_erdo_an_anadolu_mam_hatip_lisesi">Recep Tayyip Erdoğan Anadolu İmam-Hatip Lisesi</string>
     <string name="problem">Problem</string>
     <string name="paragraf">Paragraf</string>
+    <string name="yeni_sim_ve_soyisim">Yeni İsim ve Soyisim</string>
+    <string name="sim">İsim:</string>
+    <string name="hesab_sil">Hesabı Sil</string>
 </resources>

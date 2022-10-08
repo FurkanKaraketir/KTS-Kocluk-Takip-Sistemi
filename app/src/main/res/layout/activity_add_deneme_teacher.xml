@@ -79,9 +79,8 @@
             tools:ignore="UnusedAttribute" />
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/denemeTarihSecButton"
-        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
@@ -90,9 +89,8 @@
         android:textSize="18sp"
         app:icon="@drawable/ic_baseline_timer_24" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/saveDeneme"
-        style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:layout_gravity="center"

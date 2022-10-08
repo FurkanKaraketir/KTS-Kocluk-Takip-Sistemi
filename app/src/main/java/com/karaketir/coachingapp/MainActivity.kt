@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         val kocOgretmenTextView = binding.kocOgretmenTextView
         val teacherSpinnerLayout = binding.teacherSpinnerLayout
         val teacherSpinner = binding.studyZamanAraligiSpinner
+        val searchBarTeacher = binding.searchBarTeacher
         val okulLogo = binding.logoLayout
         val okulName = binding.okulName
 
@@ -221,7 +222,7 @@ class MainActivity : AppCompatActivity() {
 
                         }
                     }
-
+                searchBarTeacher.visibility = View.GONE
                 gradeSpinnerLayout.visibility = View.GONE
                 teacherSpinnerLayout.visibility = View.GONE
                 studySearchEditText.visibility = View.VISIBLE
@@ -295,6 +296,7 @@ class MainActivity : AppCompatActivity() {
                 teacherSpinnerLayout.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.GONE
                 recyclerViewMyStudents.visibility = View.VISIBLE
+                searchBarTeacher.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE
                 teacherDenemeButton.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
@@ -537,6 +539,18 @@ class MainActivity : AppCompatActivity() {
         binding.YKSsayac.text = "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
 
 
+    }
+
+    override fun onResume() {
+
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            this.startActivity(intent)
+            finish()
+        }
+
+        super.onResume()
     }
 
 }
