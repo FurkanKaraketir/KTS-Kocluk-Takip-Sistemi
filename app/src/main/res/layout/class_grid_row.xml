@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dersAdiCard"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp">
 
@@ -55,6 +55,14 @@
             </TextView>
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/classIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/add_something" />
 
     </LinearLayout>
 

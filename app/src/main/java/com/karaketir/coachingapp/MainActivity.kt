@@ -512,19 +512,26 @@ class MainActivity : AppCompatActivity() {
         when (grade) {
             12, 0 -> {
                 eventDate[Calendar.YEAR] = 2023
+                eventDate[Calendar.MONTH] = 5
+                eventDate[Calendar.DAY_OF_MONTH] = 17
             }
             11 -> {
                 eventDate[Calendar.YEAR] = 2024
+                eventDate[Calendar.MONTH] = 5
+                eventDate[Calendar.DAY_OF_MONTH] = 15
             }
             10 -> {
                 eventDate[Calendar.YEAR] = 2025
+                eventDate[Calendar.MONTH] = 5
+                eventDate[Calendar.DAY_OF_MONTH] = 14
             }
             9 -> {
                 eventDate[Calendar.YEAR] = 2026
+                eventDate[Calendar.MONTH] = 5
+                eventDate[Calendar.DAY_OF_MONTH] = 13
             }
         }
-        eventDate[Calendar.MONTH] = 5 // 0-11 so 1 less
-        eventDate[Calendar.DAY_OF_MONTH] = 17
+
         eventDate[Calendar.HOUR_OF_DAY] = 10
         eventDate[Calendar.MINUTE] = 15
         eventDate[Calendar.SECOND] = 0

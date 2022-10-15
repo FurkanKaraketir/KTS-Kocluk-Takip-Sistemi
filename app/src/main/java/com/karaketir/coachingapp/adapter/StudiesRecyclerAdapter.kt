@@ -14,6 +14,7 @@ import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.StudentGraphActivity
 import com.karaketir.coachingapp.databinding.StudyGridRowBinding
 import com.karaketir.coachingapp.models.Study
+import java.text.SimpleDateFormat
 
 
 open class StudiesRecyclerAdapter(
@@ -34,11 +35,16 @@ open class StudiesRecyclerAdapter(
         return StudyHolder(view)
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onBindViewHolder(holder: StudyHolder, position: Int) {
         with(holder) {
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
+            val date = studyList[position].timestamp.toDate()
+            val sdf = SimpleDateFormat("EEEE")
+            val dayOfTheWeek = sdf.format(date)
+
+            binding.studyGridRowDayTextView.text = dayOfTheWeek
 
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
 

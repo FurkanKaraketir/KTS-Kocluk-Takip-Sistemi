@@ -48,8 +48,13 @@ class ClassesAdapter(private val classList: ArrayList<com.karaketir.coachingapp.
                 holder.itemView.context.startActivity(intent)
             }
             binding.toplamCalismaTextView.text = classList[position].toplamCalisma.toString() + "dk"
-            binding.soruSayisiTextView.text = classList[position].cozulenSoru.toString() + " Soru"
 
+            binding.soruSayisiTextView.text = classList[position].cozulenSoru.toString() + " Soru"
+            if (classList[position].toplamCalisma != 0 && classList[position].cozulenSoru != 0) {
+                binding.classIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+            }else{
+                binding.classIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
+            }
 
         }
     }
