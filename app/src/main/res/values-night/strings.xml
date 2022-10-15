@@ -110,4 +110,5 @@
     <string name="sim">İsim:</string>
     <string name="hesab_sil">Hesabı Sil</string>
     <string name="alt_ba_l_klar">Alt Başlıklar</string>
+    <string name="ortalama_toplam_net">Ortalama Toplam Net:</string>
 </resources>

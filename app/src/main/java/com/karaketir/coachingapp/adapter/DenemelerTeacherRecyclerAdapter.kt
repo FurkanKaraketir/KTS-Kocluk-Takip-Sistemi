@@ -1,6 +1,7 @@
 package com.karaketir.coachingapp.adapter
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.karaketir.coachingapp.R
+import com.karaketir.coachingapp.TestResultsShortActivity
 import com.karaketir.coachingapp.databinding.DenemelerTeacherRowBinding
 import com.karaketir.coachingapp.models.DenemeTeacher
 
@@ -65,6 +67,11 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
 
                 }
 
+            }
+            binding.fullDenemeCard.setOnClickListener {
+                val intent = Intent(holder.itemView.context, TestResultsShortActivity::class.java)
+                intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
+                holder.itemView.context.startActivity(intent)
             }
         }
 
