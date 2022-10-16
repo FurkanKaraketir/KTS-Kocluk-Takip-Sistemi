@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        auth = Firebase.auth
+        db = Firebase.firestore
+
 
         val nameAndSurnameTextView = binding.nameAndSurnameTextView
         val transitionsContainer = binding.transitionsContainer
@@ -105,6 +108,32 @@ class MainActivity : AppCompatActivity() {
         val searchBarTeacher = binding.searchBarTeacher
         val okulLogo = binding.logoLayout
         val okulName = binding.okulName
+        val updateLayout = binding.updateLayout
+        val updateButton = binding.updateButton
+
+        updateButton.setOnClickListener {
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=com.karaketir.coachingapp")
+            )
+            startActivity(browserIntent)
+        }
+
+        db.collection("VersionCode").document("60qzy2yuxMwCCau44HdF").get().addOnSuccessListener {
+            val myVersion = BuildConfig.VERSION_CODE
+            val latestVersion = it.get("latestVersion").toString().toInt()
+            if (myVersion != latestVersion) {
+                addStudyButton.visibility = View.GONE
+                signOutButton.visibility = View.GONE
+                updateLayout.visibility = View.VISIBLE
+
+            } else {
+                addStudyButton.visibility = View.VISIBLE
+                signOutButton.visibility = View.VISIBLE
+                updateLayout.visibility = View.GONE
+
+            }
+        }
 
         var grade = 0
         okulLogo.setOnClickListener {
@@ -118,9 +147,6 @@ class MainActivity : AppCompatActivity() {
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
             startActivity(browserIntent)
         }
-
-        auth = Firebase.auth
-        db = Firebase.firestore
 
         nameAndSurnameTextView.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
