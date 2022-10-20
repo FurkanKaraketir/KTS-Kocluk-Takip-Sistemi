@@ -15,6 +15,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityEnterStudyBinding
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("UNCHECKED_CAST")
 class EnterStudyActivity : AppCompatActivity() {
@@ -43,8 +44,12 @@ class EnterStudyActivity : AppCompatActivity() {
                 if (value != null) {
                     konuAdlari.clear()
                     for (document in value) {
-                        val konuAdi = document.get("konuAdi").toString()
-                        konuAdlari.add(konuAdi)
+                        val arrayType = document.get("arrayType") as ArrayList<String>
+                        if ("konu" in arrayType) {
+                            val konuAdi = document.get("konuAdi").toString()
+                            konuAdlari.add(konuAdi)
+                        }
+
                     }
                     val studyAdapter = ArrayAdapter(
                         this@EnterStudyActivity,

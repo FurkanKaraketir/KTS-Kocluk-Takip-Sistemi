@@ -103,7 +103,10 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
 
                         for (document in value2) {
 
-                            konuList.add(document.get("konuAdi").toString())
+                            val konuIndex = document.get("arrayType") as ArrayList<*>
+                            if ("deneme" in konuIndex) {
+                                konuList.add(document.get("konuAdi").toString())
+                            }
 
                         }
                         if (dersAdi == "Türkçe-Edebiyat") {

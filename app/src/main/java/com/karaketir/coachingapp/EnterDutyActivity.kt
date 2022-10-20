@@ -88,9 +88,16 @@ class EnterDutyActivity : AppCompatActivity() {
                                                 if (konularDocument != null) {
                                                     konuAdlari.clear()
                                                     for (konuAdi in konularDocument) {
-                                                        konuAdlari.add(
-                                                            konuAdi.get("konuAdi").toString()
-                                                        )
+
+                                                        val arrayType =
+                                                            konuAdi.get("arrayType") as ArrayList<*>
+                                                        if ("konu" in arrayType) {
+                                                            konuAdlari.add(
+                                                                konuAdi.get("konuAdi").toString()
+                                                            )
+                                                        }
+
+
                                                     }
 
 
