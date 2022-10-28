@@ -41,7 +41,7 @@ class StatsActivity : AppCompatActivity() {
     private var dersSureHash = hashMapOf<String, Float>()
     private var statsList = ArrayList<Statistic>()
     private var ogrenciSayisi = 0
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
 
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
@@ -464,8 +464,8 @@ class StatsActivity : AppCompatActivity() {
     private fun showSum() {
         var toplamSure = 0f
         var toplamSoru = 0f
-        if (statsList.isNotEmpty()){
-            for (i in statsList){
+        if (statsList.isNotEmpty()) {
+            for (i in statsList) {
                 toplamSure += i.toplamCalisma.toFloat()
                 toplamSoru += i.cozulenSoru.toFloat()
             }

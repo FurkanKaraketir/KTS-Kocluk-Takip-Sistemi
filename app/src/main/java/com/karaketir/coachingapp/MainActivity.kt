@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     private var studyList = ArrayList<Study>()
     private var secilenZaman = "Bugün"
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         db.collection("VersionCode").document("60qzy2yuxMwCCau44HdF").get().addOnSuccessListener {
             val myVersion = BuildConfig.VERSION_CODE
             val latestVersion = it.get("latestVersion").toString().toInt()
-            if (myVersion != latestVersion) {
+            if (myVersion < latestVersion) {
                 addStudyButton.visibility = View.GONE
                 signOutButton.visibility = View.GONE
                 updateLayout.visibility = View.VISIBLE

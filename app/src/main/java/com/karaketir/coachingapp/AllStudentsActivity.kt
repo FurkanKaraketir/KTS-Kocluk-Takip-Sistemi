@@ -29,7 +29,7 @@ class AllStudentsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAllStudentsBinding
     private lateinit var recyclerViewAllStudents: RecyclerView
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
     private var studentList = ArrayList<Student>()
     private lateinit var filteredList: ArrayList<Student>
 

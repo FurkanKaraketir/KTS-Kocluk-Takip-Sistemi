@@ -9,24 +9,21 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.karaketir.coachingapp.databinding.KonuYanlisEditTextRowBinding
+import com.karaketir.coachingapp.models.SubItem
 
 
 open class DenemeKonulariRecyclerAdapter(
-    private val konuListesi: ArrayList<String>,
-
-
-    ) : RecyclerView.Adapter<DenemeKonulariRecyclerAdapter.KonuHolder>() {
+    private val konuListesi: ArrayList<SubItem>, val dersAdi: String
+) : RecyclerView.Adapter<DenemeKonulariRecyclerAdapter.KonuHolder>() {
     private lateinit var db: FirebaseFirestore
     lateinit var auth: FirebaseAuth
     var toplamYanlis: Int = 0
     var isOnTextChanged = false
     var expAmtArray = ArrayList<String>()
-    var textviewTotalExpense: TextView? = null
     var konuHash = hashMapOf<String, Int>()
 
     class KonuHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -45,10 +42,7 @@ open class DenemeKonulariRecyclerAdapter(
         )
 
         val context = parent.context
-        val rootView = (context as Activity).window.decorView.findViewById<View>(R.id.content)
-        textviewTotalExpense =
-            rootView.findViewById<View>(com.karaketir.coachingapp.R.id.totalText) as TextView
-
+        (context as Activity).window.decorView.findViewById<View>(R.id.content)
 
         return KonuHolder(view)
     }
@@ -58,7 +52,7 @@ open class DenemeKonulariRecyclerAdapter(
             db = FirebaseFirestore.getInstance()
             auth = FirebaseAuth.getInstance()
 
-            binding.denemeKonuAdi.text = konuListesi[position]
+            binding.denemeKonuAdi.text = konuListesi[position].subItemTitle
 
 
             binding.denemeKonuYanlisEditText.addTextChangedListener(object : TextWatcher {
@@ -137,8 +131,6 @@ open class DenemeKonulariRecyclerAdapter(
                         for (i in expAmtArray) {
                             a += i.toInt()
                         }
-
-                        textviewTotalExpense?.text = "Toplam Yanlış: $a"
 
 
                     }
