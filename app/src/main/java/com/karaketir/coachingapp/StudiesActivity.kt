@@ -4,6 +4,7 @@ package com.karaketir.coachingapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +36,7 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
     private var studentID = ""
+    private var kurumKodu = 0
     private lateinit var layoutManager: GridLayoutManager
 
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
@@ -45,7 +47,9 @@ class StudiesActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         recyclerViewStudies = binding.recyclerViewStudies
-
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+            kurumKodu = it.get("kurumKodu").toString().toInt()
+        }
         layoutManager = GridLayoutManager(applicationContext, 2)
         val intent = intent
         studentID = intent.getStringExtra("studentID").toString()
@@ -78,12 +82,13 @@ class StudiesActivity : AppCompatActivity() {
 
             "Bugün" -> {
                 baslangicTarihi = cal.time
-
+                binding.starScroll.visibility = View.VISIBLE
 
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
             "Dün" -> {
+                binding.starScroll.visibility = View.VISIBLE
                 bitisTarihi = cal.time
 
                 cal.add(Calendar.DAY_OF_YEAR, -1)
@@ -171,7 +176,7 @@ class StudiesActivity : AppCompatActivity() {
                         var iCozulen = 0
                         db.collection("User").document(auth.uid.toString()).get()
                             .addOnSuccessListener {
-                                val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+                                kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
                                 db.collection("School").document(kurumKodu.toString())
                                     .collection("Student").document(studentID).collection("Studies")
                                     .whereEqualTo("dersAdi", i)
@@ -222,108 +227,24 @@ class StudiesActivity : AppCompatActivity() {
 
 
 
+
         fiveStarButton.setOnClickListener {
-
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu 5 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("5 Yıldız") { _, _ ->
-                val notificationsSender = FcmNotificationsSenderService(
-                    "/topics/$studentID",
-                    "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu 5 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                    this
-                )
-                notificationsSender.sendNotifications()
-                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-            }
-            alertDialog.setNegativeButton("İptal") { _, _ ->
-
-            }
-            alertDialog.show()
-
+            starFun(5)
         }
         fourStarButton.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu 4 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("4 Yıldız") { _, _ ->
-                val notificationsSender = FcmNotificationsSenderService(
-                    "/topics/$studentID",
-                    "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu 4 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                    this
-                )
-                notificationsSender.sendNotifications()
-                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-            }
-            alertDialog.setNegativeButton("İptal") { _, _ ->
-
-            }
-            alertDialog.show()
+            starFun(4)
         }
 
         treeStarButton.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu 3 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("3 Yıldız") { _, _ ->
-                val notificationsSender = FcmNotificationsSenderService(
-                    "/topics/$studentID",
-                    "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu 3 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                    this
-                )
-                notificationsSender.sendNotifications()
-                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-
-            }
-            alertDialog.setNegativeButton("İptal") { _, _ ->
-
-            }
-            alertDialog.show()
+            starFun(3)
         }
 
         twoStarButton.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu 2 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("2 Yıldız") { _, _ ->
-                val notificationsSender = FcmNotificationsSenderService(
-                    "/topics/$studentID",
-                    "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu 2 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                    this
-                )
-                notificationsSender.sendNotifications()
-                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-
-            }
-            alertDialog.setNegativeButton("İptal") { _, _ ->
-
-            }
-            alertDialog.show()
+            starFun(2)
         }
 
         oneStarButton.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Çalışma Durumu")
-            alertDialog.setMessage("Çalışma Durumunu 1 Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-            alertDialog.setPositiveButton("1 Yıldız") { _, _ ->
-                val notificationsSender = FcmNotificationsSenderService(
-                    "/topics/$studentID",
-                    "Çalışmanızın Durumu",
-                    "Çalışmanızın Durumu 1 Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                    this
-                )
-                notificationsSender.sendNotifications()
-                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-
-            }
-            alertDialog.setNegativeButton("İptal") { _, _ ->
-
-            }
-            alertDialog.show()
+            starFun(1)
         }
 
         hedefTeacherButton.setOnClickListener {
@@ -363,5 +284,67 @@ class StudiesActivity : AppCompatActivity() {
     }
 
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+
+    private fun starFun(yildisSayisi: Int) {
+
+        val now = Calendar.getInstance()
+
+
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Çalışma Durumu")
+        alertDialog.setMessage("Çalışma Durumunu $yildisSayisi Yıldız Olarak Değerlendirmek İstiyor musunuz?")
+        alertDialog.setPositiveButton("$yildisSayisi Yıldız") { _, _ ->
+
+            if (secilenZamanAraligi == "Bugün") {
+                val degerlendirmeHash = hashMapOf(
+                    "yildizSayisi" to yildisSayisi,
+                    "time" to now.time,
+                    "degerlendirmeDate" to now.time
+                )
+
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Degerlendirme").document()
+                    .set(degerlendirmeHash).addOnSuccessListener {
+                        val notificationsSender = FcmNotificationsSenderService(
+                            "/topics/$studentID",
+                            "Çalışmanızın Durumu",
+                            "Çalışmanızın Durumu $yildisSayisi Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                            this
+                        )
+                        notificationsSender.sendNotifications()
+                        Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+
+                    }
+            } else {
+                now.add(Calendar.DAY_OF_YEAR, -1)
+                val degerlendirmeHash = hashMapOf(
+                    "yildizSayisi" to yildisSayisi,
+                    "time" to Calendar.getInstance().time,
+                    "degerlendirmeDate" to now.time
+                )
+
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Degerlendirme").document()
+                    .set(degerlendirmeHash).addOnSuccessListener {
+                        val notificationsSender = FcmNotificationsSenderService(
+                            "/topics/$studentID",
+                            "Çalışmanızın Durumu",
+                            "Çalışmanızın Durumu $yildisSayisi Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
+                            this
+                        )
+                        notificationsSender.sendNotifications()
+                        Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+
+                    }
+            }
+
+        }
+        alertDialog.setNegativeButton("İptal") { _, _ ->
+
+        }
+        alertDialog.show()
+
+
+    }
 
 }

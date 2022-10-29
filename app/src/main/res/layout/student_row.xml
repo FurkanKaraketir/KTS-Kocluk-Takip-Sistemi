@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/studentCard"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="30dp">
 
@@ -12,6 +12,80 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/studentNameTextView"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:text=""
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:ignore="RelativeOverlap" />
+
+        <LinearLayout
+            android:id="@+id/fiveStarButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/studentNameTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/starOne"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/add_something"
+                android:src="@drawable/baseline_stars_24" />
+
+            <ImageView
+                android:id="@+id/starTwo"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/add_something"
+                android:src="@drawable/baseline_stars_24"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/starThree"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/add_something"
+                android:src="@drawable/baseline_stars_24"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/starFour"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/add_something"
+                android:src="@drawable/baseline_stars_24"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/starFive"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/add_something"
+                android:src="@drawable/baseline_stars_24"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/degerlendirmeDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/studentGradeTextView"
@@ -24,16 +98,6 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/studentNameTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text=""
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="RelativeOverlap" />
 
         <ImageView
             android:id="@+id/todayStudyImageView"

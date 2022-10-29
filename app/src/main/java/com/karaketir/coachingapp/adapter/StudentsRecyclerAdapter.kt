@@ -1,5 +1,6 @@
 package com.karaketir.coachingapp.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.view.LayoutInflater
@@ -8,10 +9,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,6 +35,7 @@ open class StudentsRecyclerAdapter(
         return StudentHolder(view)
     }
 
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onBindViewHolder(holder: StudentHolder, position: Int) {
         with(holder) {
             db = FirebaseFirestore.getInstance()
@@ -163,7 +168,6 @@ open class StudentsRecyclerAdapter(
 
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 val kurumKodu = it.get("kurumKodu").toString().toInt()
-
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(studentList[position].id).collection("Studies")
                     .whereGreaterThan("timestamp", baslangicTarihi)
@@ -186,7 +190,69 @@ open class StudentsRecyclerAdapter(
 
                     }
 
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentList[position].id).collection("Degerlendirme")
+                    .orderBy("degerlendirmeDate", Query.Direction.DESCENDING).limit(1)
+                    .addSnapshotListener { value, error ->
+
+                        if (error != null) {
+                            println(error.localizedMessage)
+                        }
+
+                        if (value != null) {
+                            if (value.isEmpty) {
+                                binding.fiveStarButton.visibility = View.GONE
+                            } else {
+                                binding.fiveStarButton.visibility = View.VISIBLE
+                                for (i in value) {
+                                    val tarih =
+                                        i.get("degerlendirmeDate") as com.google.firebase.Timestamp
+                                    val dateFormated =
+                                        SimpleDateFormat("dd/MM/yyyy").format(tarih.toDate())
+                                    binding.degerlendirmeDate.text = dateFormated
+                                    when (i.get("yildizSayisi").toString().toInt()) {
+                                        5 -> {
+                                            binding.starTwo.visibility = View.VISIBLE
+                                            binding.starThree.visibility = View.VISIBLE
+                                            binding.starFour.visibility = View.VISIBLE
+                                            binding.starFive.visibility = View.VISIBLE
+                                        }
+                                        4 -> {
+                                            binding.starTwo.visibility = View.VISIBLE
+                                            binding.starThree.visibility = View.VISIBLE
+                                            binding.starFour.visibility = View.VISIBLE
+                                            binding.starFive.visibility = View.GONE
+                                        }
+                                        3 -> {
+                                            binding.starTwo.visibility = View.VISIBLE
+                                            binding.starThree.visibility = View.VISIBLE
+                                            binding.starFour.visibility = View.GONE
+                                            binding.starFive.visibility = View.GONE
+
+                                        }
+                                        2 -> {
+                                            binding.starTwo.visibility = View.VISIBLE
+                                            binding.starThree.visibility = View.GONE
+                                            binding.starFour.visibility = View.GONE
+                                            binding.starFive.visibility = View.GONE
+                                        }
+                                        1 -> {
+                                            binding.starTwo.visibility = View.GONE
+                                            binding.starThree.visibility = View.GONE
+                                            binding.starFour.visibility = View.GONE
+                                            binding.starFive.visibility = View.GONE
+                                        }
+                                    }
+                                }
+                            }
+
+                        } else {
+                            binding.fiveStarButton.visibility = View.GONE
+                        }
+                    }
+
             }
+
 
         }
     }

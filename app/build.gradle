@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 40
-        versionName "v0.9.40"
+        versionCode 41
+        versionName "v0.9.41"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,7 +51,7 @@ dependencies {
 
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
 
-    implementation('com.google.firebase:firebase-auth-ktx') {
+    implementation('com.google.firebase:firebase-auth-ktx:21.1.0') {
         exclude module: "play-services-safetynet"
     }
 
@@ -59,11 +59,11 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
 
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.0'
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-perf-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.1'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.2.0'
 
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
     implementation 'com.github.iwgang:countdownview:2.1.6'

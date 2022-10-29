@@ -32,6 +32,9 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         val itemList: ArrayList<Item> = ArrayList()
+        binding.backButton.setOnClickListener {
+            finish()
+        }
 
         recyclerViewDenemeYanlisKonu = binding.recyclerViewDenemeYanlisKonu
         val konuList = ArrayList<String>()
