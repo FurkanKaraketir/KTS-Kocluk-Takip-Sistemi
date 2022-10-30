@@ -31,6 +31,7 @@ class DenemeGraphActivity : AppCompatActivity() {
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private var zamanAraligi = ""
+    private var denemeOwnerID = ""
     private var dersAdi = ""
     private var denemeTur = ""
 
@@ -45,7 +46,7 @@ class DenemeGraphActivity : AppCompatActivity() {
         db = Firebase.firestore
         denemeTur = intent.getStringExtra("denemeTür").toString()
         zamanAraligi = intent.getStringExtra("zamanAraligi").toString()
-        val denemeOwnerID = intent.getStringExtra("denemeOwnerID")
+        denemeOwnerID = intent.getStringExtra("denemeOwnerID").toString()
         dersAdi = intent.getStringExtra("dersAdi").toString()
 
 
@@ -136,7 +137,7 @@ class DenemeGraphActivity : AppCompatActivity() {
             kurumKodu = it.get("kurumKodu").toString().toInt()
 
             db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(denemeOwnerID!!).collection("Denemeler")
+                .document(denemeOwnerID).collection("Denemeler")
                 .whereEqualTo("denemeTür", denemeTur)
                 .whereGreaterThan("denemeTarihi", baslangicTarihi)
                 .whereLessThan("denemeTarihi", bitisTarihi)
@@ -212,9 +213,24 @@ class DenemeGraphActivity : AppCompatActivity() {
         val anyChartView = binding.anyChartDenemeView
 
 
+
+
+
         for (i in konuHashMap.keys) {
             data.add(ValueDataEntry(i, konuHashMap[i]))
+            /*val konuAltHash = hashMapOf<String, Int>()
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .document(denemeOwnerID).collection(dersAdi).document(i).collection("AltKonu")
+                .addSnapshotListener { value, error ->
+                    if (value != null) {
+                        for (l in value) {
+                            konuAltHash[l.get("konuAdi").toString()] =
+                                l.get("yanlisSayisi").toString().toInt()
+                        }
+                    }
+                }*/
         }
+
 
         val column: Column = cartesian.column(data)
 

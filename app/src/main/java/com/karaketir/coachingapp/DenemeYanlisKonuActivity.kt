@@ -2,6 +2,7 @@ package com.karaketir.coachingapp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,10 +57,15 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
 
                     for (document in value2) {
 
-                        val konuIndex = document.get("arrayType") as ArrayList<*>
-                        if ("deneme" in konuIndex) {
-                            konuList.add(document.id)
+                        try {
+                            val konuIndex = document.get("arrayType") as ArrayList<*>
+                            if ("deneme" in konuIndex) {
+                                konuList.add(document.id)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                         }
+
 
                     }
 

@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity() {
         val teacherSpinner = binding.studyZamanAraligiSpinner
         val searchBarTeacher = binding.searchBarTeacher
         val okulLogo = binding.logoLayout
-        val okulName = binding.okulName
         val updateLayout = binding.updateLayout
         val updateButton = binding.updateButton
 
@@ -137,12 +136,6 @@ class MainActivity : AppCompatActivity() {
 
         var grade = 0
         okulLogo.setOnClickListener {
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
-            startActivity(browserIntent)
-        }
-
-        okulName.setOnClickListener {
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
             startActivity(browserIntent)

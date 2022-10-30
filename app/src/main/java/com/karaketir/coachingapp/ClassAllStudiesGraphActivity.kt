@@ -2,6 +2,7 @@ package com.karaketir.coachingapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityClassAllStudiesGraphBinding
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ClassAllStudiesGraphActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClassAllStudiesGraphBinding
@@ -125,7 +127,16 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
             .addSnapshotListener { konular, _ ->
                 if (konular != null) {
                     for (konu in konular) {
-                        konuHash[konu.get("konuAdi").toString()] = 0
+                        try {
+                            val arrayType = konu.get("arrayType") as ArrayList<*>
+                            if ("konu" in arrayType) {
+                                konuHash[konu.get("konuAdi").toString()] = 0
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                        }
+
+
                     }
                     db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                         val kurumKodu = it.get("kurumKodu").toString().toInt()

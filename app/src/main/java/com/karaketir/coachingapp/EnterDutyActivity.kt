@@ -89,12 +89,21 @@ class EnterDutyActivity : AppCompatActivity() {
                                                     konuAdlari.clear()
                                                     for (konuAdi in konularDocument) {
 
-                                                        val arrayType =
-                                                            konuAdi.get("arrayType") as ArrayList<*>
-                                                        if ("konu" in arrayType) {
-                                                            konuAdlari.add(
-                                                                konuAdi.get("konuAdi").toString()
-                                                            )
+                                                        try {
+                                                            val arrayType =
+                                                                konuAdi.get("arrayType") as ArrayList<*>
+                                                            if ("konu" in arrayType) {
+                                                                konuAdlari.add(
+                                                                    konuAdi.get("konuAdi")
+                                                                        .toString()
+                                                                )
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            Toast.makeText(
+                                                                this@EnterDutyActivity,
+                                                                e.localizedMessage,
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
                                                         }
 
 

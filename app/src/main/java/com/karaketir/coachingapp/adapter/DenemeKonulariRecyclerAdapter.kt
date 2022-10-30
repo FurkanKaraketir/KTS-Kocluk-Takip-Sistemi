@@ -21,7 +21,6 @@ open class DenemeKonulariRecyclerAdapter(
 ) : RecyclerView.Adapter<DenemeKonulariRecyclerAdapter.KonuHolder>() {
     private lateinit var db: FirebaseFirestore
     lateinit var auth: FirebaseAuth
-    var toplamYanlis: Int = 0
     var isOnTextChanged = false
     var expAmtArray = ArrayList<String>()
     var konuHash = hashMapOf<String, Int>()
@@ -71,65 +70,14 @@ open class DenemeKonulariRecyclerAdapter(
 
                         try {
 
-                            toplamYanlis = 0
-                            var i = 0
-                            while (i <= position) {
-
-                                if (i != position) {
-                                    expAmtArray.add("0")
-                                } else {
-                                    expAmtArray.add("0")
-                                    expAmtArray[position] = p0.toString()
-                                    konuHash[binding.denemeKonuAdi.text.toString()] =
-                                        p0.toString().toInt()
-                                    break
-                                }
-
-                                i += 1
-                            }
-
-                            var j = 0
-                            while (j <= expAmtArray.size - 1) {
-
-                                val tempTotalExpenase = expAmtArray[i].toInt()
-                                toplamYanlis += tempTotalExpenase
-
-
-                                j += 1
-                            }
+                            konuHash[binding.denemeKonuAdi.text.toString()] = p0.toString().toInt()
 
 
                         } catch (e: Exception) {
 
-                            toplamYanlis = 0
-
-                            var i = 0
-
-                            while (i <= position) {
-
-                                if (i == position) {
-                                    expAmtArray[position] = "0"
-                                    konuHash[binding.denemeKonuAdi.text.toString()] = 0
-
-                                }
-
-                                i += 1
-
-                            }
-                            var j = 0
-                            while (j <= expAmtArray.size - 1) {
-
-                                val tempTotalExpenase = expAmtArray[i].toInt()
-                                toplamYanlis += tempTotalExpenase
+                            konuHash[binding.denemeKonuAdi.text.toString()] = 0
 
 
-                                j += 1
-                            }
-
-                        }
-                        var a = 0
-                        for (i in expAmtArray) {
-                            a += i.toInt()
                         }
 
 

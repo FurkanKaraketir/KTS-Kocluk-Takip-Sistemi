@@ -44,11 +44,16 @@ class EnterStudyActivity : AppCompatActivity() {
                 if (value != null) {
                     konuAdlari.clear()
                     for (document in value) {
-                        val arrayType = document.get("arrayType") as ArrayList<String>
-                        if ("konu" in arrayType) {
-                            val konuAdi = document.get("konuAdi").toString()
-                            konuAdlari.add(konuAdi)
+                        try {
+                            val arrayType = document.get("arrayType") as ArrayList<String>
+                            if ("konu" in arrayType) {
+                                val konuAdi = document.get("konuAdi").toString()
+                                konuAdlari.add(konuAdi)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                         }
+
 
                     }
                     val studyAdapter = ArrayAdapter(

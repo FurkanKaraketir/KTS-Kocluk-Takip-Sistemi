@@ -359,20 +359,6 @@
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/okulName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <TextView
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/recep_tayyip_erdo_an_anadolu_mam_hatip_lisesi" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
         android:id="@+id/updateLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
