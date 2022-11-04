@@ -134,6 +134,15 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
+                            <Button
+                                android:id="@+id/previousRatingsButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/de_erlendirmeler"
+                                android:visibility="gone"
+                                app:icon="@drawable/baseline_stars_24" />
 
                             <Button
                                 android:id="@+id/studentDenemeButton"

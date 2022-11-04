@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = binding.signOutButton
         val sayacButton = binding.sayacButton
         val gorevButton = binding.gorevButton
+        val previousRatingsButton = binding.previousRatingsButton
         val allStudentsBtn = binding.allStudentsBtn
         val searchEditText = binding.searchStudentMainActivityEditText
         val studySearchEditText = binding.searchStudyEditText
@@ -246,6 +247,7 @@ class MainActivity : AppCompatActivity() {
                 teacherSpinnerLayout.visibility = View.GONE
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
+                previousRatingsButton.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.VISIBLE
                 teacherDenemeButton.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.VISIBLE
@@ -317,6 +319,7 @@ class MainActivity : AppCompatActivity() {
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 searchBarTeacher.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE
+                previousRatingsButton.visibility = View.GONE
                 teacherDenemeButton.visibility = View.VISIBLE
                 allStudentsBtn.visibility = View.VISIBLE
                 addStudyButton.visibility = View.GONE
@@ -429,6 +432,12 @@ class MainActivity : AppCompatActivity() {
             sayacVisible = !sayacVisible
             contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE
 
+        }
+
+
+        previousRatingsButton.setOnClickListener {
+            val intent = Intent(this, PreviousRatingsActivity::class.java)
+            this.startActivity(intent)
         }
 
         studentDenemeButton.setOnClickListener {
