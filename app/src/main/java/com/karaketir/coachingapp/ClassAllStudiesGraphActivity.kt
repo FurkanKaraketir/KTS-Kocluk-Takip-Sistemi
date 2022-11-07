@@ -158,8 +158,11 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                                         val konuAdi = i.get("konuAdi").toString()
                                         val currentValue = konuHash[konuAdi]
 
-                                        konuHash[konuAdi] = i.get("toplamCalisma").toString()
-                                            .toInt() + currentValue!!
+                                        if (i.get("toplamCalisma") != null && currentValue != null) {
+                                            konuHash[konuAdi] = i.get("toplamCalisma").toString()
+                                                .toInt() + currentValue
+                                        }
+
                                     }
 
 
