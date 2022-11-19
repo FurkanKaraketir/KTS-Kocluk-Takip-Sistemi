@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.karaketir.coachingapp.DenemeTeacherEditActivity
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.TestResultsShortActivity
 import com.karaketir.coachingapp.databinding.DenemelerTeacherRowBinding
@@ -70,6 +71,13 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
             }
             binding.fullDenemeCard.setOnClickListener {
                 val intent = Intent(holder.itemView.context, TestResultsShortActivity::class.java)
+                intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
+                holder.itemView.context.startActivity(intent)
+            }
+
+            binding.denemeEditButton.setOnClickListener {
+                val intent = Intent(holder.itemView.context, DenemeTeacherEditActivity::class.java)
+                intent.putExtra("denemeID", denemeList[position].denemeID)
                 intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
                 holder.itemView.context.startActivity(intent)
             }

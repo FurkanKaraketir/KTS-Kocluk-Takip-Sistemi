@@ -9,16 +9,33 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/denemelerTitleCard"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:cardCornerRadius="10dp">
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
             android:gravity="center"
-            android:text="@string/denemeler" />
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/denemeler" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/sonu_lar_g_r_nt_lemek_in_deneme_smine_t_klay_n" />
+
+        </LinearLayout>
+
 
     </androidx.cardview.widget.CardView>
 

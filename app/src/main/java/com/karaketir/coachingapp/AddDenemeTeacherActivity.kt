@@ -50,7 +50,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
 
 
             val dpd = DatePickerDialog(this, { _, year2, monthOfYear, dayOfMonth ->
-                tarihSecButton.text = ("Bitiş Tarihi: $dayOfMonth/$monthOfYear/$year2")
+                tarihSecButton.text = ("Bitiş Tarihi: $dayOfMonth/${monthOfYear + 1}/$year2")
                 c.set(year2, monthOfYear, dayOfMonth, 0, 0, 0)
             }, year, month, day)
 

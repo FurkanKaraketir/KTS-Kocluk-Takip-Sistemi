@@ -114,4 +114,6 @@
     <string name="uygulamay_g_ncellemeniz_gerekmektedir">Uygulamayı Güncellemeniz Gerekmektedir.</string>
     <string name="g_ncellemek_in_t_klay_n">Güncellemek İçin Tıklayın</string>
     <string name="de_erlendirmeler">Değerlendirmeler</string>
+    <string name="deneme_son_tarih">Bitiş Tarihi:</string>
+    <string name="sonu_lar_g_r_nt_lemek_in_deneme_smine_t_klay_n">Sonuçları Görüntülemek İçin Deneme İsmine Tıklayın</string>
 </resources>
