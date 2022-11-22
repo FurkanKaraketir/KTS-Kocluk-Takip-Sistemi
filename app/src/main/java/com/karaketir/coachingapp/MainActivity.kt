@@ -265,6 +265,18 @@ class MainActivity : AppCompatActivity() {
                 cal.clear(Calendar.MINUTE)
                 cal.clear(Calendar.SECOND)
                 cal.clear(Calendar.MILLISECOND)
+                if (auth.currentUser != null) {
+
+                    // furkankaraketir2005@gmail.com - hozgumus31@gmail.com
+                    if (auth.currentUser!!.email.toString() == "hozgumus31@gmail.com") {
+                        signOutButton.visibility = View.GONE
+                        binding.imageHalit.visibility = View.VISIBLE
+                    } else {
+                        signOutButton.visibility = View.VISIBLE
+                        binding.imageHalit.visibility = View.GONE
+                    }
+
+                }
 
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 val baslangicTarihi = cal.time
@@ -491,7 +503,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("studentID", auth.uid)
             this.startActivity(intent)
         }
-
 
         handler.post(object : Runnable {
             override fun run() {

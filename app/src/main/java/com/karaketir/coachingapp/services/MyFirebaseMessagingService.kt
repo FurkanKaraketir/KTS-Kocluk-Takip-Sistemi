@@ -39,8 +39,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             builder.setSmallIcon(R.drawable.ic_baseline_book_24)
         }
         val resultIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent =
-            PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent: PendingIntent? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_MUTABLE)
+        } else {
+            PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_ONE_SHOT)
+        }
         builder.setContentTitle(remoteMessage.notification!!.title)
         builder.setContentText(remoteMessage.notification!!.body)
         builder.setVibrate(longArrayOf(300, 300))
