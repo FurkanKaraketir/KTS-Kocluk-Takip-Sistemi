@@ -27,6 +27,7 @@ class ClassesActivity : AppCompatActivity() {
         val felsefe = binding.felsefe
         val din = binding.din
         val deneme = binding.deneme
+        val denemeAsil = binding.denemeAsil
         val paragrafButton = binding.paragrafButton
         val problemButton = binding.problemButton
 
@@ -301,6 +302,29 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Diğer")
+                    intent.putExtra("studyType", "AYT")
+                    this.startActivity(intent)
+                }
+                false
+            }
+        }
+        denemeAsil.setOnClickListener {
+            val popup = PopupMenu(applicationContext, it)
+            //inflate menu with layout mainmenu
+            popup.inflate(R.menu.subject_context)
+            popup.show()
+
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.TYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Denemeler")
+                    intent.putExtra("studyType", "TYT")
+                    this.startActivity(intent)
+                }
+
+                if (item.itemId == R.id.AYT) {
+                    val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("dersAdi", "Denemeler")
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
