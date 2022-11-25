@@ -35,6 +35,8 @@ import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
 import com.karaketir.coachingapp.models.Student
 import com.karaketir.coachingapp.models.Study
+import com.karaketir.coachingapp.services.glide
+import com.karaketir.coachingapp.services.placeHolderYap
 import java.util.*
 
 
@@ -81,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
-
         val nameAndSurnameTextView = binding.nameAndSurnameTextView
         val transitionsContainer = binding.transitionsContainer
         val sayacContainer = binding.sayacContainer
@@ -110,6 +111,13 @@ class MainActivity : AppCompatActivity() {
         val okulLogo = binding.logoLayout
         val updateLayout = binding.updateLayout
         val updateButton = binding.updateButton
+
+        db.collection("UserPhotos").document(auth.uid.toString()).get().addOnSuccessListener {
+            binding.imageHalit.glide(
+                it.get("photoURL").toString(), placeHolderYap(applicationContext)
+            )
+        }
+
 
         updateButton.setOnClickListener {
             val browserIntent = Intent(
@@ -265,18 +273,6 @@ class MainActivity : AppCompatActivity() {
                 cal.clear(Calendar.MINUTE)
                 cal.clear(Calendar.SECOND)
                 cal.clear(Calendar.MILLISECOND)
-                if (auth.currentUser != null) {
-
-                    // furkankaraketir2005@gmail.com - hozgumus31@gmail.com
-                    if (auth.currentUser!!.email.toString() == "hozgumus31@gmail.com") {
-                        signOutButton.visibility = View.GONE
-                        binding.imageHalit.visibility = View.VISIBLE
-                    } else {
-                        signOutButton.visibility = View.VISIBLE
-                        binding.imageHalit.visibility = View.GONE
-                    }
-
-                }
 
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 val baslangicTarihi = cal.time

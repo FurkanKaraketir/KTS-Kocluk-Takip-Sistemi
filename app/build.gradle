@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 45
-        versionName "v0.9.45"
+        versionCode 46
+        versionName "v0.9.46"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,16 +58,20 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
+    implementation 'com.github.dhaval2404:imagepicker:2.1'
 
     implementation 'com.google.firebase:firebase-firestore-ktx:24.4.1'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.2'
     implementation 'com.google.firebase:firebase-perf-ktx:20.3.0'
+    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
     implementation 'com.github.iwgang:countdownview:2.1.6'
-
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.0'
     implementation 'com.android.volley:volley:1.2.1'

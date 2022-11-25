@@ -116,4 +116,8 @@
     <string name="de_erlendirmeler">Değerlendirmeler</string>
     <string name="deneme_son_tarih">Bitiş Tarihi:</string>
     <string name="sonu_lar_g_r_nt_lemek_in_deneme_smine_t_klay_n">Sonuçları Görüntülemek İçin Deneme İsmine Tıklayın</string>
+
+    <string name="sample_using_cropimageview">Sample using CropImageView</string>
+    <string name="sample_of_customactivity">Sample of CustomActivity</string>
+    <string name="sample_calling_cropimage">Sample calling CropImage</string>
 </resources>

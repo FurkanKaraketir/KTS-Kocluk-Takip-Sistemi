@@ -21,4 +21,10 @@
         <item name="windowSplashScreenIconBackgroundColor">#2357dd</item>
     </style>
 
+
+    <style name="Sample.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/design_default_color_primary</item>
+        <item name="android:textColor">@color/design_default_color_on_primary</item>
+    </style>
+
 </resources>
