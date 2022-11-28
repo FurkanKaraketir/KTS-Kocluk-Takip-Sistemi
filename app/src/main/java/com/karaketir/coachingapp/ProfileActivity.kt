@@ -11,11 +11,19 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.giphy.sdk.core.models.Media
+import com.giphy.sdk.ui.GPHContentType
+import com.giphy.sdk.ui.GPHSettings
+import com.giphy.sdk.ui.Giphy
+import com.giphy.sdk.ui.themes.GPHTheme
+import com.giphy.sdk.ui.themes.GridType
+import com.giphy.sdk.ui.views.GiphyDialogFragment
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -30,13 +38,15 @@ import com.karaketir.coachingapp.services.glide
 import com.karaketir.coachingapp.services.placeHolderYap
 
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private var istenen: String = ""
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var storage: FirebaseStorage
+    private lateinit var secilenGorsel: ImageView
     private lateinit var spaceRef: StorageReference
 
     @SuppressLint("SetTextI18n")
@@ -48,6 +58,13 @@ class ProfileActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         storage = Firebase.storage
+        db.collection("School").document("763455").collection("Student")
+            .document("1BfRKDOOQmb3FAJqv6IQZpWyqyt1").get().addOnSuccessListener {
+                Giphy.configure(this, it.get("giphyKey").toString())
+            }
+        val settings = GPHSettings(GridType.waterfall, GPHTheme.Dark)
+        settings.mediaTypeConfig = arrayOf(GPHContentType.gif)
+
 
         val storageRef = storage.reference
         val imagesRef = storageRef.child("userBackgroundPhotos")
@@ -60,6 +77,8 @@ class ProfileActivity : AppCompatActivity() {
         val nameText = binding.currentNameTextView
         val gradeText = binding.currentGradeTextView
         val nameChangeEditText = binding.changeNameEditText
+        val addPhoto = binding.addPhoto
+        secilenGorsel = binding.secilenGorsel
         val gradeChangeEditText = binding.changeGradeEditText
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
@@ -149,25 +168,54 @@ class ProfileActivity : AppCompatActivity() {
             alertDialog.show()
         }
 
-        binding.addPhoto.setOnClickListener {
-
-            if (ContextCompat.checkSelfPermission(
-                    this, READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                    this, CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                //İzin Verilmedi, iste
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(READ_EXTERNAL_STORAGE, CAMERA), 1
-                )
+        addPhoto.setOnClickListener {
 
 
-            } else {
-                ImagePicker.with(this@ProfileActivity)
-                    .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
-                    .start()
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("GIF ya da Resim")
+            alertDialog.setMessage("Seçim Yapınız")
+            alertDialog.setNegativeButton("GIF") { _, _ ->
+                GiphyDialogFragment.newInstance(settings)
+                    .show(supportFragmentManager, "giphy_dialog")
             }
+            alertDialog.setPositiveButton("Resim") { _, _ ->
+                if (ContextCompat.checkSelfPermission(
+                        this, READ_EXTERNAL_STORAGE
+                    ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                        this, CAMERA
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    //İzin Verilmedi, iste
+                    ActivityCompat.requestPermissions(
+                        this, arrayOf(READ_EXTERNAL_STORAGE, CAMERA), 1
+                    )
+
+
+                } else {
+                    ImagePicker.with(this@ProfileActivity)
+                        .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
+                        .start()
+                }
+                if (ContextCompat.checkSelfPermission(
+                        this, READ_EXTERNAL_STORAGE
+                    ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                        this, CAMERA
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    //İzin Verilmedi, iste
+                    ActivityCompat.requestPermissions(
+                        this, arrayOf(READ_EXTERNAL_STORAGE, CAMERA), 1
+                    )
+
+
+                } else {
+                    ImagePicker.with(this@ProfileActivity)
+                        .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
+                        .start()
+                }
+            }
+            alertDialog.show()
+
 
         }
 
@@ -187,7 +235,7 @@ class ProfileActivity : AppCompatActivity() {
             Activity.RESULT_OK -> {
                 //Image Uri will not be null for RESULT_OK
                 val uri: Uri = data?.data!!
-                binding.secilenGorsel.glide("", placeHolderYap(this))
+                secilenGorsel.glide("", placeHolderYap(this))
 
                 Toast.makeText(this, "Lütfen Bekleyiniz", Toast.LENGTH_SHORT).show()
 
@@ -205,7 +253,7 @@ class ProfileActivity : AppCompatActivity() {
                         db.collection("UserPhotos").document(auth.uid.toString()).set(refFile)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT).show()
-                                binding.secilenGorsel.setImageURI(uri)
+                                secilenGorsel.setImageURI(uri)
                             }
                     }
 
@@ -216,11 +264,50 @@ class ProfileActivity : AppCompatActivity() {
             ImagePicker.RESULT_ERROR -> {
                 Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
             }
-            else -> {
-                Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
-            }
         }
+
     }
 
+    override fun didSearchTerm(term: String) {
+
+    }
+
+    override fun onDismissed(selectedContentType: GPHContentType) {
+    }
+
+    override fun onGifSelected(
+        media: Media, searchTerm: String?, selectedContentType: GPHContentType
+    ) {
+
+        val url = media.embedUrl!!
+        val hepsi: List<String> = url.split('/')
+
+        istenen = hepsi[hepsi.size - 1]
+        val a = "https://media.giphy.com/media/$istenen/giphy.gif"
+        secilenGorsel.glide(a, placeHolderYap(this))
+        Toast.makeText(this, "Lütfen Bekleyiniz", Toast.LENGTH_SHORT).show()
+
+        val newData = hashMapOf("photoURL" to a)
+        db.collection("UserPhotos").document(auth.uid.toString()).set(newData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+            }
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        //İzin Yeni Verildi
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                ImagePicker.with(this@ProfileActivity)
+                    .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
+                    .start()
+            }
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
 }

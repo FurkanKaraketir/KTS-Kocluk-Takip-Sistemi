@@ -111,9 +111,10 @@ class MainActivity : AppCompatActivity() {
         val okulLogo = binding.logoLayout
         val updateLayout = binding.updateLayout
         val updateButton = binding.updateButton
+        val imageHalit = binding.imageHalit
 
         db.collection("UserPhotos").document(auth.uid.toString()).get().addOnSuccessListener {
-            binding.imageHalit.glide(
+            imageHalit.glide(
                 it.get("photoURL").toString(), placeHolderYap(applicationContext)
             )
         }

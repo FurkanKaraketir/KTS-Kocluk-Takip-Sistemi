@@ -92,11 +92,13 @@
 
                     <TextView
                         android:id="@+id/YKSsayac"
-                        style="@style/TextAppearance.AppCompat.Title"
+                        style="@style/mainMenuText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:shadowRadius="10"
+                        android:text="@string/add_something" />
 
                     <LinearLayout
                         android:id="@+id/teacherSpinnerLayout"
@@ -124,10 +126,11 @@
 
                     <TextView
                         android:id="@+id/kocOgretmenTextView"
-                        style="@style/TextAppearance.AppCompat.Body1"
+                        style="@style/bodyMenuText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
+                        android:shadowRadius="10"
                         android:text="@string/ko_retmenin"
                         android:visibility="gone" />
 
