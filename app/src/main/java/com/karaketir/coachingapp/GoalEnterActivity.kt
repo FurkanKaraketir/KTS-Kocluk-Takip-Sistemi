@@ -76,7 +76,7 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                         val data = hashMapOf(
                             "dersAdi" to secilenDers,
                             "toplamCalisma" to toplamCalisma.text.toString().toInt(),
-                            "çözülenSoru" to toplamCalisma.text.toString().toInt()
+                            "çözülenSoru" to cozulenSoru.text.toString().toInt()
                         )
 
                         db.collection("School").document(kurumKodu).collection("Student")

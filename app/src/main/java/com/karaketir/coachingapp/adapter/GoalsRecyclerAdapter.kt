@@ -1,9 +1,11 @@
 package com.karaketir.coachingapp.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -61,6 +63,40 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
 
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                 val kurumKodu = it.get("kurumKodu").toString().toInt()
+                if (it.get("personType").toString() == "Student") {
+                    binding.deleteGoalButton.visibility = View.GONE
+                } else {
+                    binding.deleteGoalButton.visibility = View.VISIBLE
+
+                    binding.deleteGoalButton.setOnClickListener {
+
+                        val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
+                        deleteDutyDialog.setTitle("Görev Sil")
+                        deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
+
+                        deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").document(goalList[position].studentOwnerID)
+                                .collection("HaftalikHedefler").document(goalList[position].goalID)
+                                .delete().addOnSuccessListener {
+                                    Toast.makeText(
+                                        holder.itemView.context,
+                                        "İşlem Başarılı!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                        }
+                        deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
+
+                        }
+
+                        deleteDutyDialog.show()
+
+                    }
+                }
+
+
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(goalList[position].studentOwnerID).collection("Studies")

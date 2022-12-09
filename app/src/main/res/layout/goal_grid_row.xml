@@ -97,6 +97,18 @@
             </ImageView>
         </LinearLayout>
 
+        <Button
+            android:id="@+id/deleteGoalButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/statusicon"
+            android:visibility="gone"
+            app:icon="@drawable/ic_baseline_remove_circle_outline_24">
+
+        </Button>
 
     </LinearLayout>
 
