@@ -110,12 +110,16 @@
                         android:visibility="gone">
 
                         <TextView
+                            android:shadowRadius="10"
+                            style="@style/bodyMenuText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/zaman_aral"
                             android:textSize="18sp" />
 
                         <Spinner
+                            android:shadowRadius="10"
+                            style="@style/bodyMenuText"
                             android:id="@+id/studyZamanAraligiSpinner"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"

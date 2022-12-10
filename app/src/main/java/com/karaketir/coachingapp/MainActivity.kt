@@ -5,6 +5,7 @@ package com.karaketir.coachingapp
 import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var mp: MediaPlayer
 
     private var studyList = ArrayList<Study>()
     private var secilenZaman = "Bugün"
@@ -114,11 +116,11 @@ class MainActivity : AppCompatActivity() {
         val imageHalit = binding.imageHalit
 
         db.collection("UserPhotos").document(auth.uid.toString()).get().addOnSuccessListener {
-            imageHalit.glide(
-                it.get("photoURL").toString(), placeHolderYap(applicationContext)
-            )
+            imageHalit.glide(it.get("photoURL").toString(), placeHolderYap(applicationContext))
+
         }
 
+        val dogumGunu = Calendar.getInstance()
 
         updateButton.setOnClickListener {
             val browserIntent = Intent(
@@ -127,6 +129,8 @@ class MainActivity : AppCompatActivity() {
             )
             startActivity(browserIntent)
         }
+
+
 
         db.collection("VersionCode").document("60qzy2yuxMwCCau44HdF").get().addOnSuccessListener {
             val myVersion = BuildConfig.VERSION_CODE
@@ -223,6 +227,7 @@ class MainActivity : AppCompatActivity() {
             nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
             val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
+
             TransitionManager.beginDelayedTransition(transitionsContainer)
             visible = !visible
             nameAndSurnameTextView.visibility = if (visible) View.VISIBLE else View.GONE
@@ -281,6 +286,31 @@ class MainActivity : AppCompatActivity() {
 
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 val bitisTarihi = cal.time
+
+                val email = it.get("email").toString()
+                db.collection("VersionCode").document("1sraIWibAFqiyzJHzxV5").get()
+                    .addOnSuccessListener { dogumGunuIt ->
+                        if (email == dogumGunuIt.get("email").toString()) {
+                            val dogumGunuBas = dogumGunuIt.get("dogumGunuBas") as Timestamp
+                            val dogumGunuSon = dogumGunuIt.get("dogumGunuSon") as Timestamp
+                            val photoURL = dogumGunuIt.get("photoURL").toString()
+
+
+
+                            if (dogumGunuBas.toDate() <= dogumGunu.time && dogumGunu.time <= dogumGunuSon.toDate()) {
+                                nameAndSurnameTextView.text =
+                                    "İyi ki Doğdun: " + it.get("nameAndSurname").toString()
+                                binding.YKSsayac.visibility = View.INVISIBLE
+                                okulLogo.visibility = View.INVISIBLE
+                                kocOgretmenTextView.visibility = View.INVISIBLE
+                                imageHalit.glide(photoURL, placeHolderYap(this))
+                                mp = MediaPlayer.create(this, com.karaketir.coachingapp.R.raw.halay)
+                                mp.isLooping = true
+                                mp.start()
+                            }
+
+                        }
+                    }
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
