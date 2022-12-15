@@ -38,103 +38,113 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
     override fun onBindViewHolder(holder: GoalHolder, position: Int) {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        if (position >= 0 && position < goalList.size) {
+            // code to access the element at the specified index
+            with(holder) {
+                binding.goalDersAdi.text = goalList[position].dersAdi
+                binding.hedefToplamCalisma.text =
+                    "Hedef Toplam Çalışma: " + goalList[position].toplamCalisma.toString() + "dk"
+                binding.hedefSoru.text =
+                    "Hedef Toplam Soru: " + goalList[position].cozulenSoru.toString()
+                val cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
-        with(holder) {
-            binding.goalDersAdi.text = goalList[position].dersAdi
-            binding.hedefToplamCalisma.text =
-                "Hedef Toplam Çalışma: " + goalList[position].toplamCalisma.toString() + "dk"
-            binding.hedefSoru.text =
-                "Hedef Toplam Soru: " + goalList[position].cozulenSoru.toString()
-            val cal = Calendar.getInstance()
-            cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
 
-            cal.clear(Calendar.MINUTE)
-            cal.clear(Calendar.SECOND)
-            cal.clear(Calendar.MILLISECOND)
-
-            cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-            val bitisTarihi = cal.time
-
-
-            cal.add(Calendar.DAY_OF_YEAR, -7)
-            val baslangicTarihi = cal.time
-            var toplamCalisma = 0
-            var cozulenSoru = 0
-
-            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                val kurumKodu = it.get("kurumKodu").toString().toInt()
-                if (it.get("personType").toString() == "Student") {
-                    binding.deleteGoalButton.visibility = View.GONE
-                } else {
-                    binding.deleteGoalButton.visibility = View.VISIBLE
-
-                    binding.deleteGoalButton.setOnClickListener {
-
-                        val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
-                        deleteDutyDialog.setTitle("Görev Sil")
-                        deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
-
-                        deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(goalList[position].studentOwnerID)
-                                .collection("HaftalikHedefler").document(goalList[position].goalID)
-                                .delete().addOnSuccessListener {
-                                    Toast.makeText(
-                                        holder.itemView.context,
-                                        "İşlem Başarılı!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-
-                        }
-                        deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
-
-                        }
-
-                        deleteDutyDialog.show()
-
-                    }
-                }
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                val bitisTarihi = cal.time
 
 
+                cal.add(Calendar.DAY_OF_YEAR, -7)
+                val baslangicTarihi = cal.time
+                var toplamCalisma = 0
+                var cozulenSoru = 0
 
-                db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .document(goalList[position].studentOwnerID).collection("Studies")
-                    .whereEqualTo("dersAdi", goalList[position].dersAdi)
-                    .whereGreaterThan("timestamp", baslangicTarihi)
-                    .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, _ ->
+                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                    val kurumKodu = it.get("kurumKodu").toString().toInt()
+                    if (it.get("personType").toString() == "Student") {
+                        binding.deleteGoalButton.visibility = View.GONE
+                    } else {
+                        binding.deleteGoalButton.visibility = View.VISIBLE
 
-                        if (value != null) {
+                        binding.deleteGoalButton.setOnClickListener {
 
-                            for (document in value) {
+                            val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
+                            deleteDutyDialog.setTitle("Görev Sil")
+                            deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
 
-                                toplamCalisma += document.get("toplamCalisma").toString().toInt()
-                                cozulenSoru += document.get("çözülenSoru").toString().toInt()
+                            deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student")
+                                    .document(goalList[position].studentOwnerID)
+                                    .collection("HaftalikHedefler")
+                                    .document(goalList[position].goalID).delete()
+                                    .addOnSuccessListener {
+                                        Toast.makeText(
+                                            holder.itemView.context,
+                                            "İşlem Başarılı!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                            }
+                            deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
 
                             }
 
-                        }
-                        println(toplamCalisma.toString())
-                        binding.haftaToplamCalisma.text =
-                            "Geçen Hafta Toplam Çalışma: $toplamCalisma" + "dk"
-                        if (toplamCalisma < goalList[position].toplamCalisma) {
-                            binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                        } else {
-                            binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
-                        }
+                            deleteDutyDialog.show()
 
-                        if (cozulenSoru < goalList[position].cozulenSoru) {
-                            binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                        } else {
-                            binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                         }
-                        binding.haftaSoru.text = "Geçen Hafta Toplam Soru: $cozulenSoru"
-
                     }
+
+
+
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(goalList[position].studentOwnerID).collection("Studies")
+                        .whereEqualTo("dersAdi", goalList[position].dersAdi)
+                        .whereGreaterThan("timestamp", baslangicTarihi)
+                        .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, _ ->
+
+                            if (value != null) {
+
+                                for (document in value) {
+
+                                    toplamCalisma += document.get("toplamCalisma").toString()
+                                        .toInt()
+                                    cozulenSoru += document.get("çözülenSoru").toString().toInt()
+
+                                }
+
+                            }
+                            println(toplamCalisma.toString())
+                            binding.haftaToplamCalisma.text =
+                                "Geçen Hafta Toplam Çalışma: $toplamCalisma" + "dk"
+                            if (toplamCalisma < goalList[position].toplamCalisma) {
+                                binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                            } else {
+                                binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                            }
+
+                            if (cozulenSoru < goalList[position].cozulenSoru) {
+                                binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                            } else {
+                                binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                            }
+                            binding.haftaSoru.text = "Geçen Hafta Toplam Soru: $cozulenSoru"
+
+                        }
+
+                }
 
             }
 
+        } else {
+            // handle the error
+            println("Hata")
         }
+
     }
 
     override fun getItemCount(): Int {

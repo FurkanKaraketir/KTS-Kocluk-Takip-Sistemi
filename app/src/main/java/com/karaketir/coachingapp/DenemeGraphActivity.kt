@@ -212,23 +212,13 @@ class DenemeGraphActivity : AppCompatActivity() {
         val cartesian: Cartesian = AnyChart.column()
         val anyChartView = binding.anyChartDenemeView
 
+        val sortedMap = konuHashMap.toList().sortedBy { (key, _) -> key }.toMap()
 
 
 
 
-        for (i in konuHashMap.keys) {
-            data.add(ValueDataEntry(i, konuHashMap[i]))
-            /*val konuAltHash = hashMapOf<String, Int>()
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(denemeOwnerID).collection(dersAdi).document(i).collection("AltKonu")
-                .addSnapshotListener { value, error ->
-                    if (value != null) {
-                        for (l in value) {
-                            konuAltHash[l.get("konuAdi").toString()] =
-                                l.get("yanlisSayisi").toString().toInt()
-                        }
-                    }
-                }*/
+        for (i in sortedMap.keys) {
+            data.add(ValueDataEntry(i, sortedMap[i]))
         }
 
 

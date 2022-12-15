@@ -185,9 +185,11 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                         val cartesian: Cartesian = AnyChart.column()
                         val anyChartView = binding.anyChartDenemeByTimeView
 
+                        val sortedMap = netHash.toList().sortedBy { (key, _) -> key }.toMap()
 
-                        for (i in netHash.keys) {
-                            data.add(ValueDataEntry(i, netHash[i]))
+
+                        for (i in sortedMap.keys) {
+                            data.add(ValueDataEntry(i, sortedMap[i]))
                         }
 
                         val column: Column = cartesian.column(data)
@@ -212,7 +214,7 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                         cartesian.interactivity().hoverMode(HoverMode.BY_X)
 
                         cartesian.xAxis(0).title("Deneme Adları")
-                        cartesian.yAxis(0).title("Yanlış Sayısı")
+                        cartesian.yAxis(0).title("Net Sayısı")
 
                         anyChartView.setChart(cartesian)
 

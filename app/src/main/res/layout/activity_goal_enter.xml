@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:gravity="center"
-            android:text="Haftalık Hedef Ekle/Düzenle">
+            android:text="@string/haftal_k_hedef_ekle_d_zenle">
 
         </TextView>
 
@@ -44,8 +44,7 @@
             android:id="@+id/hedefDersSpinner"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:spinnerMode="dialog"
-            android:tooltipText="Alan Seçimi Yapınız" />
+            android:spinnerMode="dialog" />
     </LinearLayout>
 
 
@@ -89,11 +88,11 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/goalSave"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_baseline_save_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/TextInputHedefToplamSoru"
-        android:contentDescription="@string/save" />
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/save"
+        android:src="@drawable/ic_baseline_save_24" />
 
 </RelativeLayout>

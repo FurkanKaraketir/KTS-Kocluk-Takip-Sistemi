@@ -42,92 +42,99 @@ class DenemeKonulariShowMoreRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: KonuHolder, position: Int) {
-        with(holder) {
+        if (position >= 0 && position < konuListesi.size) {
+            // code to access the element at the specified index
+            with(holder) {
 
-            auth = Firebase.auth
-            db = Firebase.firestore
+                auth = Firebase.auth
+                db = Firebase.firestore
 
-            val item: Item = itemList[position]
+                val item: Item = itemList[position]
 
-            db.collection("Lessons").document(item.dersAdi).collection(item.tur)
-                .document(item.itemTitle).get().addOnSuccessListener {
-                    binding.denemeKonuAdi.text = it.get("konuAdi").toString()
-                }
-
-            binding.showButton.setOnClickListener {
-                if (binding.showMoreSubjects.visibility == View.VISIBLE) {
-                    binding.showMoreSubjects.visibility = View.GONE
-                } else {
-                    binding.showMoreSubjects.visibility = View.VISIBLE
-                }
-            }
-
-
-            // Create layout manager with initial prefetch item count
-
-            // Create layout manager with initial prefetch item count
-
-
-            val layoutManager = LinearLayoutManager(
-                binding.showMoreSubjects.context, LinearLayoutManager.VERTICAL, false
-            )
-            layoutManager.initialPrefetchItemCount = item.getSubItemList().size
-
-            // Create sub item view adapter
-
-
-            // Create sub item view adapter
-            val subItemAdapter = DenemeKonulariRecyclerAdapter(item.getSubItemList(), item.dersAdi)
-            binding.showMoreSubjects.layoutManager = layoutManager
-            binding.showMoreSubjects.adapter = subItemAdapter
-            binding.showMoreSubjects.setRecycledViewPool(viewPool)
-
-            binding.saveSubjectButton.setOnClickListener {
-                val konuHash = subItemAdapter.konuHash
-                var kurumKodu: Int
-
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    kurumKodu = it.get("kurumKodu").toString().toInt()
-
-                    if (konuHash.isEmpty()) {
-                        println("Error Here")
+                db.collection("Lessons").document(item.dersAdi).collection(item.tur)
+                    .document(item.itemTitle).get().addOnSuccessListener {
+                        binding.denemeKonuAdi.text = it.get("konuAdi").toString()
                     }
 
-                    var konuToplamYanlis = 0
-                    for (j in konuHash.keys) {
-                        val konuHashMap = hashMapOf(
-                            "konuAdi" to j, "yanlisSayisi" to konuHash[j]
-                        )
+                binding.showButton.setOnClickListener {
+                    if (binding.showMoreSubjects.visibility == View.VISIBLE) {
+                        binding.showMoreSubjects.visibility = View.GONE
+                    } else {
+                        binding.showMoreSubjects.visibility = View.VISIBLE
+                    }
+                }
 
 
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(auth.uid.toString()).collection("Denemeler")
-                            .document(denemeID).collection(dersAdi)
-                            .document(binding.denemeKonuAdi.text.toString()).collection("AltKonu")
-                            .document(j).set(
-                                konuHashMap
-                            ).addOnSuccessListener {
+                // Create layout manager with initial prefetch item count
 
-                                konuToplamYanlis += konuHash[j]!!
+                // Create layout manager with initial prefetch item count
 
 
-                                val ustKonuHashMap = hashMapOf(
-                                    "konuAdi" to binding.denemeKonuAdi.text.toString(),
-                                    "yanlisSayisi" to konuToplamYanlis
-                                )
-                                db.collection("School").document(kurumKodu.toString())
-                                    .collection("Student").document(auth.uid.toString())
-                                    .collection("Denemeler").document(denemeID).collection(dersAdi)
-                                    .document(binding.denemeKonuAdi.text.toString())
-                                    .set(ustKonuHashMap).addOnSuccessListener {
-                                        Toast.makeText(
-                                            holder.itemView.context,
-                                            "İşlem Başarılı",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                val layoutManager = LinearLayoutManager(
+                    binding.showMoreSubjects.context, LinearLayoutManager.VERTICAL, false
+                )
+                layoutManager.initialPrefetchItemCount = item.getSubItemList().size
 
-                            }
+                // Create sub item view adapter
+
+
+                // Create sub item view adapter
+                val subItemAdapter =
+                    DenemeKonulariRecyclerAdapter(item.getSubItemList(), item.dersAdi)
+                binding.showMoreSubjects.layoutManager = layoutManager
+                binding.showMoreSubjects.adapter = subItemAdapter
+                binding.showMoreSubjects.setRecycledViewPool(viewPool)
+
+                binding.saveSubjectButton.setOnClickListener {
+                    val konuHash = subItemAdapter.konuHash
+                    var kurumKodu: Int
+
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                        kurumKodu = it.get("kurumKodu").toString().toInt()
+
+                        if (konuHash.isEmpty()) {
+                            println("Error Here")
+                        }
+
+                        var konuToplamYanlis = 0
+                        for (j in konuHash.keys) {
+                            val konuHashMap = hashMapOf(
+                                "konuAdi" to j, "yanlisSayisi" to konuHash[j]
+                            )
+
+
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").document(auth.uid.toString())
+                                .collection("Denemeler").document(denemeID).collection(dersAdi)
+                                .document(binding.denemeKonuAdi.text.toString())
+                                .collection("AltKonu").document(j).set(
+                                    konuHashMap
+                                ).addOnSuccessListener {
+
+                                    konuToplamYanlis += konuHash[j]!!
+
+
+                                    val ustKonuHashMap = hashMapOf(
+                                        "konuAdi" to binding.denemeKonuAdi.text.toString(),
+                                        "yanlisSayisi" to konuToplamYanlis
+                                    )
+                                    db.collection("School").document(kurumKodu.toString())
+                                        .collection("Student").document(auth.uid.toString())
+                                        .collection("Denemeler").document(denemeID)
+                                        .collection(dersAdi)
+                                        .document(binding.denemeKonuAdi.text.toString())
+                                        .set(ustKonuHashMap).addOnSuccessListener {
+                                            Toast.makeText(
+                                                holder.itemView.context,
+                                                "İşlem Başarılı",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+
+                                }
+
+
+                        }
 
 
                     }
@@ -138,7 +145,10 @@ class DenemeKonulariShowMoreRecyclerAdapter(
 
             }
 
-
+        } else {
+            // handle the error
+            println("Hata")
         }
+
     }
 }

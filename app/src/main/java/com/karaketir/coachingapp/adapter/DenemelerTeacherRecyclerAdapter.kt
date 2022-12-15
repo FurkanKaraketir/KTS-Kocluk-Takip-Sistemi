@@ -34,54 +34,67 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
     }
 
     override fun onBindViewHolder(holder: DenemeHolder, position: Int) {
-        with(holder) {
+        if (position >= 0 && position < denemeList.size) {
+            // code to access the element at the specified index
+            with(holder) {
 
-            db = FirebaseFirestore.getInstance()
-            auth = FirebaseAuth.getInstance()
-
-
-            binding.denemeAdiTeacherTextView.text = denemeList[position].denemeAdi
-            binding.deleteDenemeTeacherButton.setOnClickListener {
-
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+                db = FirebaseFirestore.getInstance()
+                auth = FirebaseAuth.getInstance()
 
 
-                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
-                    deleteAlertDialog.setTitle("Deneme Sil")
-                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
-                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+                binding.denemeAdiTeacherTextView.text = denemeList[position].denemeAdi
+                binding.deleteDenemeTeacherButton.setOnClickListener {
 
-                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
-                            .document(auth.uid.toString()).collection("Denemeler")
-                            .document(denemeList[position].denemeID).delete().addOnSuccessListener {
-                                Toast.makeText(
-                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                        val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+
+
+                        val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                        deleteAlertDialog.setTitle("Deneme Sil")
+                        deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                        deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Teacher").document(auth.uid.toString())
+                                .collection("Denemeler").document(denemeList[position].denemeID)
+                                .delete().addOnSuccessListener {
+                                    Toast.makeText(
+                                        holder.itemView.context,
+                                        "İşlem Başarılı!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                        }
+                        deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
+
+                        }
+                        deleteAlertDialog.show()
+
+
                     }
-                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
-
-                    }
-                    deleteAlertDialog.show()
-
 
                 }
+                binding.fullDenemeCard.setOnClickListener {
+                    val intent =
+                        Intent(holder.itemView.context, TestResultsShortActivity::class.java)
+                    intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
+                    holder.itemView.context.startActivity(intent)
+                }
 
-            }
-            binding.fullDenemeCard.setOnClickListener {
-                val intent = Intent(holder.itemView.context, TestResultsShortActivity::class.java)
-                intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
-                holder.itemView.context.startActivity(intent)
+                binding.denemeEditButton.setOnClickListener {
+                    val intent =
+                        Intent(holder.itemView.context, DenemeTeacherEditActivity::class.java)
+                    intent.putExtra("denemeID", denemeList[position].denemeID)
+                    intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
+                    holder.itemView.context.startActivity(intent)
+                }
             }
 
-            binding.denemeEditButton.setOnClickListener {
-                val intent = Intent(holder.itemView.context, DenemeTeacherEditActivity::class.java)
-                intent.putExtra("denemeID", denemeList[position].denemeID)
-                intent.putExtra("denemeAdi", denemeList[position].denemeAdi)
-                holder.itemView.context.startActivity(intent)
-            }
+        } else {
+            // handle the error
+            println("Hata")
         }
+
 
     }
 

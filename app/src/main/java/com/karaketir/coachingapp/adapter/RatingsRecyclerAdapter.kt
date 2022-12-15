@@ -29,52 +29,60 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: RatingHolder, position: Int) {
-        with(holder) {
-            when (ratingsList[position].starCount) {
-                1 -> {
-                    binding.starOne.visibility = View.VISIBLE
-                    binding.starTwo.visibility = View.GONE
-                    binding.starThree.visibility = View.GONE
-                    binding.starFour.visibility = View.GONE
-                    binding.starFive.visibility = View.GONE
-                }
-                2 -> {
-                    binding.starOne.visibility = View.VISIBLE
-                    binding.starTwo.visibility = View.VISIBLE
-                    binding.starThree.visibility = View.GONE
-                    binding.starFour.visibility = View.GONE
-                    binding.starFive.visibility = View.GONE
+        if (position >= 0 && position < ratingsList.size) {
+            // code to access the element at the specified index
+            with(holder) {
+                when (ratingsList[position].starCount) {
+                    1 -> {
+                        binding.starOne.visibility = View.VISIBLE
+                        binding.starTwo.visibility = View.GONE
+                        binding.starThree.visibility = View.GONE
+                        binding.starFour.visibility = View.GONE
+                        binding.starFive.visibility = View.GONE
+                    }
+                    2 -> {
+                        binding.starOne.visibility = View.VISIBLE
+                        binding.starTwo.visibility = View.VISIBLE
+                        binding.starThree.visibility = View.GONE
+                        binding.starFour.visibility = View.GONE
+                        binding.starFive.visibility = View.GONE
+
+                    }
+                    3 -> {
+                        binding.starOne.visibility = View.VISIBLE
+                        binding.starTwo.visibility = View.VISIBLE
+                        binding.starThree.visibility = View.VISIBLE
+                        binding.starFour.visibility = View.GONE
+                        binding.starFive.visibility = View.GONE
+                    }
+                    4 -> {
+                        binding.starOne.visibility = View.VISIBLE
+                        binding.starTwo.visibility = View.VISIBLE
+                        binding.starThree.visibility = View.VISIBLE
+                        binding.starFour.visibility = View.VISIBLE
+                        binding.starFive.visibility = View.GONE
+                    }
+                    5 -> {
+                        binding.starOne.visibility = View.VISIBLE
+                        binding.starTwo.visibility = View.VISIBLE
+                        binding.starThree.visibility = View.VISIBLE
+                        binding.starFour.visibility = View.VISIBLE
+                        binding.starFive.visibility = View.VISIBLE
+                    }
+
 
                 }
-                3 -> {
-                    binding.starOne.visibility = View.VISIBLE
-                    binding.starTwo.visibility = View.VISIBLE
-                    binding.starThree.visibility = View.VISIBLE
-                    binding.starFour.visibility = View.GONE
-                    binding.starFive.visibility = View.GONE
-                }
-                4 -> {
-                    binding.starOne.visibility = View.VISIBLE
-                    binding.starTwo.visibility = View.VISIBLE
-                    binding.starThree.visibility = View.VISIBLE
-                    binding.starFour.visibility = View.VISIBLE
-                    binding.starFive.visibility = View.GONE
-                }
-                5 -> {
-                    binding.starOne.visibility = View.VISIBLE
-                    binding.starTwo.visibility = View.VISIBLE
-                    binding.starThree.visibility = View.VISIBLE
-                    binding.starFour.visibility = View.VISIBLE
-                    binding.starFive.visibility = View.VISIBLE
-                }
 
-
+                val dateFormated =
+                    SimpleDateFormat("dd/MM/yyyy").format(ratingsList[position].ratingDate.toDate())
+                binding.raingDateText.text = "Çalışma Tarihi: $dateFormated"
             }
 
-            val dateFormated =
-                SimpleDateFormat("dd/MM/yyyy").format(ratingsList[position].ratingDate.toDate())
-            binding.raingDateText.text = "Çalışma Tarihi: $dateFormated"
+        } else {
+            // handle the error
+            println("Hata")
         }
+
     }
 
 

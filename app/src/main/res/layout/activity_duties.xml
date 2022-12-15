@@ -54,8 +54,7 @@
                             android:id="@+id/gorevSpinner"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:spinnerMode="dialog"
-                            android:tooltipText="Alan Seçimi Yapınız" />
+                            android:spinnerMode="dialog" />
                     </LinearLayout>
 
                 </LinearLayout>

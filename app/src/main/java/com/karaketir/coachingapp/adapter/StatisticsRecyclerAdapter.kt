@@ -25,22 +25,30 @@ class StatisticsRecyclerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: StatisticHolder, position: Int) {
-        with(holder) {
+        if (position >= 0 && position < statisticList.size) {
+            // code to access the element at the specified index
+            with(holder) {
 
-            if (statisticList[position].dersAdi == "Deneme") {
-                binding.statsDersAdi.text = "Deneme Tahlili"
-            } else {
-                binding.statsDersAdi.text = statisticList[position].dersAdi
+                if (statisticList[position].dersAdi == "Deneme") {
+                    binding.statsDersAdi.text = "Deneme Tahlili"
+                } else {
+                    binding.statsDersAdi.text = statisticList[position].dersAdi
+                }
+                binding.statsToplamCalisma.text = "Ortalama Çalışılan Süre:  ${
+                    statisticList[position].toplamCalisma.toFloat().format(2)
+                } dk"
+                binding.statsCozulenSoru.text = "Ortalama Çözülen Soru:  ${
+                    statisticList[position].cozulenSoru.toFloat().format(2)
+                } Soru"
+
+
             }
-            binding.statsToplamCalisma.text = "Ortalama Çalışılan Süre:  ${
-                statisticList[position].toplamCalisma.toFloat().format(2)
-            } dk"
-            binding.statsCozulenSoru.text = "Ortalama Çözülen Soru:  ${
-                statisticList[position].cozulenSoru.toFloat().format(2)
-            } Soru"
 
-
+        } else {
+            // handle the error
+            println("Hata")
         }
+
     }
 
     override fun getItemCount(): Int {

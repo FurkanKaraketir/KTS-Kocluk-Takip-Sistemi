@@ -22,7 +22,6 @@ open class DenemeKonulariRecyclerAdapter(
     private lateinit var db: FirebaseFirestore
     lateinit var auth: FirebaseAuth
     var isOnTextChanged = false
-    var expAmtArray = ArrayList<String>()
     var konuHash = hashMapOf<String, Int>()
 
     class KonuHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -47,35 +46,42 @@ open class DenemeKonulariRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: KonuHolder, @SuppressLint("RecyclerView") position: Int) {
-        with(holder) {
-            db = FirebaseFirestore.getInstance()
-            auth = FirebaseAuth.getInstance()
 
-            binding.denemeKonuAdi.text = konuListesi[position].subItemTitle
+        if (position >= 0 && position < konuListesi.size) {
+            // code to access the element at the specified index
+            with(holder) {
+                db = FirebaseFirestore.getInstance()
+                auth = FirebaseAuth.getInstance()
 
-
-            binding.denemeKonuYanlisEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    isOnTextChanged = true
-                }
-
-                @SuppressLint("SetTextI18n")
-                override fun afterTextChanged(p0: Editable?) {
-                    if (isOnTextChanged) {
-                        isOnTextChanged = false
+                binding.denemeKonuAdi.text = konuListesi[position].subItemTitle
 
 
-                        try {
+                binding.denemeKonuYanlisEditText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
 
-                            konuHash[binding.denemeKonuAdi.text.toString()] = p0.toString().toInt()
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        isOnTextChanged = true
+                    }
+
+                    @SuppressLint("SetTextI18n")
+                    override fun afterTextChanged(p0: Editable?) {
+                        if (isOnTextChanged) {
+                            isOnTextChanged = false
 
 
-                        } catch (e: Exception) {
+                            try {
 
-                            konuHash[binding.denemeKonuAdi.text.toString()] = 0
+                                konuHash[binding.denemeKonuAdi.text.toString()] =
+                                    p0.toString().toInt()
+
+
+                            } catch (e: Exception) {
+
+                                konuHash[binding.denemeKonuAdi.text.toString()] = 0
+
+
+                            }
 
 
                         }
@@ -83,12 +89,14 @@ open class DenemeKonulariRecyclerAdapter(
 
                     }
 
-
-                }
-
-            })
+                })
 
 
+            }
+
+        } else {
+            // handle the error
+            println("Hata")
         }
 
 

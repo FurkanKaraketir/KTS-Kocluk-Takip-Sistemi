@@ -30,17 +30,26 @@ class TestResultsShortRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: ResultHolder, position: Int) {
-        with(holder) {
-            binding.nameText.text = studentList[position].name
-            binding.netText.text = studentList[position].toplamNet.toString()
-            binding.cardDenemeResult.setOnClickListener {
-                val intent = Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
-                intent.putExtra("denemeID", studentList[position].denemeID)
-                intent.putExtra("denemeTür", studentList[position].denemeTur)
-                intent.putExtra("denemeStudentID", studentList[position].denemeOwnerID)
-                intent.putExtra("secilenZamanAraligi", "Tüm Zamanlar")
-                holder.itemView.context.startActivity(intent)
+        if (position >= 0 && position < studentList.size) {
+            // code to access the element at the specified index
+            with(holder) {
+                binding.nameText.text = studentList[position].name
+                binding.netText.text = studentList[position].toplamNet.toString()
+                binding.cardDenemeResult.setOnClickListener {
+                    val intent =
+                        Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
+                    intent.putExtra("denemeID", studentList[position].denemeID)
+                    intent.putExtra("denemeTür", studentList[position].denemeTur)
+                    intent.putExtra("denemeStudentID", studentList[position].denemeOwnerID)
+                    intent.putExtra("secilenZamanAraligi", "Tüm Zamanlar")
+                    holder.itemView.context.startActivity(intent)
+                }
             }
+
+        } else {
+            // handle the error
+            println("Hata")
         }
+
     }
 }

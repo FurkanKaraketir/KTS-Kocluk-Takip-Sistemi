@@ -120,4 +120,5 @@
     <string name="sample_using_cropimageview">Sample using CropImageView</string>
     <string name="sample_of_customactivity">Sample of CustomActivity</string>
     <string name="sample_calling_cropimage">Sample calling CropImage</string>
+    <string name="haftal_k_hedef_ekle_d_zenle">Haftalık Hedef Ekle/Düzenle</string>
 </resources>

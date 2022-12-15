@@ -1,44 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fullDenemeCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/denemeEditButton"
-        style="@style/Widget.Material3.Button.IconButton.Outlined"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/denemeAdiTeacherTextView"
-        app:icon="@drawable/ic_baseline_edit_24"
-        tools:ignore="RelativeOverlap" />
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:id="@+id/fullDenemeCard"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_gravity="center_vertical"
+                android:id="@+id/denemeEditButton"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_baseline_edit_24"
+                tools:ignore="RelativeOverlap" />
 
-    <TextView
-        android:id="@+id/denemeAdiTeacherTextView"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        android:gravity="center" />
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:id="@+id/denemeAdiTeacherTextView"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center" />
 
-    <Button
-        android:id="@+id/deleteDenemeTeacherButton"
-        style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/denemeAdiTeacherTextView"
-        app:icon="@drawable/ic_baseline_remove_circle_outline_24" />
+            <Button
+                android:layout_gravity="center_vertical"
+                android:id="@+id/deleteDenemeTeacherButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_baseline_remove_circle_outline_24" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/denemeAdiTeacherTextView"
         android:background="@color/gray" />
 
-</RelativeLayout>
+</LinearLayout>

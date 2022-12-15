@@ -40,52 +40,65 @@ class DenemelerRecyclerAdapter(
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: DenemeHolder, position: Int) {
 
-        with(holder) {
-            auth = Firebase.auth
-            db = Firebase.firestore
-            binding.denemeAdiTextView.text = denemeList[position].denemeAdi
-            binding.denemeToplamNetTextView.text =
-                "Toplam Net: " + denemeList[position].denemeToplamNet.toString() + " " + denemeList[position].denemeTur
-            val date = denemeList[position].denemeTarihi.toDate()
-            val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
+        if (position >= 0 && position < denemeList.size) {
+            // code to access the element at the specified index
+            with(holder) {
+                auth = Firebase.auth
+                db = Firebase.firestore
+                binding.denemeAdiTextView.text = denemeList[position].denemeAdi
+                binding.denemeToplamNetTextView.text =
+                    "Toplam Net: " + denemeList[position].denemeToplamNet.toString() + " " + denemeList[position].denemeTur
+                val date = denemeList[position].denemeTarihi.toDate()
+                val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
 
-            binding.denemeTarihTextView.text = dateFormated
+                binding.denemeTarihTextView.text = dateFormated
 
-            binding.denemeCard.setOnClickListener {
-                val intent = Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
-                intent.putExtra("denemeID", denemeList[position].denemeID)
-                intent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
-                intent.putExtra("denemeStudentID", denemeList[position].denemeStudentID)
-                intent.putExtra("denemeTür", denemeList[position].denemeTur)
-                holder.itemView.context.startActivity(intent)
-            }
-            binding.denemeDeleteStudentButton.setOnClickListener {
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+                binding.denemeCard.setOnClickListener {
+                    val intent =
+                        Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
+                    intent.putExtra("denemeID", denemeList[position].denemeID)
+                    intent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
+                    intent.putExtra("denemeStudentID", denemeList[position].denemeStudentID)
+                    intent.putExtra("denemeTür", denemeList[position].denemeTur)
+                    holder.itemView.context.startActivity(intent)
+                }
+                binding.denemeDeleteStudentButton.setOnClickListener {
+                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                        val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
-                    deleteAlertDialog.setTitle("Deneme Sil")
-                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
-                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+                        val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                        deleteAlertDialog.setTitle("Deneme Sil")
+                        deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                        deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
 
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(denemeList[position].denemeStudentID).collection("Denemeler")
-                            .document(denemeList[position].denemeID).delete().addOnSuccessListener {
-                                Toast.makeText(
-                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student")
+                                .document(denemeList[position].denemeStudentID)
+                                .collection("Denemeler").document(denemeList[position].denemeID)
+                                .delete().addOnSuccessListener {
+                                    Toast.makeText(
+                                        holder.itemView.context,
+                                        "İşlem Başarılı!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                        }
+
+                        deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
+
+                        }
+                        deleteAlertDialog.show()
+
+
                     }
-
-                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
-
-                    }
-                    deleteAlertDialog.show()
-
-
                 }
             }
+
+        } else {
+            // handle the error
+            println("Hata")
         }
+
 
     }
 

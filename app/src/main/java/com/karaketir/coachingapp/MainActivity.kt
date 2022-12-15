@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity() {
         val contentTextView = binding.contentTextView
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
-        val sayacButton = binding.sayacButton
         val gorevButton = binding.gorevButton
         val previousRatingsButton = binding.previousRatingsButton
         val allStudentsBtn = binding.allStudentsBtn
@@ -268,8 +267,6 @@ class MainActivity : AppCompatActivity() {
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 istatistikButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.GONE
-
-                sayacButton.visibility = View.VISIBLE
                 gorevButton.visibility = View.VISIBLE
 
                 contentTextView.text = "Bu Haftaki Çalışmalarım"
@@ -518,11 +515,6 @@ class MainActivity : AppCompatActivity() {
             }
             signOutAlertDialog.show()
 
-        }
-
-        sayacButton.setOnClickListener {
-            val intent = Intent(this, ChronometerActivity::class.java)
-            this.startActivity(intent)
         }
 
         gorevButton.setOnClickListener {
