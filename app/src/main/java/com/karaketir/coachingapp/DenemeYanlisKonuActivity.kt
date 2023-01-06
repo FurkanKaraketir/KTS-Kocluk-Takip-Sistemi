@@ -78,7 +78,8 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
                         val subItemList: ArrayList<SubItem> = ArrayList()
 
                         db.collection("Lessons").document(dersAdi).collection(tur).document(i)
-                            .collection("AltKonu").orderBy("konuAdi",Query.Direction.ASCENDING).addSnapshotListener { value, _ ->
+                            .collection("AltKonu").orderBy("konuAdi", Query.Direction.ASCENDING)
+                            .addSnapshotListener { value, _ ->
                                 if (value != null) {
                                     subItemList.clear()
                                     for (a in value) {

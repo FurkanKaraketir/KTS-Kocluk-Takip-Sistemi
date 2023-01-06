@@ -12,6 +12,7 @@ import com.anychart.enums.Anchor
 import com.anychart.enums.HoverMode
 import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +21,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityDenemeNetGraphByTimeBinding
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class DenemeNetGraphByTimeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDenemeNetGraphByTimeBinding
@@ -140,9 +143,10 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                 .addSnapshotListener { value, _ ->
 
                     if (value != null) {
+                        val denemeTarihList = HashMap<String, Timestamp>()
                         for (deneme in value) {
                             val denemeAdi = deneme.get("denemeAdi").toString()
-
+                            denemeTarihList[denemeAdi] = deneme.get("denemeTarihi") as Timestamp
                             when (dersAdi) {
                                 "ToplamNet" -> {
                                     netHash[denemeAdi] =
@@ -184,13 +188,13 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                         val data: MutableList<DataEntry> = ArrayList()
                         val cartesian: Cartesian = AnyChart.column()
                         val anyChartView = binding.anyChartDenemeByTimeView
+                        val sortedDateMap =
+                            denemeTarihList.toList().sortedBy { (_, date) -> date }.toMap()
 
-                        val sortedMap = netHash.toList().sortedBy { (key, _) -> key }.toMap()
-
-
-                        for (i in sortedMap.keys) {
-                            data.add(ValueDataEntry(i, sortedMap[i]))
+                        for (i in sortedDateMap.keys) {
+                            data.add(ValueDataEntry(i, netHash[i]))
                         }
+
 
                         val column: Column = cartesian.column(data)
 
