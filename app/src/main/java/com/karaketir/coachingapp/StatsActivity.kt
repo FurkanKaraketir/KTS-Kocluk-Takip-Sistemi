@@ -1,16 +1,24 @@
+@file:Suppress("DEPRECATION")
+
 package com.karaketir.coachingapp
 
+import android.Manifest
 //noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.*
+import android.provider.Settings
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -22,9 +30,30 @@ import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityStatsBinding
 import com.karaketir.coachingapp.models.Statistic
+import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.util.CellUtil.createCell
+import org.apache.poi.xssf.usermodel.IndexedColorMap
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 class StatsActivity : AppCompatActivity() {
+    init {
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLInputFactory",
+            "com.fasterxml.aalto.stax.InputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
+            "com.fasterxml.aalto.stax.OutputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLEventFactory",
+            "com.fasterxml.aalto.stax.EventFactoryImpl"
+        )
+    }
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -34,10 +63,13 @@ class StatsActivity : AppCompatActivity() {
     private lateinit var layoutManager: GridLayoutManager
     private var secilenZamanAraligi = ""
     private val handler = Handler(Looper.getMainLooper())
+    private val workbook = XSSFWorkbook()
     private var secilenGrade = ""
     private lateinit var recyclerViewStats: RecyclerView
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
     private var dersSoruHash = hashMapOf<String, Float>()
+    private var filePath: File =
+        File(Environment.getExternalStorageDirectory().toString() + "/Demo.xlsx")
     private var dersSureHash = hashMapOf<String, Float>()
     private var statsList = ArrayList<Statistic>()
     private var ogrenciSayisi = 0
@@ -45,6 +77,127 @@ class StatsActivity : AppCompatActivity() {
 
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+
+    private fun createExcel() {
+        filePath = File(
+            Environment.getExternalStorageDirectory()
+                .toString() + "/Koçluk İstatistikleri $secilenGrade - ${secilenZamanAraligi}.xlsx"
+        )
+        try {
+            if (!filePath.exists()) {
+                filePath.createNewFile()
+            }
+            val fileOutputStream = FileOutputStream(filePath)
+            workbook.write(fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println(e)
+        }
+    }
+
+    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
+        //setHeaderStyle is a custom function written below to add header style
+
+        //Create sheet first row
+        val row = sheet.createRow(0)
+
+        //Header list
+        val headerList = listOf("column_1", "column_2", "column_3")
+
+        //Loop to populate each column of header row
+        for ((index, value) in headerList.withIndex()) {
+
+            val columnWidth = (15 * 500)
+
+            sheet.setColumnWidth(index, columnWidth)
+
+            val cell = row.createCell(index)
+
+            cell?.setCellValue(value)
+
+            cell.cellStyle = cellStyle
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addData(sheet: Sheet) {
+
+        //Create row based on row index
+        val row = sheet.createRow(0)
+
+        var toplamSure = 0f
+        var toplamSoru = 0f
+        if (statsList.isNotEmpty()) {
+            for (i in statsList) {
+                toplamSure += i.toplamCalisma.toFloat()
+                toplamSoru += i.cozulenSoru.toFloat()
+            }
+        }
+
+
+        val toplamSureSaat = toplamSure / 60
+        createCell(row, 0, "Toplam")
+        createCell(
+            row, 1, toplamSure.format(2) + "dk " + "(${
+                toplamSureSaat.format(2)
+            } Saat)"
+        ) //Column 1
+
+
+        createCell(row, 2, "${toplamSoru.format(2)} Soru")
+        var indexNum = 0
+        if (ogrenciSayisi != 0) {
+
+            for (i in dersSureHash.keys) {
+                val row2 = sheet.createRow(indexNum + 1)
+
+                val dersSure = dersSureHash[i]
+                if (dersSure != null) {
+                    val sureSaat = (dersSure) / (60 * ogrenciSayisi)
+
+                    createCell(row2, 0, i)
+                    createCell(
+                        row2,
+                        1,
+                        (dersSure / (ogrenciSayisi)).format(2) + "dk " + "(${sureSaat.format(2)} Saat)"
+                    )
+                }
+                val dersSoru = dersSoruHash[i]
+                if (dersSoru != null) {
+                    createCell(
+                        row2, 2, (dersSoru / ogrenciSayisi).format(2) + " Soru"
+                    )
+                }
+                indexNum += 1
+
+            }
+        }
+        Toast.makeText(this, "Excel Dosyası Oluşturuldu", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getHeaderStyle(workbook: Workbook): CellStyle {
+
+        //Cell style for header row
+        val cellStyle: CellStyle = workbook.createCellStyle()
+
+        //Apply cell color
+        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
+        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
+        cellStyle.fillForegroundColor = color
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+
+        //Apply font style on cell text
+        val whiteFont = workbook.createFont()
+        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
+        whiteFont.color = color
+        whiteFont.bold = true
+        cellStyle.setFont(whiteFont)
+
+
+        return cellStyle
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +207,18 @@ class StatsActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         db = Firebase.firestore
+
+        val sheet: Sheet = workbook.createSheet("Sayfa 1")
+
+        //Create Header Cell Style
+        val cellStyle = getHeaderStyle(workbook)
+
+        //Creating sheet header row
+        createSheetHeader(cellStyle, sheet)
+
+        //Adding data to the sheet
+
+        val fileSaveButton = binding.fileSaveExcelButton
 
         layoutManager = GridLayoutManager(applicationContext, 2)
         val statsZamanSpinner = binding.statsZamanAraligiSpinner
@@ -72,6 +237,12 @@ class StatsActivity : AppCompatActivity() {
         statsZamanSpinner.adapter = statsAdapter
 
 
+        fileSaveButton.setOnClickListener {
+            addData(sheet)
+
+            askForPermissions()
+            createExcel()
+        }
 
 
 
@@ -481,5 +652,42 @@ class StatsActivity : AppCompatActivity() {
 
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
+
+    private fun askForPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivity(intent)
+                return
+            }
+            createExcel()
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                //İzin Verilmedi, iste
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), 1
+                )
+
+
+            } else {
+                createExcel()
+            }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                createExcel()
+            }
+        }
+    }
 
 }

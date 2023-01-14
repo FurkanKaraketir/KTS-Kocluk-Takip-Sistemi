@@ -196,23 +196,6 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
                         .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
                         .start()
                 }
-                if (ContextCompat.checkSelfPermission(
-                        this, READ_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                        this, CAMERA
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    //İzin Verilmedi, iste
-                    ActivityCompat.requestPermissions(
-                        this, arrayOf(READ_EXTERNAL_STORAGE, CAMERA), 1
-                    )
-
-
-                } else {
-                    ImagePicker.with(this@ProfileActivity)
-                        .crop(10f, 8f) //Crop square image, its same as crop(1f, 1f)
-                        .start()
-                }
             }
             alertDialog.show()
 

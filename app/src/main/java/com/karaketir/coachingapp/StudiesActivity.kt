@@ -1,13 +1,23 @@
+@file:Suppress("DEPRECATION")
+
 package com.karaketir.coachingapp
 
 //noinspection SuspiciousImport
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +29,13 @@ import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
+import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.util.CellUtil
+import org.apache.poi.xssf.usermodel.IndexedColorMap
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -27,6 +44,7 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
+    private val workbook = XSSFWorkbook()
 
     private lateinit var recyclerViewStudies: RecyclerView
     private var studyList = ArrayList<com.karaketir.coachingapp.models.Class>()
@@ -36,6 +54,7 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
     private var studentID = ""
+    var name = ""
     private var kurumKodu = 0
     private lateinit var layoutManager: GridLayoutManager
 
@@ -54,6 +73,15 @@ class StudiesActivity : AppCompatActivity() {
         val intent = intent
         studentID = intent.getStringExtra("studentID").toString()
         secilenZamanAraligi = intent.getStringExtra("secilenZaman").toString()
+
+        val sheet: Sheet = workbook.createSheet("Sayfa 1")
+
+        //Create Header Cell Style
+        val cellStyle = getHeaderStyle(workbook)
+
+        //Creating sheet header row
+        createSheetHeader(cellStyle, sheet)
+
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
@@ -65,18 +93,28 @@ class StudiesActivity : AppCompatActivity() {
         val treeStarButton = binding.threeStarButton
         val twoStarButton = binding.twoStarButton
         val oneStarButton = binding.oneStarButton
+        val zamanAraligiTextView = binding.zamanAraligiTextView
+        val excelCreateButton = binding.excelStudentButton
 
         setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
         db.collection("User").document(studentID).get().addOnSuccessListener {
-            val name = it.get("nameAndSurname").toString()
+            name = it.get("nameAndSurname").toString()
             nameTextView.text = name
 
         }
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)
         cal.clear(Calendar.MILLISECOND)
+
+        zamanAraligiTextView.text = secilenZamanAraligi
+
+        excelCreateButton.setOnClickListener {
+            addData(sheet)
+
+            askForPermissions()
+        }
 
         when (secilenZamanAraligi) {
 
@@ -345,6 +383,222 @@ class StudiesActivity : AppCompatActivity() {
         alertDialog.show()
 
 
+    }
+
+    private fun createExcel() {
+        Toast.makeText(this, "Birkaç Saniye Bekleyiniz...", Toast.LENGTH_SHORT).show()
+        val filePath = File(
+            Environment.getExternalStorageDirectory()
+                .toString() + "/Koçluk İstatistikleri ${name}.xlsx"
+        )
+        try {
+            if (!filePath.exists()) {
+                filePath.createNewFile()
+            }
+            val fileOutputStream = FileOutputStream(filePath)
+            workbook.write(fileOutputStream)
+            fileOutputStream.flush()
+
+            fileOutputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println(e)
+        }
+    }
+
+    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
+        //setHeaderStyle is a custom function written below to add header style
+
+        //Create sheet first row
+        val row = sheet.createRow(0)
+
+        //Header list
+        val headerList = listOf("column_1", "column_2", "column_3")
+
+        //Loop to populate each column of header row
+        for ((index, value) in headerList.withIndex()) {
+
+            val columnWidth = (15 * 500)
+
+            sheet.setColumnWidth(index, columnWidth)
+
+            val cell = row.createCell(index)
+
+            cell?.setCellValue(value)
+
+            cell.cellStyle = cellStyle
+        }
+    }
+
+    private fun addData(sheet: Sheet) {
+        var cal = Calendar.getInstance()
+        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+        cal.clear(Calendar.MINUTE)
+        cal.clear(Calendar.SECOND)
+        cal.clear(Calendar.MILLISECOND)
+        when (secilenZamanAraligi) {
+            "Bugün" -> {
+                baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+            "Dün" -> {
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+            }
+            "Bu Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                bitisTarihi = cal.time
+
+            }
+            "Geçen Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                bitisTarihi = cal.time
+
+
+                cal.add(Calendar.DAY_OF_YEAR, -7)
+                baslangicTarihi = cal.time
+
+
+            }
+            "Bu Ay" -> {
+
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                baslangicTarihi = cal.time
+
+
+                cal.add(Calendar.MONTH, 1)
+                bitisTarihi = cal.time
+
+
+            }
+            "Geçen Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                bitisTarihi = cal.time
+
+
+                cal.add(Calendar.MONTH, -1)
+                baslangicTarihi = cal.time
+
+            }
+
+            "Tüm Zamanlar" -> {
+                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                baslangicTarihi = cal.time
+
+
+                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                bitisTarihi = cal.time
+
+            }
+        }
+
+        var indexNum = 0
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("Studies")
+            .whereGreaterThan("timestamp", baslangicTarihi).whereLessThan("timestamp", bitisTarihi)
+            .addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    for (i in value) {
+                        val row = sheet.createRow(indexNum)
+
+                        CellUtil.createCell(row, 0, i.get("dersAdi").toString())
+                        CellUtil.createCell(row, 1, i.get("tür").toString())
+                        CellUtil.createCell(row, 2, i.get("konuAdi").toString())
+                        CellUtil.createCell(row, 3, (i.get("toplamCalisma").toString() + " dk"))
+                        CellUtil.createCell(row, 4, (i.get("çözülenSoru").toString()) + " Soru")
+                        indexNum += 1
+                    }
+                    createExcel()
+                }
+
+
+            }
+
+    }
+
+
+    private fun getHeaderStyle(workbook: Workbook): CellStyle {
+
+        //Cell style for header row
+        val cellStyle: CellStyle = workbook.createCellStyle()
+
+        //Apply cell color
+        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
+        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
+        cellStyle.fillForegroundColor = color
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+
+        //Apply font style on cell text
+        val whiteFont = workbook.createFont()
+        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
+        whiteFont.color = color
+        whiteFont.bold = true
+        cellStyle.setFont(whiteFont)
+
+
+        return cellStyle
+    }
+
+    private fun askForPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivity(intent)
+                return
+            }
+            createExcel()
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                //İzin Verilmedi, iste
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), 1
+                )
+
+
+            } else {
+                createExcel()
+            }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                createExcel()
+            }
+        }
     }
 
 }

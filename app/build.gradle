@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 52
-        versionName "v0.1.2"
+        versionCode 54
+        versionName "v0.1.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,13 +44,12 @@ android {
 dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:30.4.1')
-
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'com.google.android.material:material:1.7.0'
     implementation "com.andkulikov:transitionseverywhere:1.8.1"
-
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
-
+    implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
+    compileOnly 'org.apache.poi:poi-ooxml:3.17'
     implementation('com.google.firebase:firebase-auth-ktx:21.1.0') {
         exclude module: "play-services-safetynet"
     }

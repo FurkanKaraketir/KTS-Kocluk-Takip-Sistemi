@@ -81,9 +81,30 @@
                         android:text="@string/haftal_k_hedefler"
                         android:textSize="15sp"
                         app:icon="@drawable/ic_baseline_outlined_flag_24" />
+
+                    <Button
+                        android:id="@+id/excelStudentButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/excel_tablosu_olu_tur"
+                        app:icon="@drawable/baseline_upload_file_24">
+
+                    </Button>
+
                 </LinearLayout>
 
             </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/zamanAraligiTextView"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="@string/zaman_aral" />
 
             <LinearLayout
                 android:layout_width="match_parent"

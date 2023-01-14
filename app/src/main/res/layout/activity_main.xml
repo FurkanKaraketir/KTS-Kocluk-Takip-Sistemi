@@ -225,6 +225,18 @@
 
                             </Button>
 
+                            <Button
+                                android:id="@+id/excelButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/excel_tablosu_olu_tur"
+                                android:visibility="gone"
+                                app:icon="@drawable/baseline_upload_file_24">
+
+                            </Button>
+
                         </LinearLayout>
 
                     </HorizontalScrollView>
