@@ -6,12 +6,16 @@ package com.karaketir.coachingapp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.Settings
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -36,6 +40,8 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -385,26 +391,147 @@ class StudiesActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("Range", "Recycle")
     private fun createExcel() {
-        Toast.makeText(this, "Birkaç Saniye Bekleyiniz...", Toast.LENGTH_SHORT).show()
-        val filePath = File(
-            Environment.getExternalStorageDirectory()
-                .toString() + "/Koçluk İstatistikleri ${name}.xlsx"
-        )
-        try {
-            if (!filePath.exists()) {
-                filePath.createNewFile()
-            }
-            val fileOutputStream = FileOutputStream(filePath)
-            workbook.write(fileOutputStream)
-            fileOutputStream.flush()
+        val contentUri = MediaStore.Files.getContentUri("external")
 
-            fileOutputStream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println(e)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
+
+            val selectionArgs =
+                arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
+
+
+            val cursor: Cursor? =
+                contentResolver.query(contentUri, null, selection, selectionArgs, null)
+
+            var uri: Uri? = null
+
+            if (cursor != null) {
+                if (cursor.count == 0) {
+                    Toast.makeText(
+                        this,
+                        "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/\"",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    try {
+                        val values = ContentValues()
+                        values.put(
+                            MediaStore.MediaColumns.DISPLAY_NAME, "$name - $secilenZamanAraligi"
+                        ) //file name
+                        values.put(
+                            MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
+                        ) //file extension, will automatically add to file
+                        values.put(
+                            MediaStore.MediaColumns.RELATIVE_PATH,
+                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
+                        ) //end "/" is not mandatory
+                        uri = contentResolver.insert(
+                            MediaStore.Files.getContentUri("external"), values
+                        ) //important!
+                        val outputStream = contentResolver.openOutputStream(uri!!)
+                        workbook.write(outputStream)
+                        outputStream!!.flush()
+                        //outputStream!!.write("This is menu category data.".toByteArray())
+                        outputStream.close()
+                        Toast.makeText(
+                            this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: IOException) {
+                        Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
+                    }
+
+                } else {
+                    while (cursor.moveToNext()) {
+                        val fileName: String =
+                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
+                        if (fileName == "$name - $secilenZamanAraligi.xls") {                          //must include extension
+                            val id: Long =
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
+                            uri = ContentUris.withAppendedId(contentUri, id)
+                            break
+                        }
+                    }
+                    if (uri == null) {
+                        Toast.makeText(
+                            this,
+                            "\"$name - $secilenZamanAraligi.xls\" Bulunamadı",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        try {
+                            val values = ContentValues()
+                            values.put(
+                                MediaStore.MediaColumns.DISPLAY_NAME, "$name - $secilenZamanAraligi"
+                            ) //file name
+                            values.put(
+                                MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
+                            ) //file extension, will automatically add to file
+                            values.put(
+                                MediaStore.MediaColumns.RELATIVE_PATH,
+                                Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
+                            ) //end "/" is not mandatory
+                            uri = contentResolver.insert(
+                                MediaStore.Files.getContentUri("external"), values
+                            ) //important!
+                            val outputStream = contentResolver.openOutputStream(uri!!)
+                            workbook.write(outputStream)
+                            outputStream!!.flush()
+                            //outputStream!!.write("This is menu category data.".toByteArray())
+                            outputStream.close()
+                            Toast.makeText(
+                                this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: IOException) {
+                            Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
+                        }
+
+
+                    } else {
+                        try {
+                            val outputStream: OutputStream? = contentResolver.openOutputStream(
+                                uri, "rwt"
+                            ) //overwrite mode, see below
+                            workbook.write(outputStream)
+                            outputStream!!.flush()
+                            //outputStream!!.write("This is menu category data.".toByteArray())
+                            outputStream.close()
+                            Toast.makeText(
+                                this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: IOException) {
+                            Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+
+
+        } else {
+            val filePath = File(
+                Environment.getExternalStorageDirectory()
+                    .toString() + "/$name - ${secilenZamanAraligi}.xlsx"
+            )
+            try {
+                if (!filePath.exists()) {
+                    filePath.createNewFile()
+                }
+                val fileOutputStream = FileOutputStream(filePath)
+                workbook.write(fileOutputStream)
+                Toast.makeText(
+                    this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                ).show()
+                fileOutputStream.flush()
+
+                fileOutputStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println(e)
+            }
         }
     }
+
 
     private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
         //setHeaderStyle is a custom function written below to add header style
@@ -565,30 +692,23 @@ class StudiesActivity : AppCompatActivity() {
     }
 
     private fun askForPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
-                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                startActivity(intent)
-                return
-            }
-            createExcel()
+
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //İzin Verilmedi, iste
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), 1
+            )
+
+
         } else {
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                //İzin Verilmedi, iste
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), 1
-                )
-
-
-            } else {
-                createExcel()
-            }
+            createExcel()
         }
+
     }
 
     @Deprecated("Deprecated in Java")
