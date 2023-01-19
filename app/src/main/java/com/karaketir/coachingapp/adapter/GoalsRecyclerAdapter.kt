@@ -38,7 +38,7 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
     override fun onBindViewHolder(holder: GoalHolder, position: Int) {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        if (position >= 0 && position < goalList.size) {
+        if (goalList.isNotEmpty() && position >= 0 && position < goalList.size) {
             // code to access the element at the specified index
             with(holder) {
                 binding.goalDersAdi.text = goalList[position].dersAdi

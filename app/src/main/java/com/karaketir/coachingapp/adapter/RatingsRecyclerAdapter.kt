@@ -29,7 +29,7 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: RatingHolder, position: Int) {
-        if (position >= 0 && position < ratingsList.size) {
+        if (ratingsList.isNotEmpty() && position >= 0 && position < ratingsList.size) {
             // code to access the element at the specified index
             with(holder) {
                 when (ratingsList[position].starCount) {

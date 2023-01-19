@@ -8,6 +8,23 @@ import com.karaketir.coachingapp.databinding.ActivityClassesBinding
 
 
 class ClassesActivity : AppCompatActivity() {
+
+    init {
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLInputFactory",
+            "com.fasterxml.aalto.stax.InputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
+            "com.fasterxml.aalto.stax.OutputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLEventFactory",
+            "com.fasterxml.aalto.stax.EventFactoryImpl"
+        )
+    }
+
+
     private lateinit var binding: ActivityClassesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

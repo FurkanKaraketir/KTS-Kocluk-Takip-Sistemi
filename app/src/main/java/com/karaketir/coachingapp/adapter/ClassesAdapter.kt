@@ -32,7 +32,7 @@ class ClassesAdapter(private val classList: ArrayList<com.karaketir.coachingapp.
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ClassHolder, position: Int) {
 
-        if (position >= 0 && position < classList.size) {
+        if (classList.isNotEmpty() && position >= 0 && position < classList.size) {
             // code to access the element at the specified index
             with(holder) {
                 db = FirebaseFirestore.getInstance()

@@ -25,7 +25,7 @@ class StatisticsRecyclerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: StatisticHolder, position: Int) {
-        if (position >= 0 && position < statisticList.size) {
+        if (statisticList.isNotEmpty() && position >= 0 && position < statisticList.size) {
             // code to access the element at the specified index
             with(holder) {
 

@@ -40,7 +40,7 @@ class DenemelerRecyclerAdapter(
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: DenemeHolder, position: Int) {
 
-        if (position >= 0 && position < denemeList.size) {
+        if (denemeList.isNotEmpty() && position >= 0 && position < denemeList.size) {
             // code to access the element at the specified index
             with(holder) {
                 auth = Firebase.auth

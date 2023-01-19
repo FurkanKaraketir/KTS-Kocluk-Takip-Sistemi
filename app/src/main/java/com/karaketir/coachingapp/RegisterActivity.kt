@@ -15,6 +15,23 @@ import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    init {
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLInputFactory",
+            "com.fasterxml.aalto.stax.InputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
+            "com.fasterxml.aalto.stax.OutputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLEventFactory",
+            "com.fasterxml.aalto.stax.EventFactoryImpl"
+        )
+    }
+
+
     private val alanlar = arrayOf("Dil", "Eşit Ağırlık", "Sözel", "Sayısal")
     private val dersler = ArrayList<String>()
 

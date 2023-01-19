@@ -30,7 +30,7 @@ class TestResultsShortRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: ResultHolder, position: Int) {
-        if (position >= 0 && position < studentList.size) {
+        if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
             // code to access the element at the specified index
             with(holder) {
                 binding.nameText.text = studentList[position].name

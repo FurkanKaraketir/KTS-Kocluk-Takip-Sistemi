@@ -27,6 +27,23 @@ import com.karaketir.coachingapp.models.Deneme
 import java.util.*
 
 class DenemelerActivity : AppCompatActivity() {
+
+    init {
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLInputFactory",
+            "com.fasterxml.aalto.stax.InputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
+            "com.fasterxml.aalto.stax.OutputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLEventFactory",
+            "com.fasterxml.aalto.stax.EventFactoryImpl"
+        )
+    }
+
+
     private lateinit var binding: ActivityDenemelerBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: DenemelerRecyclerAdapter

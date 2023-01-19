@@ -25,6 +25,24 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class DenemeNetGraphByTimeActivity : AppCompatActivity() {
+
+
+    init {
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLInputFactory",
+            "com.fasterxml.aalto.stax.InputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
+            "com.fasterxml.aalto.stax.OutputFactoryImpl"
+        )
+        System.setProperty(
+            "org.apache.poi.javax.xml.stream.XMLEventFactory",
+            "com.fasterxml.aalto.stax.EventFactoryImpl"
+        )
+    }
+
+
     private lateinit var binding: ActivityDenemeNetGraphByTimeBinding
 
     private lateinit var db: FirebaseFirestore

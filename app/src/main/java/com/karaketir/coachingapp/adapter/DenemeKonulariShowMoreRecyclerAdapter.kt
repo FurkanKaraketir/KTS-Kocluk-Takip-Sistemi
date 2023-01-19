@@ -42,7 +42,7 @@ class DenemeKonulariShowMoreRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: KonuHolder, position: Int) {
-        if (position >= 0 && position < konuListesi.size) {
+        if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
             // code to access the element at the specified index
             with(holder) {
 
