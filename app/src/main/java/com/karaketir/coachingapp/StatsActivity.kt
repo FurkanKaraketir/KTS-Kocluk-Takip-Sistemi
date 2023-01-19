@@ -43,6 +43,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 
 class StatsActivity : AppCompatActivity() {
@@ -82,8 +83,13 @@ class StatsActivity : AppCompatActivity() {
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
 
-    @SuppressLint("Recycle", "Range")
+    @SuppressLint("Recycle", "Range", "SimpleDateFormat")
     private fun createExcel() {
+
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val current = formatter.format(time)
+
         val contentUri = MediaStore.Files.getContentUri("external")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -110,7 +116,7 @@ class StatsActivity : AppCompatActivity() {
                         val values = ContentValues()
                         values.put(
                             MediaStore.MediaColumns.DISPLAY_NAME,
-                            "$secilenGrade - $secilenZamanAraligi"
+                            "$secilenGrade - $secilenZamanAraligi - $current"
                         ) //file name
                         values.put(
                             MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
@@ -138,7 +144,7 @@ class StatsActivity : AppCompatActivity() {
                     while (cursor.moveToNext()) {
                         val fileName: String =
                             cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$secilenGrade - $secilenZamanAraligi.xls") {                          //must include extension
+                        if (fileName == "$secilenGrade - $secilenZamanAraligi - $current.xls") {                          //must include extension
                             val id: Long =
                                 cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
                             uri = ContentUris.withAppendedId(contentUri, id)
@@ -148,7 +154,7 @@ class StatsActivity : AppCompatActivity() {
                     if (uri == null) {
                         Toast.makeText(
                             this,
-                            "\"$secilenGrade - $secilenZamanAraligi.xls\" Bulunamadı",
+                            "\"$secilenGrade - $secilenZamanAraligi - $current.xls\" Bulunamadı",
                             Toast.LENGTH_SHORT
                         ).show()
 
@@ -156,7 +162,7 @@ class StatsActivity : AppCompatActivity() {
                             val values = ContentValues()
                             values.put(
                                 MediaStore.MediaColumns.DISPLAY_NAME,
-                                "$secilenGrade - $secilenZamanAraligi"
+                                "$secilenGrade - $secilenZamanAraligi - $current"
                             ) //file name
                             values.put(
                                 MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
@@ -204,7 +210,7 @@ class StatsActivity : AppCompatActivity() {
         } else {
             val filePath = File(
                 Environment.getExternalStorageDirectory()
-                    .toString() + "/$secilenGrade - ${secilenZamanAraligi}.xlsx"
+                    .toString() + "/$secilenGrade - $secilenZamanAraligi - $current.xlsx"
             )
             try {
                 if (!filePath.exists()) {
@@ -783,21 +789,21 @@ class StatsActivity : AppCompatActivity() {
 
     private fun askForPermissions() {
 
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                //İzin Verilmedi, iste
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), 1
-                )
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //İzin Verilmedi, iste
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), 1
+            )
 
 
-            } else {
-                createExcel()
-            }
+        } else {
+            createExcel()
+        }
 
     }
 

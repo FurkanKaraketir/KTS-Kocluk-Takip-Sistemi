@@ -42,6 +42,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -391,8 +392,13 @@ class StudiesActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("Range", "Recycle")
+    @SuppressLint("Range", "Recycle", "SimpleDateFormat")
     private fun createExcel() {
+
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val current = formatter.format(time)
+
         val contentUri = MediaStore.Files.getContentUri("external")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -418,7 +424,8 @@ class StudiesActivity : AppCompatActivity() {
                     try {
                         val values = ContentValues()
                         values.put(
-                            MediaStore.MediaColumns.DISPLAY_NAME, "$name - $secilenZamanAraligi"
+                            MediaStore.MediaColumns.DISPLAY_NAME,
+                            "$name - $secilenZamanAraligi - $current"
                         ) //file name
                         values.put(
                             MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
@@ -446,7 +453,7 @@ class StudiesActivity : AppCompatActivity() {
                     while (cursor.moveToNext()) {
                         val fileName: String =
                             cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$name - $secilenZamanAraligi.xls") {                          //must include extension
+                        if (fileName == "$name - $secilenZamanAraligi - $current.xls") {                          //must include extension
                             val id: Long =
                                 cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
                             uri = ContentUris.withAppendedId(contentUri, id)
@@ -456,14 +463,15 @@ class StudiesActivity : AppCompatActivity() {
                     if (uri == null) {
                         Toast.makeText(
                             this,
-                            "\"$name - $secilenZamanAraligi.xls\" Bulunamadı",
+                            "\"$name - $secilenZamanAraligi - $current.xls\" Bulunamadı",
                             Toast.LENGTH_SHORT
                         ).show()
 
                         try {
                             val values = ContentValues()
                             values.put(
-                                MediaStore.MediaColumns.DISPLAY_NAME, "$name - $secilenZamanAraligi"
+                                MediaStore.MediaColumns.DISPLAY_NAME,
+                                "$name - $secilenZamanAraligi - $current"
                             ) //file name
                             values.put(
                                 MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
@@ -511,7 +519,7 @@ class StudiesActivity : AppCompatActivity() {
         } else {
             val filePath = File(
                 Environment.getExternalStorageDirectory()
-                    .toString() + "/$name - ${secilenZamanAraligi}.xlsx"
+                    .toString() + "/$name - $secilenZamanAraligi - $current.xlsx"
             )
             try {
                 if (!filePath.exists()) {
