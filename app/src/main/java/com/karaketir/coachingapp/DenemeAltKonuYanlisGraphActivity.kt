@@ -1,62 +1,44 @@
-@file:Suppress("KotlinConstantConditions")
-
 package com.karaketir.coachingapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.anychart.AnyChart
-import com.anychart.AnyChart.pie
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.anychart.chart.common.listener.Event
-import com.anychart.chart.common.listener.ListenersInterface
 import com.anychart.charts.Cartesian
 import com.anychart.core.cartesian.series.Column
-import com.anychart.enums.*
+import com.anychart.enums.Anchor
+import com.anychart.enums.HoverMode
+import com.anychart.enums.Position
+import com.anychart.enums.TooltipPositionMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.karaketir.coachingapp.databinding.ActivityDenemeGraphBinding
+import com.karaketir.coachingapp.databinding.ActivityDenemeAltKonuYanlisGraphBinding
 import java.util.*
 
-
-class DenemeGraphActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
+class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
 
 
-    private lateinit var binding: ActivityDenemeGraphBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
+    private lateinit var binding: ActivityDenemeAltKonuYanlisGraphBinding
     private var zamanAraligi = ""
     private var denemeOwnerID = ""
+    private var konuAdi = ""
     private var dersAdi = ""
+    private var value = ""
     private var denemeTur = ""
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        binding = ActivityDenemeGraphBinding.inflate(layoutInflater)
-
+        binding = ActivityDenemeAltKonuYanlisGraphBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
@@ -66,6 +48,8 @@ class DenemeGraphActivity : AppCompatActivity() {
         zamanAraligi = intent.getStringExtra("zamanAraligi").toString()
         denemeOwnerID = intent.getStringExtra("denemeOwnerID").toString()
         dersAdi = intent.getStringExtra("dersAdi").toString()
+        value = intent.getStringExtra("value").toString()
+        konuAdi = intent.getStringExtra("konuAdi").toString()
 
 
         var cal = Calendar.getInstance()
@@ -74,7 +58,6 @@ class DenemeGraphActivity : AppCompatActivity() {
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)
         cal.clear(Calendar.MILLISECOND)
-
 
         when (zamanAraligi) {
             "Bugün" -> {
@@ -150,7 +133,6 @@ class DenemeGraphActivity : AppCompatActivity() {
 
         val konuHashMap = hashMapOf<String, Int>()
         konuHashMap.clear()
-
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             kurumKodu = it.get("kurumKodu").toString().toInt()
 
@@ -172,6 +154,7 @@ class DenemeGraphActivity : AppCompatActivity() {
                             db.collection("School").document(kurumKodu.toString())
                                 .collection("Student").document(denemeOwnerID)
                                 .collection("Denemeler").document(id).collection(dersAdi)
+                                .document(konuAdi).collection("AltKonu")
                                 .addSnapshotListener { konular, _ ->
                                     if (konular != null) {
                                         for (konu in konular) {
@@ -215,7 +198,7 @@ class DenemeGraphActivity : AppCompatActivity() {
         Toast.makeText(this, "Grafiği Görmek İçin Sağ Üsteki Butona Basın", Toast.LENGTH_LONG)
             .show()
 
-        val showBtn = binding.showBtn
+        val showBtn = binding.showAltKonuBtn
         showBtn.setOnClickListener {
             drawGraph(konuHashMap)
 
@@ -224,11 +207,10 @@ class DenemeGraphActivity : AppCompatActivity() {
 
     }
 
-
     private fun drawGraph(konuHashMap: HashMap<String, Int>) {
         val data: MutableList<DataEntry> = ArrayList()
         val cartesian: Cartesian = AnyChart.column()
-        val anyChartView = binding.anyChartDenemeView
+        val anyChartView = binding.anyChartDenemeAltKonuView
 
         val sortedMap = konuHashMap.toList().sortedBy { (key, _) -> key }.toMap()
 
@@ -242,34 +224,12 @@ class DenemeGraphActivity : AppCompatActivity() {
 
         val column: Column = cartesian.column(data)
 
-        cartesian.setOnClickListener(object :
-            ListenersInterface.OnClickListener(arrayOf("x", "value")) {
-            override fun onClick(event: Event) {
-
-                Toast.makeText(
-                    this@DenemeGraphActivity,
-                    event.data["x"] + " - " + event.data["value"],
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                val intentOne =
-                    Intent(this@DenemeGraphActivity, DenemeAltKonuYanlisGraphActivity::class.java)
-                intentOne.putExtra("dersAdi", dersAdi)
-                intentOne.putExtra("denemeTür", denemeTur)
-                intentOne.putExtra("denemeOwnerID", denemeOwnerID)
-                intentOne.putExtra("zamanAraligi", zamanAraligi)
-                intentOne.putExtra("konuAdi", event.data["x"])
-                intentOne.putExtra("value", event.data["value"])
-                this@DenemeGraphActivity.startActivity(intentOne)
-            }
-        })
-
         column.tooltip().titleFormat("{%X}").position(Position.CENTER_BOTTOM)
             .anchor(Anchor.CENTER_BOTTOM).offsetX(0.0).offsetY(5.0)
             .format("{%Value}{groupsSeparator:.}")
 
         cartesian.animation(true)
-        val title = "$dersAdi $zamanAraligi Deneme Yanlışları Konu Dağılımı"
+        val title = "$konuAdi - $value $zamanAraligi Deneme Yanlışları Konu Dağılımı"
         cartesian.title(title)
 
         cartesian.yScale().minimum(0.0)

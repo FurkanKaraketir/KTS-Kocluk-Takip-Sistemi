@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 58
-        versionName "v0.1.8"
+        versionCode 60
+        versionName "v0.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,11 +60,11 @@ dependencies {
     implementation 'com.github.dhaval2404:imagepicker:2.1'
     implementation 'com.giphy.sdk:ui:2.3.0'
 
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.2'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.2'
-    implementation 'com.google.firebase:firebase-perf-ktx:20.3.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.3'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.3.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 
     implementation 'com.google.android.gms:play-services-ads:21.4.0'
