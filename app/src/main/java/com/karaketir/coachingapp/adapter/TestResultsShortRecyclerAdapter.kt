@@ -30,9 +30,9 @@ class TestResultsShortRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: ResultHolder, position: Int) {
-        if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+            if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
+
                 binding.nameText.text = studentList[position].name
                 binding.netText.text = studentList[position].toplamNet.toString()
                 binding.cardDenemeResult.setOnClickListener {
@@ -46,9 +46,6 @@ class TestResultsShortRecyclerAdapter(
                 }
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

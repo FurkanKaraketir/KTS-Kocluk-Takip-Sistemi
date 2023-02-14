@@ -42,9 +42,8 @@ class DenemeKonulariShowMoreRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: KonuHolder, position: Int) {
-        if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+            if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
 
                 auth = Firebase.auth
                 db = Firebase.firestore
@@ -145,9 +144,6 @@ class DenemeKonulariShowMoreRecyclerAdapter(
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

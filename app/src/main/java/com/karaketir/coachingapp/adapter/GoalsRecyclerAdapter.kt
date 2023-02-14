@@ -38,9 +38,11 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
     override fun onBindViewHolder(holder: GoalHolder, position: Int) {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        if (goalList.isNotEmpty() && position >= 0 && position < goalList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (goalList.isNotEmpty() && position >= 0 && position < goalList.size) {
+
+
                 binding.goalDersAdi.text = goalList[position].dersAdi
                 binding.hedefToplamCalisma.text =
                     "Hedef Toplam Çalışma: " + goalList[position].toplamCalisma.toString() + "dk"
@@ -140,9 +142,6 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

@@ -47,9 +47,10 @@ open class DenemeKonulariRecyclerAdapter(
 
     override fun onBindViewHolder(holder: KonuHolder, @SuppressLint("RecyclerView") position: Int) {
 
-        if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
@@ -94,9 +95,6 @@ open class DenemeKonulariRecyclerAdapter(
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
 

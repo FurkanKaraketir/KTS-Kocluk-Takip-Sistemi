@@ -44,9 +44,10 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onBindViewHolder(holder: DutyHolder, position: Int) {
 
-        if (dutyList.isNotEmpty() && position >= 0 && position < dutyList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (dutyList.isNotEmpty() && position >= 0 && position < dutyList.size) {
+
                 auth = Firebase.auth
                 db = Firebase.firestore
                 var kurumKodu: Int
@@ -134,11 +135,7 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
-
 
     }
 

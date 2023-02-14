@@ -29,9 +29,11 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: RatingHolder, position: Int) {
-        if (ratingsList.isNotEmpty() && position >= 0 && position < ratingsList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (ratingsList.isNotEmpty() && position >= 0 && position < ratingsList.size) {
+
+
                 when (ratingsList[position].starCount) {
                     1 -> {
                         binding.starOne.visibility = View.VISIBLE
@@ -78,9 +80,6 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
                 binding.raingDateText.text = "Çalışma Tarihi: $dateFormated"
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

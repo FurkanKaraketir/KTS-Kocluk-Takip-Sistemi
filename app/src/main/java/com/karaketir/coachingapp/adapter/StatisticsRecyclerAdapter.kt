@@ -25,9 +25,10 @@ class StatisticsRecyclerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: StatisticHolder, position: Int) {
-        if (statisticList.isNotEmpty() && position >= 0 && position < statisticList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (statisticList.isNotEmpty() && position >= 0 && position < statisticList.size) {
+
 
                 if (statisticList[position].dersAdi == "Deneme") {
                     binding.statsDersAdi.text = "Deneme Tahlili"
@@ -44,9 +45,6 @@ class StatisticsRecyclerAdapter(
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

@@ -27,10 +27,9 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
     }
 
     override fun onBindViewHolder(holder: StudentHolder, position: Int) {
+        with(holder) {
+            if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
 
-        if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
-            // code to access the element at the specified index
-            with(holder) {
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
                 var kurumKodu: Int
@@ -65,9 +64,6 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
 

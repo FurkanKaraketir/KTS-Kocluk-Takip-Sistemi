@@ -37,9 +37,11 @@ open class StudiesRecyclerAdapter(
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onBindViewHolder(holder: StudyHolder, position: Int) {
-        if (studyList.isNotEmpty() && position >= 0 && position < studyList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (studyList.isNotEmpty() && position >= 0 && position < studyList.size) {
+
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
                 val date = studyList[position].timestamp.toDate()
@@ -170,9 +172,6 @@ open class StudiesRecyclerAdapter(
 
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
     }

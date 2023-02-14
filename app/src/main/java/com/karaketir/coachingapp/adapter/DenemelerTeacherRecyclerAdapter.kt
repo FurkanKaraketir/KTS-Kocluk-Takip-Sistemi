@@ -34,9 +34,9 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
     }
 
     override fun onBindViewHolder(holder: DenemeHolder, position: Int) {
-        if (denemeList.isNotEmpty() && position >= 0 && position < denemeList.size) {
-            // code to access the element at the specified index
-            with(holder) {
+        with(holder) {
+
+            if (denemeList.isNotEmpty() && position >= 0 && position < denemeList.size) {
 
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
@@ -90,9 +90,6 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
                 }
             }
 
-        } else {
-            // handle the error
-            println("Hata")
         }
 
 
