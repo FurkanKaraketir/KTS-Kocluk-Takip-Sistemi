@@ -41,10 +41,11 @@ open class StudiesRecyclerAdapter(
 
             if (studyList.isNotEmpty() && position >= 0 && position < studyList.size) {
 
+                val myItem = studyList[position]
 
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
-                val date = studyList[position].timestamp.toDate()
+                val date = myItem.timestamp.toDate()
                 val sdf = SimpleDateFormat("EEEE")
                 val dayOfTheWeek = sdf.format(date)
 
@@ -55,86 +56,75 @@ open class StudiesRecyclerAdapter(
 
                     if (it.get("personType").toString() == "Student") {
 
-                        binding.studyGridRowStudyNameTextView.text = studyList[position].studyName
+                        binding.studyGridRowStudyNameTextView.text = myItem.studyName
                         binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
                         binding.studyGridRowStudyCountTextView.visibility = View.VISIBLE
-                        binding.studyTurText.text = studyList[position].dersTur
-                        binding.studyDersText.text = studyList[position].studyDersAdi
-                        binding.studyGridRowStudyMinuteTextView.text =
-                            studyList[position].studyCount + "dk"
-                        binding.studyGridRowStudyCountTextView.text =
-                            studyList[position].soruSayisi + " Soru"
+                        binding.studyTurText.text = myItem.dersTur
+                        binding.studyDersText.text = myItem.studyDersAdi
+                        binding.studyGridRowStudyMinuteTextView.text = myItem.studyCount + "dk"
+                        binding.studyGridRowStudyCountTextView.text = myItem.soruSayisi + " Soru"
                     } else {
-                        if (position < studyList.size) {
 
-                            binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
-                            binding.studyGridRowStudyCountTextView.visibility = View.VISIBLE
-
-                            binding.studyGridRowStudyNameTextView.text =
-                                studyList[position].studyName
-                            binding.studyGridRowStudyMinuteTextView.text =
-                                studyList[position].studyCount + "dk"
-                            binding.studyGridRowStudyCountTextView.text =
-                                studyList[position].soruSayisi + " Soru"
-                            binding.studyTurText.text = studyList[position].dersTur
-                            binding.studyDersText.text = studyList[position].studyDersAdi
+                        binding.studyGridRowStudyMinuteTextView.visibility = View.VISIBLE
+                        binding.studyGridRowStudyCountTextView.visibility = View.VISIBLE
+                        binding.studyGridRowStudyNameTextView.text = myItem.studyName
+                        binding.studyGridRowStudyMinuteTextView.text = myItem.studyCount + "dk"
+                        binding.studyGridRowStudyCountTextView.text = myItem.soruSayisi + " Soru"
+                        binding.studyTurText.text = myItem.dersTur
+                        binding.studyDersText.text = myItem.studyDersAdi
 
 
 
 
-                            binding.studyGridCard.setOnClickListener {
+                        binding.studyGridCard.setOnClickListener {
 
-                                val soruOrSureAlertDialog =
-                                    AlertDialog.Builder(holder.itemView.context)
-                                soruOrSureAlertDialog.setTitle("Soru-Süre Grafikleri")
-                                soruOrSureAlertDialog.setMessage(studyList[position].dersTur + " " + studyList[position].studyDersAdi + " " + studyList[position].studyName + " Konusundaki Görmek İstediğiniz Grafik Türünü Seçiniz")
-                                soruOrSureAlertDialog.setPositiveButton("SÜRE GRAFİĞİ") { _, _ ->
+                            val soruOrSureAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                            soruOrSureAlertDialog.setTitle("Soru-Süre Grafikleri")
+                            soruOrSureAlertDialog.setMessage(myItem.dersTur + " " + myItem.studyDersAdi + " " + myItem.studyName + " Konusundaki Görmek İstediğiniz Grafik Türünü Seçiniz")
+                            soruOrSureAlertDialog.setPositiveButton("SÜRE GRAFİĞİ") { _, _ ->
 
-                                    val intent = Intent(
-                                        holder.itemView.context, StudentGraphActivity::class.java
-                                    )
-                                    intent.putExtra(
-                                        "studyOwnerID", studyList[position].studyOwnerID
-                                    )
-                                    intent.putExtra("zamanAraligi", zamanAraligi)
-                                    intent.putExtra("grafikTuru", "Süre")
-                                    intent.putExtra(
-                                        "studyDersAdi", studyList[position].studyDersAdi
-                                    )
-                                    intent.putExtra("studyKonuAdi", studyList[position].studyName)
-                                    intent.putExtra("studyTur", studyList[position].dersTur)
-                                    intent.putExtra("soruSayisi", studyList[position].soruSayisi)
-                                    holder.itemView.context.startActivity(intent)
-                                }
-
-                                soruOrSureAlertDialog.setNegativeButton("SORU GRAFİĞİ") { _, _ ->
-                                    val intent = Intent(
-                                        holder.itemView.context, StudentGraphActivity::class.java
-                                    )
-                                    intent.putExtra(
-                                        "studyOwnerID", studyList[position].studyOwnerID
-                                    )
-                                    intent.putExtra("zamanAraligi", zamanAraligi)
-                                    intent.putExtra("grafikTuru", "Soru")
-                                    intent.putExtra(
-                                        "studyDersAdi", studyList[position].studyDersAdi
-                                    )
-                                    intent.putExtra("studyKonuAdi", studyList[position].studyName)
-                                    intent.putExtra("studyTur", studyList[position].dersTur)
-                                    intent.putExtra("soruSayisi", studyList[position].soruSayisi)
-
-                                    holder.itemView.context.startActivity(intent)
-                                }
-                                soruOrSureAlertDialog.show()
-
-
+                                val intent = Intent(
+                                    holder.itemView.context, StudentGraphActivity::class.java
+                                )
+                                intent.putExtra(
+                                    "studyOwnerID", myItem.studyOwnerID
+                                )
+                                intent.putExtra("zamanAraligi", zamanAraligi)
+                                intent.putExtra("grafikTuru", "Süre")
+                                intent.putExtra(
+                                    "studyDersAdi", myItem.studyDersAdi
+                                )
+                                intent.putExtra("studyKonuAdi", myItem.studyName)
+                                intent.putExtra("studyTur", myItem.dersTur)
+                                intent.putExtra("soruSayisi", myItem.soruSayisi)
+                                holder.itemView.context.startActivity(intent)
                             }
+
+                            soruOrSureAlertDialog.setNegativeButton("SORU GRAFİĞİ") { _, _ ->
+                                val intent = Intent(
+                                    holder.itemView.context, StudentGraphActivity::class.java
+                                )
+                                intent.putExtra(
+                                    "studyOwnerID", myItem.studyOwnerID
+                                )
+                                intent.putExtra("zamanAraligi", zamanAraligi)
+                                intent.putExtra("grafikTuru", "Soru")
+                                intent.putExtra(
+                                    "studyDersAdi", myItem.studyDersAdi
+                                )
+                                intent.putExtra("studyKonuAdi", myItem.studyName)
+                                intent.putExtra("studyTur", myItem.dersTur)
+                                intent.putExtra("soruSayisi", myItem.soruSayisi)
+
+                                holder.itemView.context.startActivity(intent)
+                            }
+                            soruOrSureAlertDialog.show()
+
+
                         }
                     }
 
                 }
-
-                studyList[position].studyID
 
                 binding.studyDeleteButton.setOnClickListener {
 
@@ -148,9 +138,8 @@ open class StudiesRecyclerAdapter(
 
                                 val kurumKodu = it.get("kurumKodu").toString()
                                 db.collection("School").document(kurumKodu).collection("Student")
-                                    .document(studyList[position].studyOwnerID)
-                                    .collection("Studies").document(studyList[position].studyID)
-                                    .delete().addOnSuccessListener {
+                                    .document(myItem.studyOwnerID).collection("Studies")
+                                    .document(myItem.studyID).delete().addOnSuccessListener {
                                         Toast.makeText(
                                             holder.itemView.context,
                                             "İşlem Başarılı!",

@@ -35,27 +35,28 @@ class ClassesAdapter(private val classList: ArrayList<com.karaketir.coachingapp.
         with(holder) {
             if (classList.isNotEmpty() && position >= 0 && position < classList.size) {
 
+                val myItem = classList[position]
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
-                binding.dersAdiTextView.text = classList[position].dersAdi
+                binding.dersAdiTextView.text = myItem.dersAdi
                 binding.dersAdiCard.setOnClickListener {
                     val intent = Intent(
                         holder.itemView.context, ActivityStudiesByClasses::class.java
                     )
-                    intent.putExtra("studentID", classList[position].studentID)
-                    intent.putExtra("dersAdi", classList[position].dersAdi)
-                    intent.putExtra("baslangicTarihi", classList[position].baslangicTarihi)
-                    intent.putExtra("bitisTarihi", classList[position].bitisTarihi)
-                    intent.putExtra("secilenZamanAraligi", classList[position].secilenZamanAraligi)
+                    intent.putExtra("studentID", myItem.studentID)
+                    intent.putExtra("dersAdi", myItem.dersAdi)
+                    intent.putExtra("baslangicTarihi", myItem.baslangicTarihi)
+                    intent.putExtra("bitisTarihi", myItem.bitisTarihi)
+                    intent.putExtra("secilenZamanAraligi", myItem.secilenZamanAraligi)
                     holder.itemView.context.startActivity(intent)
                 }
-                binding.toplamCalismaTextView.text =
-                    classList[position].toplamCalisma.toString() + "dk"
+                binding.toplamCalismaTextView.text = myItem.toplamCalisma.toString() + "dk"
 
-                binding.soruSayisiTextView.text =
-                    classList[position].cozulenSoru.toString() + " Soru"
-                if (classList[position].toplamCalisma != 0 && classList[position].cozulenSoru != 0) {
+                binding.soruSayisiTextView.text = myItem.cozulenSoru.toString() + " Soru"
+
+                if (myItem.toplamCalisma != 0 && myItem.cozulenSoru != 0) {
                     binding.classIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                 } else {
                     binding.classIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)

@@ -39,28 +39,29 @@ open class StudentsRecyclerAdapter(
 
             if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
 
+                val myItem = studentList[position]
 
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
-                binding.studentNameTextView.text = studentList[position].studentName
-                binding.studentGradeTextView.text = studentList[position].grade.toString()
+                binding.studentNameTextView.text = myItem.studentName
+                binding.studentGradeTextView.text = myItem.grade.toString()
 
                 binding.studentAddButton.visibility = View.GONE
                 binding.studentDeleteButton.visibility = View.VISIBLE
+
                 binding.studentDeleteButton.setOnClickListener {
 
                     db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                         val kurumKodu = it.get("kurumKodu").toString().toInt()
-                        binding.studentNameTextView.text = studentList[position].studentName
+                        binding.studentNameTextView.text = myItem.studentName
                         val removeStudent = AlertDialog.Builder(holder.itemView.context)
                         removeStudent.setTitle("Öğrenci Çıkar")
-                        removeStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                        removeStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
                         removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
 
                             db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(studentList[position].id)
-                                .update("teacher", "")
+                                .collection("Student").document(myItem.id).update("teacher", "")
                         }
                         removeStudent.setNegativeButton("İPTAL") { _, _ ->
 
@@ -74,7 +75,7 @@ open class StudentsRecyclerAdapter(
                 binding.studentCard.setOnClickListener {
                     val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
                     intent.putExtra("secilenZaman", secilenZaman)
-                    intent.putExtra("studentID", studentList[position].id)
+                    intent.putExtra("studentID", myItem.id)
                     holder.itemView.context.startActivity(intent)
                 }
 
@@ -172,7 +173,7 @@ open class StudentsRecyclerAdapter(
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     val kurumKodu = it.get("kurumKodu").toString().toInt()
                     db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentList[position].id).collection("Studies")
+                        .document(myItem.id).collection("Studies")
                         .whereGreaterThan("timestamp", baslangicTarihi)
                         .whereLessThan("timestamp", bitisTarihi)
                         .addSnapshotListener { value, error ->
@@ -195,7 +196,7 @@ open class StudentsRecyclerAdapter(
                         }
 
                     db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentList[position].id).collection("Degerlendirme")
+                        .document(myItem.id).collection("Degerlendirme")
                         .orderBy("degerlendirmeDate", Query.Direction.DESCENDING).limit(1)
                         .addSnapshotListener { value, error ->
 

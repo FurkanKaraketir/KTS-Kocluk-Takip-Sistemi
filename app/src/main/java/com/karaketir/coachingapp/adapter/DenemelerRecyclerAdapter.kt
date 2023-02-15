@@ -43,12 +43,14 @@ class DenemelerRecyclerAdapter(
         with(holder) {
             if (denemeList.isNotEmpty() && position >= 0 && position < denemeList.size) {
 
+                val myItem = denemeList[position]
+
                 auth = Firebase.auth
                 db = Firebase.firestore
-                binding.denemeAdiTextView.text = denemeList[position].denemeAdi
+                binding.denemeAdiTextView.text = myItem.denemeAdi
                 binding.denemeToplamNetTextView.text =
-                    "Toplam Net: " + denemeList[position].denemeToplamNet.toString() + " " + denemeList[position].denemeTur
-                val date = denemeList[position].denemeTarihi.toDate()
+                    "Toplam Net: " + myItem.denemeToplamNet.toString() + " " + myItem.denemeTur
+                val date = myItem.denemeTarihi.toDate()
                 val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
 
                 binding.denemeTarihTextView.text = dateFormated
@@ -56,10 +58,10 @@ class DenemelerRecyclerAdapter(
                 binding.denemeCard.setOnClickListener {
                     val intent =
                         Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
-                    intent.putExtra("denemeID", denemeList[position].denemeID)
+                    intent.putExtra("denemeID", myItem.denemeID)
                     intent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
-                    intent.putExtra("denemeStudentID", denemeList[position].denemeStudentID)
-                    intent.putExtra("denemeTür", denemeList[position].denemeTur)
+                    intent.putExtra("denemeStudentID", myItem.denemeStudentID)
+                    intent.putExtra("denemeTür", myItem.denemeTur)
                     holder.itemView.context.startActivity(intent)
                 }
                 binding.denemeDeleteStudentButton.setOnClickListener {
@@ -72,10 +74,9 @@ class DenemelerRecyclerAdapter(
                         deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
 
                             db.collection("School").document(kurumKodu.toString())
-                                .collection("Student")
-                                .document(denemeList[position].denemeStudentID)
-                                .collection("Denemeler").document(denemeList[position].denemeID)
-                                .delete().addOnSuccessListener {
+                                .collection("Student").document(myItem.denemeStudentID)
+                                .collection("Denemeler").document(myItem.denemeID).delete()
+                                .addOnSuccessListener {
                                     Toast.makeText(
                                         holder.itemView.context,
                                         "İşlem Başarılı!",

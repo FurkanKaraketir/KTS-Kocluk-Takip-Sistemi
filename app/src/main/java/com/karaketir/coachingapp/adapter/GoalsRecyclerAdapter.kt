@@ -42,12 +42,12 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
 
             if (goalList.isNotEmpty() && position >= 0 && position < goalList.size) {
 
+                val myItem = goalList[position]
 
-                binding.goalDersAdi.text = goalList[position].dersAdi
+                binding.goalDersAdi.text = myItem.dersAdi
                 binding.hedefToplamCalisma.text =
-                    "Hedef Toplam Çalışma: " + goalList[position].toplamCalisma.toString() + "dk"
-                binding.hedefSoru.text =
-                    "Hedef Toplam Soru: " + goalList[position].cozulenSoru.toString()
+                    "Hedef Toplam Çalışma: " + myItem.toplamCalisma.toString() + "dk"
+                binding.hedefSoru.text = "Hedef Toplam Soru: " + myItem.cozulenSoru.toString()
                 val cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -79,10 +79,8 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
 
                             deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
                                 db.collection("School").document(kurumKodu.toString())
-                                    .collection("Student")
-                                    .document(goalList[position].studentOwnerID)
-                                    .collection("HaftalikHedefler")
-                                    .document(goalList[position].goalID).delete()
+                                    .collection("Student").document(myItem.studentOwnerID)
+                                    .collection("HaftalikHedefler").document(myItem.goalID).delete()
                                     .addOnSuccessListener {
                                         Toast.makeText(
                                             holder.itemView.context,
@@ -104,8 +102,8 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
 
 
                     db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(goalList[position].studentOwnerID).collection("Studies")
-                        .whereEqualTo("dersAdi", goalList[position].dersAdi)
+                        .document(myItem.studentOwnerID).collection("Studies")
+                        .whereEqualTo("dersAdi", myItem.dersAdi)
                         .whereGreaterThan("timestamp", baslangicTarihi)
                         .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, _ ->
 
@@ -123,13 +121,13 @@ class GoalsRecyclerAdapter(private val goalList: ArrayList<Goal>) :
                             println(toplamCalisma.toString())
                             binding.haftaToplamCalisma.text =
                                 "Geçen Hafta Toplam Çalışma: $toplamCalisma" + "dk"
-                            if (toplamCalisma < goalList[position].toplamCalisma) {
+                            if (toplamCalisma < myItem.toplamCalisma) {
                                 binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
                             } else {
                                 binding.haftaSureImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                             }
 
-                            if (cozulenSoru < goalList[position].cozulenSoru) {
+                            if (cozulenSoru < myItem.cozulenSoru) {
                                 binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
                             } else {
                                 binding.haftaSoruImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)

@@ -48,40 +48,41 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
 
             if (dutyList.isNotEmpty() && position >= 0 && position < dutyList.size) {
 
+                val myItem = dutyList[position]
+
                 auth = Firebase.auth
                 db = Firebase.firestore
                 var kurumKodu: Int
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     kurumKodu = it.get("kurumKodu").toString().toInt()
+                    binding.dutyKonuAdiTextView.text = myItem.konuAdi
+                    binding.dutyTurText.text = myItem.tur
+                    binding.dutyDersText.text = myItem.dersAdi
 
-                    binding.dutyKonuAdiTextView.text = dutyList[position].konuAdi
-                    binding.dutyTurText.text = dutyList[position].tur
-                    binding.dutyDersText.text = dutyList[position].dersAdi
-
-                    if (dutyList[position].toplamCalisma.toInt() < 0) {
+                    if (myItem.toplamCalisma.toInt() < 0) {
                         binding.dutyToplamCalisma.text = "0 dk"
                     } else {
-                        binding.dutyToplamCalisma.text = dutyList[position].toplamCalisma + "dk"
+                        binding.dutyToplamCalisma.text = myItem.toplamCalisma + "dk"
                     }
 
-                    if (dutyList[position].cozulenSoru.toInt() < 0) {
+                    if (myItem.cozulenSoru.toInt() < 0) {
                         binding.dutyCozulenSoru.text = "0 Soru"
                     } else {
-                        binding.dutyCozulenSoru.text = dutyList[position].cozulenSoru + " Soru"
+                        binding.dutyCozulenSoru.text = myItem.cozulenSoru + " Soru"
                     }
 
-                    val date = dutyList[position].bitisZamani.toDate()
+                    val date = myItem.bitisZamani.toDate()
                     val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
 
                     binding.bitisZamaniText.text = "Görev Bitiş Tarihi \n$dateFormated"
 
                     db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(dutyList[position].studyOwnerID).collection("Duties")
-                        .document(dutyList[position].dutyID).get().addOnSuccessListener { it2 ->
+                        .document(myItem.studyOwnerID).collection("Duties").document(myItem.dutyID)
+                        .get().addOnSuccessListener { it2 ->
                             val bitisZamani = it2.get("bitisZamani") as Timestamp
                             bitisZamani.toDate()
 
-                            if (dutyList[position].dutyTamamlandi) {
+                            if (myItem.dutyTamamlandi) {
                                 binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                             } else {
                                 if (Calendar.getInstance().time.after(date)) {
@@ -109,10 +110,9 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
                                 .addOnSuccessListener {
 
                                     db.collection("School").document(kurumKodu.toString())
-                                        .collection("Student")
-                                        .document(dutyList[position].studyOwnerID)
-                                        .collection("Duties").document(dutyList[position].dutyID)
-                                        .delete().addOnSuccessListener {
+                                        .collection("Student").document(myItem.studyOwnerID)
+                                        .collection("Duties").document(myItem.dutyID).delete()
+                                        .addOnSuccessListener {
                                             Toast.makeText(
                                                 holder.itemView.context,
                                                 "İşlem Başarılı!",

@@ -45,13 +45,13 @@ class DenemeKonulariShowMoreRecyclerAdapter(
         with(holder) {
             if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
 
+                val myItem = itemList[position]
+
                 auth = Firebase.auth
                 db = Firebase.firestore
 
-                val item: Item = itemList[position]
-
-                db.collection("Lessons").document(item.dersAdi).collection(item.tur)
-                    .document(item.itemTitle).get().addOnSuccessListener {
+                db.collection("Lessons").document(myItem.dersAdi).collection(myItem.tur)
+                    .document(myItem.itemTitle).get().addOnSuccessListener {
                         binding.denemeKonuAdi.text = it.get("konuAdi").toString()
                     }
 
@@ -72,14 +72,14 @@ class DenemeKonulariShowMoreRecyclerAdapter(
                 val layoutManager = LinearLayoutManager(
                     binding.showMoreSubjects.context, LinearLayoutManager.VERTICAL, false
                 )
-                layoutManager.initialPrefetchItemCount = item.getSubItemList().size
+                layoutManager.initialPrefetchItemCount = myItem.getSubItemList().size
 
                 // Create sub item view adapter
 
 
                 // Create sub item view adapter
                 val subItemAdapter =
-                    DenemeKonulariRecyclerAdapter(item.getSubItemList(), item.dersAdi)
+                    DenemeKonulariRecyclerAdapter(myItem.getSubItemList(), myItem.dersAdi)
                 binding.showMoreSubjects.layoutManager = layoutManager
                 binding.showMoreSubjects.adapter = subItemAdapter
                 binding.showMoreSubjects.setRecycledViewPool(viewPool)

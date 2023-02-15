@@ -29,17 +29,18 @@ class StatisticsRecyclerAdapter(
 
             if (statisticList.isNotEmpty() && position >= 0 && position < statisticList.size) {
 
+                val myItem = statisticList[position]
 
-                if (statisticList[position].dersAdi == "Deneme") {
+                if (myItem.dersAdi == "Deneme") {
                     binding.statsDersAdi.text = "Deneme Tahlili"
                 } else {
-                    binding.statsDersAdi.text = statisticList[position].dersAdi
+                    binding.statsDersAdi.text = myItem.dersAdi
                 }
                 binding.statsToplamCalisma.text = "Ortalama Çalışılan Süre:  ${
-                    statisticList[position].toplamCalisma.toFloat().format(2)
+                    myItem.toplamCalisma.toFloat().format(2)
                 } dk"
                 binding.statsCozulenSoru.text = "Ortalama Çözülen Soru:  ${
-                    statisticList[position].cozulenSoru.toFloat().format(2)
+                    myItem.cozulenSoru.toFloat().format(2)
                 } Soru"
 
 

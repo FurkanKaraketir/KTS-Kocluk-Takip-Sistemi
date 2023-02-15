@@ -72,21 +72,24 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         kullanici.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link", "https://www.furkankaraketir.com/post/kullan%C4%B1m-ko%C5%9Fullar%C4%B1"
+                "link",
+                "https://docs.google.com/document/d/1mzyFHaD6UUrB85BkXRO9r3fS8_jo_sUxoDPbn0Qi2kk/edit?usp=sharing"
             )
             this.startActivity(intent)
         }
         gizlilik.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link", "https://www.furkankaraketir.com/post/gizlilik-politikas%C4%B1"
+                "link",
+                "https://docs.google.com/document/d/1cDKP_HRTnQhVJS3u1uYQeLqU4x3_4HCNQreBE5JCIag/edit?usp=sharing"
             )
             this.startActivity(intent)
         }
         cerez.setOnClickListener {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra(
-                "link", "https://www.furkankaraketir.com/post/%C3%A7erez-politikas%C4%B1"
+                "link",
+                "https://docs.google.com/document/d/1jFbZ8IW4AEb8ZMBy57YLQAJAwl5uQ34W4q_yMhqc8aU/edit?usp=sharing"
             )
             this.startActivity(intent)
         }

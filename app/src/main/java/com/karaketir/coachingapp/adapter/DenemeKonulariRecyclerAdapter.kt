@@ -51,10 +51,12 @@ open class DenemeKonulariRecyclerAdapter(
 
             if (konuListesi.isNotEmpty() && position >= 0 && position < konuListesi.size) {
 
+                val myItem = konuListesi[position]
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
-                binding.denemeKonuAdi.text = konuListesi[position].subItemTitle
+                binding.denemeKonuAdi.text = myItem.subItemTitle
 
 
                 binding.denemeKonuYanlisEditText.addTextChangedListener(object : TextWatcher {

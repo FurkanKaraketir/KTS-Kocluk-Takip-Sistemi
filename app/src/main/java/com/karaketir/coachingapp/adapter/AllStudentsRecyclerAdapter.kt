@@ -30,6 +30,8 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
         with(holder) {
             if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
 
+                val myItem = studentList[position]
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
                 var kurumKodu: Int
@@ -37,18 +39,18 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                 binding.studentAddButton.visibility = View.VISIBLE
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     kurumKodu = it.get("kurumKodu").toString().toInt()
-                    binding.studentNameTextView.text = studentList[position].studentName
+                    binding.studentNameTextView.text = myItem.studentName
 
                     binding.studentAddButton.setOnClickListener {
 
                         val addStudent = AlertDialog.Builder(holder.itemView.context)
                         addStudent.setTitle("Öğrenci Ekle")
-                        addStudent.setMessage("${studentList[position].studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
+                        addStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
                         addStudent.setPositiveButton("EKLE") { _, _ ->
                             db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(studentList[position].id)
+                                .collection("Student").document(myItem.id)
                                 .update("teacher", auth.uid.toString())
-                            db.collection("User").document(studentList[position].id)
+                            db.collection("User").document(myItem.id)
                                 .update("teacher", auth.uid.toString())
                         }
                         addStudent.setNegativeButton("İPTAL") { _, _ ->
@@ -59,7 +61,7 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
                     }
                 }
-                binding.studentGradeTextView.text = studentList[position].grade.toString()
+                binding.studentGradeTextView.text = myItem.grade.toString()
 
 
             }

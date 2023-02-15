@@ -33,8 +33,9 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
 
             if (ratingsList.isNotEmpty() && position >= 0 && position < ratingsList.size) {
 
+                val myItem = ratingsList[position]
 
-                when (ratingsList[position].starCount) {
+                when (myItem.starCount) {
                     1 -> {
                         binding.starOne.visibility = View.VISIBLE
                         binding.starTwo.visibility = View.GONE
@@ -75,8 +76,7 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
 
                 }
 
-                val dateFormated =
-                    SimpleDateFormat("dd/MM/yyyy").format(ratingsList[position].ratingDate.toDate())
+                val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(myItem.ratingDate.toDate())
                 binding.raingDateText.text = "Çalışma Tarihi: $dateFormated"
             }
 

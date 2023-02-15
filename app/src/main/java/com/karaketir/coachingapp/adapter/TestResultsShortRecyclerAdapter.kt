@@ -33,14 +33,16 @@ class TestResultsShortRecyclerAdapter(
         with(holder) {
             if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
 
-                binding.nameText.text = studentList[position].name
-                binding.netText.text = studentList[position].toplamNet.toString()
+                val myItem = studentList[position]
+
+                binding.nameText.text = myItem.name
+                binding.netText.text = myItem.toplamNet.toString()
                 binding.cardDenemeResult.setOnClickListener {
                     val intent =
                         Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
-                    intent.putExtra("denemeID", studentList[position].denemeID)
-                    intent.putExtra("denemeTür", studentList[position].denemeTur)
-                    intent.putExtra("denemeStudentID", studentList[position].denemeOwnerID)
+                    intent.putExtra("denemeID", myItem.denemeID)
+                    intent.putExtra("denemeTür", myItem.denemeTur)
+                    intent.putExtra("denemeStudentID", myItem.denemeOwnerID)
                     intent.putExtra("secilenZamanAraligi", "Tüm Zamanlar")
                     holder.itemView.context.startActivity(intent)
                 }
