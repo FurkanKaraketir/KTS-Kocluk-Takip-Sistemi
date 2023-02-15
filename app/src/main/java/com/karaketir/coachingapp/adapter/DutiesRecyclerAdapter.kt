@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -76,23 +75,18 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
 
                     binding.bitisZamaniText.text = "Görev Bitiş Tarihi \n$dateFormated"
 
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(myItem.studyOwnerID).collection("Duties").document(myItem.dutyID)
-                        .get().addOnSuccessListener { it2 ->
-                            val bitisZamani = it2.get("bitisZamani") as Timestamp
-                            bitisZamani.toDate()
 
-                            if (myItem.dutyTamamlandi) {
-                                binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
-                            } else {
-                                if (Calendar.getInstance().time.after(date)) {
-                                    binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                                } else {
-                                    binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
-                                }
-                            }
-
+                    if (myItem.dutyTamamlandi) {
+                        binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                    } else {
+                        if (Calendar.getInstance().time.after(date)) {
+                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                        } else {
+                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
                         }
+                    }
+
+
 
                     if (it.get("personType").toString() == "Student") {
                         binding.deleteDutyButton.visibility = View.GONE
