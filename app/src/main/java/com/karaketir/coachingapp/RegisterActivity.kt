@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityRegisterBinding
+import com.karaketir.coachingapp.services.openLink
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
@@ -69,29 +70,24 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val kullanici = binding.kullanimBtn
         val gizlilik = binding.gizBtn
         val cerez = binding.cerezBtn
+
         kullanici.setOnClickListener {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(
-                "link",
-                "https://docs.google.com/document/d/1mzyFHaD6UUrB85BkXRO9r3fS8_jo_sUxoDPbn0Qi2kk/edit?usp=sharing"
+            openLink(
+                "https://docs.google.com/document/d/1mzyFHaD6UUrB85BkXRO9r3fS8_jo_sUxoDPbn0Qi2kk/edit?usp=sharing",
+                this
             )
-            this.startActivity(intent)
         }
         gizlilik.setOnClickListener {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(
-                "link",
-                "https://docs.google.com/document/d/1cDKP_HRTnQhVJS3u1uYQeLqU4x3_4HCNQreBE5JCIag/edit?usp=sharing"
+            openLink(
+                "https://docs.google.com/document/d/1cDKP_HRTnQhVJS3u1uYQeLqU4x3_4HCNQreBE5JCIag/edit?usp=sharing",
+                this
             )
-            this.startActivity(intent)
         }
         cerez.setOnClickListener {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(
-                "link",
-                "https://docs.google.com/document/d/1jFbZ8IW4AEb8ZMBy57YLQAJAwl5uQ34W4q_yMhqc8aU/edit?usp=sharing"
+            openLink(
+                "https://docs.google.com/document/d/1jFbZ8IW4AEb8ZMBy57YLQAJAwl5uQ34W4q_yMhqc8aU/edit?usp=sharing",
+                this
             )
-            this.startActivity(intent)
         }
 
         signUpButton.setOnClickListener {

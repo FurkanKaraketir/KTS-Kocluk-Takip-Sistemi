@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -280,6 +281,11 @@ fun createExcel(
     }
 
 
+}
+
+fun openLink(link: String, context: Context) {
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    context.startActivity(browserIntent)
 }
 
 fun addData(
