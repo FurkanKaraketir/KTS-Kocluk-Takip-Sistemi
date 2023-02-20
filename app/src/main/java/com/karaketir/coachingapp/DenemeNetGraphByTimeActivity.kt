@@ -209,6 +209,19 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                         val sortedDateMap =
                             denemeTarihList.toList().sortedBy { (_, date) -> date }.toMap()
 
+                        var ortalama = 0f
+                        for (i in sortedDateMap.keys) {
+                            ortalama += netHash[i]!!
+                        }
+
+                        data.add(
+                            ValueDataEntry(
+                                "Ortalama Net",
+                                (ortalama / sortedDateMap.keys.size).format(2).toFloat()
+                            )
+                        )
+
+
                         for (i in sortedDateMap.keys) {
                             data.add(ValueDataEntry(i, netHash[i]))
                         }
@@ -245,4 +258,7 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                 }
         }
     }
+
+    private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+
 }
