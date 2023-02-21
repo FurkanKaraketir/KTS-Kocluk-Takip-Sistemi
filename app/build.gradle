@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 63
-        versionName "v0.2.3"
+        versionCode 66
+        versionName "v0.2.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx:24.4.3'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.4'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.5'
     implementation 'com.google.firebase:firebase-perf-ktx:20.3.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 
