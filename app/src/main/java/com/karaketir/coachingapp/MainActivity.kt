@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
@@ -178,9 +179,11 @@ class MainActivity : AppCompatActivity() {
         val dogumGunu = Calendar.getInstance()
 
         updateButton.setOnClickListener {
-            openLink(
-                "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp", this
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=com.karaketir.coachingapp")
             )
+            startActivity(browserIntent)
         }
 
 
@@ -202,7 +205,9 @@ class MainActivity : AppCompatActivity() {
 
         var grade = 0
         okulLogo.setOnClickListener {
-            openLink("https://www.instagram.com/rteprojeihl/", this)
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/rteprojeihl/"))
+            startActivity(browserIntent)
         }
 
         nameAndSurnameTextView.setOnClickListener {
