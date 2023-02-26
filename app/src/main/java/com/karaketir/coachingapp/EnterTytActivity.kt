@@ -102,7 +102,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                 println(error.localizedMessage)
                             }
                             denemeList.clear()
-                            if (value != null) {
+                            if (value != null && !value.isEmpty) {
 
                                 for (deneme in value) {
                                     denemeList.add(deneme.get("denemeAdi").toString())
@@ -115,9 +115,12 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                 denemeAdiSpinner.onItemSelectedListener = this
                             }
                             if (denemeList.isEmpty()) {
-                                denemeList.add("Deneme Yok")
-                                Toast.makeText(this, "Deneme Bulunmamaktadır", Toast.LENGTH_SHORT)
-                                    .show()
+                                binding.denemeNameEditText.visibility = View.VISIBLE
+                                binding.denemeSpinnerLayout.visibility = View.GONE
+
+                            } else {
+                                binding.denemeNameEditText.visibility = View.GONE
+                                binding.denemeSpinnerLayout.visibility = View.VISIBLE
                             }
 
                         }
@@ -394,43 +397,96 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
                 val toplamNet =
                     turkceNet + tarihNet + cogNet + felNet + dinNet + matNet + fizNet + kimyaNet + biyoNet + geoNet
-                val deneme = hashMapOf(
-                    "id" to documentID,
-                    "denemeTür" to studyType,
-                    "denemeAdi" to denemeAdi,
-                    "turkceNet" to turkceNet,
-                    "tarihNet" to tarihNet,
-                    "cogNet" to cogNet,
-                    "felNet" to felNet,
-                    "dinNet" to dinNet,
-                    "matNet" to matNet,
-                    "fizNet" to fizNet,
-                    "kimyaNet" to kimyaNet,
-                    "biyoNet" to biyoNet,
-                    "geoNet" to geoNet,
-                    "denemeTarihi" to Timestamp.now(),
-                    "toplamNet" to toplamNet
-                )
 
-                db.collection(
-                    "School"
-                ).document(
-                    kurumKodu.toString()
-                ).collection(
-                    "Student"
-                ).document(
-                    auth.uid.toString()
-                ).collection(
-                    "Denemeler"
-                ).document(
-                    documentID
-                ).set(
-                    deneme
-                ).addOnSuccessListener {
-                    Toast.makeText(
-                        this, "İşlem Başarılı", Toast.LENGTH_SHORT
-                    ).show()
-                    finish()
+                if (denemeAdi == "") {
+                    if (binding.denemeNameEditText.text.isNotEmpty()) {
+                        binding.denemeNameEditText.error = null
+                        denemeAdi = binding.denemeNameEditText.text.toString()
+
+
+                        val deneme = hashMapOf(
+                            "id" to documentID,
+                            "denemeTür" to studyType,
+                            "denemeAdi" to denemeAdi,
+                            "turkceNet" to turkceNet,
+                            "tarihNet" to tarihNet,
+                            "cogNet" to cogNet,
+                            "felNet" to felNet,
+                            "dinNet" to dinNet,
+                            "matNet" to matNet,
+                            "fizNet" to fizNet,
+                            "kimyaNet" to kimyaNet,
+                            "biyoNet" to biyoNet,
+                            "geoNet" to geoNet,
+                            "denemeTarihi" to Timestamp.now(),
+                            "toplamNet" to toplamNet
+                        )
+
+                        db.collection(
+                            "School"
+                        ).document(
+                            kurumKodu.toString()
+                        ).collection(
+                            "Student"
+                        ).document(
+                            auth.uid.toString()
+                        ).collection(
+                            "Denemeler"
+                        ).document(
+                            documentID
+                        ).set(
+                            deneme
+                        ).addOnSuccessListener {
+                            Toast.makeText(
+                                this, "İşlem Başarılı", Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                        }
+
+                    } else {
+                        binding.denemeNameEditText.error = "Bu Alan Boş Bırakılamaz"
+                        button.isClickable = true
+                    }
+                } else {
+
+                    val deneme = hashMapOf(
+                        "id" to documentID,
+                        "denemeTür" to studyType,
+                        "denemeAdi" to denemeAdi,
+                        "turkceNet" to turkceNet,
+                        "tarihNet" to tarihNet,
+                        "cogNet" to cogNet,
+                        "felNet" to felNet,
+                        "dinNet" to dinNet,
+                        "matNet" to matNet,
+                        "fizNet" to fizNet,
+                        "kimyaNet" to kimyaNet,
+                        "biyoNet" to biyoNet,
+                        "geoNet" to geoNet,
+                        "denemeTarihi" to Timestamp.now(),
+                        "toplamNet" to toplamNet
+                    )
+
+                    db.collection(
+                        "School"
+                    ).document(
+                        kurumKodu.toString()
+                    ).collection(
+                        "Student"
+                    ).document(
+                        auth.uid.toString()
+                    ).collection(
+                        "Denemeler"
+                    ).document(
+                        documentID
+                    ).set(
+                        deneme
+                    ).addOnSuccessListener {
+                        Toast.makeText(
+                            this, "İşlem Başarılı", Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
+                    }
                 }
 
 
