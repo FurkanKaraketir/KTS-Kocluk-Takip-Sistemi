@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -70,9 +68,11 @@ class EnterDutyActivity : AppCompatActivity() {
                     }
                     val dersAdiSpinner = binding.dutyDersAdiSpinner
                     val dersAdiAdapter = ArrayAdapter(
-                        this@EnterDutyActivity, R.layout.simple_spinner_dropdown_item, dersAdlari
+                        this@EnterDutyActivity,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        dersAdlari
                     )
-                    dersAdiAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                    dersAdiAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     dersAdiSpinner.adapter = dersAdiAdapter
                     dersAdiSpinner.onItemSelectedListener = object : OnItemSelectedListener {
                         override fun onItemSelected(
@@ -84,11 +84,11 @@ class EnterDutyActivity : AppCompatActivity() {
 
                             val dutyTurAdapter = ArrayAdapter(
                                 this@EnterDutyActivity,
-                                R.layout.simple_spinner_dropdown_item,
+                                android.R.layout.simple_spinner_dropdown_item,
                                 turler
                             )
 
-                            dutyTurAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                            dutyTurAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                             dutyTurSpinner.adapter = dutyTurAdapter
                             dutyTurSpinner.onItemSelectedListener =
                                 object : OnItemSelectedListener {
@@ -131,10 +131,10 @@ class EnterDutyActivity : AppCompatActivity() {
 
                                                     val dutyKonuAdapter = ArrayAdapter(
                                                         this@EnterDutyActivity,
-                                                        R.layout.simple_spinner_dropdown_item,
+                                                        android.R.layout.simple_spinner_dropdown_item,
                                                         konuAdlari
                                                     )
-                                                    dutyKonuAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                                                    dutyKonuAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                                     dutyKonuSpinner.adapter = dutyKonuAdapter
                                                     dutyKonuSpinner.onItemSelectedListener =
                                                         object : OnItemSelectedListener {

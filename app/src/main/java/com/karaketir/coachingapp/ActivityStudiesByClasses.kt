@@ -19,7 +19,6 @@ import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesByClassesBinding
 import com.karaketir.coachingapp.models.Study
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ActivityStudiesByClasses : AppCompatActivity() {
 

@@ -2,7 +2,6 @@
 
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity

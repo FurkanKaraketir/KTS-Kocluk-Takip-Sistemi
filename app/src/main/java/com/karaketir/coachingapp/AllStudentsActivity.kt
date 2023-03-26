@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
@@ -98,9 +96,9 @@ class AllStudentsActivity : AppCompatActivity() {
             kurumKodu = it.get("kurumKodu").toString().toInt()
 
             val gradeAdapter = ArrayAdapter(
-                this@AllStudentsActivity, R.layout.simple_spinner_item, gradeList
+                this@AllStudentsActivity, android.R.layout.simple_spinner_item, gradeList
             )
-            gradeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+            gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             gradeSpinner.adapter = gradeAdapter
             gradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {

@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -72,13 +70,13 @@ class DenemelerTeacherActivity : AppCompatActivity() {
         }
 
         val gradeAdapter = ArrayAdapter(
-            this@DenemelerTeacherActivity, R.layout.simple_spinner_item, gradeList
+            this@DenemelerTeacherActivity, android.R.layout.simple_spinner_item, gradeList
         )
         val turAdapter = ArrayAdapter(
-            this@DenemelerTeacherActivity, R.layout.simple_spinner_item, turler
+            this@DenemelerTeacherActivity, android.R.layout.simple_spinner_item, turler
         )
 
-        gradeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         gradeSpinner.adapter = gradeAdapter
         gradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -87,7 +85,7 @@ class DenemelerTeacherActivity : AppCompatActivity() {
 
                 secilenGrade = gradeList[position]
 
-                turAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                turAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 turSpinner.adapter = turAdapter
                 turSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(

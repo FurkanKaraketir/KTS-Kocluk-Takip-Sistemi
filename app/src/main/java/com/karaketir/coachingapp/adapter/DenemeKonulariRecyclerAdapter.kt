@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp.adapter
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.text.Editable
@@ -12,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.KonuYanlisEditTextRowBinding
 import com.karaketir.coachingapp.models.SubItem
 
@@ -36,11 +35,11 @@ open class DenemeKonulariRecyclerAdapter(
     ): KonuHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(
-            com.karaketir.coachingapp.R.layout.konu_yanlis_edit_text_row, parent, false
+            R.layout.konu_yanlis_edit_text_row, parent, false
         )
 
         val context = parent.context
-        (context as Activity).window.decorView.findViewById<View>(R.id.content)
+        (context as Activity).window.decorView.findViewById<View>(android.R.id.content)
 
         return KonuHolder(view)
     }

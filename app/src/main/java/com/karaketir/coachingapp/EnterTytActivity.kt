@@ -2,8 +2,6 @@
 
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -108,9 +106,11 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                     denemeList.add(deneme.get("denemeAdi").toString())
                                 }
                                 val denemeAdapter = ArrayAdapter(
-                                    this@EnterTytActivity, R.layout.simple_spinner_item, denemeList
+                                    this@EnterTytActivity,
+                                    android.R.layout.simple_spinner_item,
+                                    denemeList
                                 )
-                                denemeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                                denemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                 denemeAdiSpinner.adapter = denemeAdapter
                                 denemeAdiSpinner.onItemSelectedListener = this
                             }

@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,7 +32,6 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
             "com.fasterxml.aalto.stax.EventFactoryImpl"
         )
     }
-
 
 
     private lateinit var binding: ActivityAddDenemeTeacherBinding
@@ -76,10 +73,10 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
         }
 
         val denemeAdapter = ArrayAdapter(
-            this@AddDenemeTeacherActivity, R.layout.simple_spinner_item, turler
+            this@AddDenemeTeacherActivity, android.R.layout.simple_spinner_item, turler
         )
 
-        denemeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        denemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         denemeTuruSpinner.adapter = denemeAdapter
         denemeTuruSpinner.onItemSelectedListener = this
 

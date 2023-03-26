@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -82,15 +80,15 @@ class DenemelerActivity : AppCompatActivity() {
         }
 
         val denemeAdapter = ArrayAdapter(
-            this@DenemelerActivity, R.layout.simple_spinner_item, zamanAraliklari
+            this@DenemelerActivity, android.R.layout.simple_spinner_item, zamanAraliklari
         )
         val turAdapter = ArrayAdapter(
-            this@DenemelerActivity, R.layout.simple_spinner_item, turler
+            this@DenemelerActivity, android.R.layout.simple_spinner_item, turler
         )
 
         studentID = intent.getStringExtra("studentID").toString()
 
-        denemeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        denemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = denemeAdapter
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             @SuppressLint("NotifyDataSetChanged")
@@ -189,7 +187,7 @@ class DenemelerActivity : AppCompatActivity() {
                     }
                 }
 
-                turAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                turAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 turSpinner.adapter = turAdapter
                 turSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
@@ -400,17 +398,17 @@ class DenemelerActivity : AppCompatActivity() {
                         if (teacherID.isNotEmpty()) {
                             val popup = PopupMenu(applicationContext, it)
                             //inflate menu with layout mainmenu
-                            popup.inflate(com.karaketir.coachingapp.R.menu.subject_context)
+                            popup.inflate(R.menu.subject_context)
                             popup.show()
 
                             popup.setOnMenuItemClickListener { item ->
-                                if (item.itemId == com.karaketir.coachingapp.R.id.TYT) {
+                                if (item.itemId == R.id.TYT) {
                                     val intent = Intent(this, EnterTytActivity::class.java)
                                     intent.putExtra("studyType", "TYT")
                                     this.startActivity(intent)
                                 }
 
-                                if (item.itemId == com.karaketir.coachingapp.R.id.AYT) {
+                                if (item.itemId == R.id.AYT) {
                                     val intent = Intent(this, EnterTytActivity::class.java)
                                     intent.putExtra("studyType", "AYT")
                                     this.startActivity(intent)

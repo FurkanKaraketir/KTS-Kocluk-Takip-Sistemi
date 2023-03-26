@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 68
-        versionName "v0.2.8"
+        versionCode 69
+        versionName "v0.2.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,15 +55,15 @@ dependencies {
     }
 
     implementation 'androidx.core:core-splashscreen:1.0.0'
-    implementation 'androidx.work:work-runtime-ktx:2.8.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
     implementation 'com.github.dhaval2404:imagepicker:2.1'
     implementation 'com.giphy.sdk:ui:2.3.0'
 
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.3'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.5'
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.5'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.1'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.6'
     implementation 'com.google.firebase:firebase-perf-ktx:20.3.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 
@@ -73,7 +73,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.1'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
     implementation 'com.android.volley:volley:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -97,9 +95,9 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val gorevTuruSpinner = binding.gorevSpinner
         dutyAddButton = binding.addDutyButton
         val dutyAdapter = ArrayAdapter(
-            this@DutiesActivity, R.layout.simple_spinner_item, gorevTurleri
+            this@DutiesActivity, android.R.layout.simple_spinner_item, gorevTurleri
         )
-        dutyAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        dutyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         gorevTuruSpinner.adapter = dutyAdapter
         gorevTuruSpinner.onItemSelectedListener = this
 

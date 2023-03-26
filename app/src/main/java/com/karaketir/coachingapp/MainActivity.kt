@@ -1,13 +1,7 @@
-@file:Suppress("DEPRECATION")
-
 package com.karaketir.coachingapp
 
-
 import android.Manifest
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,9 +14,9 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.GridLayoutManager
@@ -357,7 +351,7 @@ class MainActivity : AppCompatActivity() {
                                 okulLogo.visibility = View.INVISIBLE
                                 kocOgretmenTextView.visibility = View.INVISIBLE
                                 imageHalit.glide(photoURL, placeHolderYap(this))
-                                mp = MediaPlayer.create(this, com.karaketir.coachingapp.R.raw.halay)
+                                mp = MediaPlayer.create(this, R.raw.halay)
                                 mp.isLooping = true
                                 mp.start()
                             }
@@ -446,9 +440,9 @@ class MainActivity : AppCompatActivity() {
 
 
                 val gradeAdapter = ArrayAdapter(
-                    this@MainActivity, R.layout.simple_spinner_item, gradeList
+                    this@MainActivity, android.R.layout.simple_spinner_item, gradeList
                 )
-                gradeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 gradeSpinner.adapter = gradeAdapter
                 gradeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -525,9 +519,9 @@ class MainActivity : AppCompatActivity() {
 
 
                 val tarihAdapter = ArrayAdapter(
-                    this@MainActivity, R.layout.simple_spinner_item, zamanAraliklari
+                    this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
                 )
-                tarihAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 teacherSpinner.adapter = tarihAdapter
                 teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -700,34 +694,25 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    private fun askForPermissions() {
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            createExcel(this, secilenGrade, secilenZaman, workbook)
+        } else {
+            // Permission not granted, handle accordingly
+        }
+    }
 
+    private fun askForPermissions() {
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //İzin Verilmedi, iste
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ), 1
-            )
-
-
+            // Permission not granted, request it
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
             createExcel(this, secilenGrade, secilenZaman, workbook)
         }
-
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                createExcel(this, secilenGrade, secilenZaman, workbook)
-            }
-        }
-    }
 
 }

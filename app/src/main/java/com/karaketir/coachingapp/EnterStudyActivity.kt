@@ -142,7 +142,7 @@ class EnterStudyActivity : AppCompatActivity() {
             var stopper2 = false
             val cal = Calendar.getInstance()
             val studyTime = Calendar.getInstance()
-            studyTime.add(Calendar.HOUR_OF_DAY, -3)
+            studyTime.add(Calendar.HOUR_OF_DAY, -5)
 
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 

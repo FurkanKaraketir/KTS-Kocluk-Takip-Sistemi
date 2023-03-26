@@ -1,15 +1,9 @@
-@file:Suppress("DEPRECATION")
-
 package com.karaketir.coachingapp
 
 import android.Manifest
-//noinspection SuspiciousImport
-import android.R
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
@@ -20,8 +14,8 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -360,14 +354,14 @@ class StatsActivity : AppCompatActivity() {
         val statsGradeSpinner = binding.statsGradeSpinner
 
         val statsAdapter = ArrayAdapter(
-            this@StatsActivity, R.layout.simple_spinner_item, zamanAraliklari
+            this@StatsActivity, android.R.layout.simple_spinner_item, zamanAraliklari
         )
 
         val gradeAdapter = ArrayAdapter(
-            this@StatsActivity, R.layout.simple_spinner_item, gradeList
+            this@StatsActivity, android.R.layout.simple_spinner_item, gradeList
         )
 
-        statsAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        statsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         statsZamanSpinner.adapter = statsAdapter
 
 
@@ -385,7 +379,7 @@ class StatsActivity : AppCompatActivity() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
 
-                gradeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 statsGradeSpinner.adapter = gradeAdapter
                 statsGradeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
                     @SuppressLint("SetTextI18n")
@@ -787,33 +781,24 @@ class StatsActivity : AppCompatActivity() {
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
 
-    private fun askForPermissions() {
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                createExcel()
+            } else {
+                // Permission not granted, handle accordingly
+            }
+        }
 
+    private fun askForPermissions() {
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //İzin Verilmedi, iste
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ), 1
-            )
-
-
+            // Permission not granted, request it
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
             createExcel()
-        }
-
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                createExcel()
-            }
         }
     }
 

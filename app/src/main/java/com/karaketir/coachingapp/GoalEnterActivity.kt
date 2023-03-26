@@ -1,7 +1,5 @@
 package com.karaketir.coachingapp
 
-//noinspection SuspiciousImport
-import android.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -64,10 +62,10 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
 
                     val studentAdapter = ArrayAdapter(
-                        this@GoalEnterActivity, R.layout.simple_spinner_item, dersler
+                        this@GoalEnterActivity, android.R.layout.simple_spinner_item, dersler
                     )
 
-                    studentAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                    studentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     dersAdiSpinner.adapter = studentAdapter
                     dersAdiSpinner.onItemSelectedListener = this
 
