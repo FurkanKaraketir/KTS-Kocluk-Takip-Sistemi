@@ -2,10 +2,8 @@ package com.karaketir.coachingapp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,7 +36,6 @@ import com.karaketir.coachingapp.models.Study
 import com.karaketir.coachingapp.services.*
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
 import java.util.*
 
 
@@ -67,7 +64,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var mp: MediaPlayer
     private val workbook = XSSFWorkbook()
     private var studyList = ArrayList<Study>()
     private var currentKurumKodu = 0
@@ -81,38 +77,9 @@ class MainActivity : AppCompatActivity() {
 
     private var studentList = ArrayList<Student>()
 
-    private fun deleteCache(context: Context) {
-        try {
-            val dir: File = context.cacheDir
-            deleteDir(dir)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun deleteDir(dir: File?): Boolean {
-        return if (dir != null && dir.isDirectory) {
-            val children = dir.list()
-            if (children != null) {
-                for (i in children.indices) {
-                    val success = deleteDir(File(dir, children[i]))
-                    if (!success) {
-                        return false
-                    }
-                }
-            }
-            dir.delete()
-        } else if (dir != null && dir.isFile) {
-            dir.delete()
-        } else {
-            false
-        }
-    }
 
     public override fun onStart() {
         super.onStart()
-
-        deleteCache(this)
         val currentUser = auth.currentUser
         if (currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
@@ -168,8 +135,6 @@ class MainActivity : AppCompatActivity() {
             imageHalit.glide(it.get("photoURL").toString(), placeHolderYap(applicationContext))
 
         }
-
-        val dogumGunu = Calendar.getInstance()
 
         updateButton.setOnClickListener {
             openLink(
@@ -333,31 +298,6 @@ class MainActivity : AppCompatActivity() {
 
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 val bitisTarihi = cal.time
-
-                val email = it.get("email").toString()
-                db.collection("VersionCode").document("1sraIWibAFqiyzJHzxV5").get()
-                    .addOnSuccessListener { dogumGunuIt ->
-                        if (email == dogumGunuIt.get("email").toString()) {
-                            val dogumGunuBas = dogumGunuIt.get("dogumGunuBas") as Timestamp
-                            val dogumGunuSon = dogumGunuIt.get("dogumGunuSon") as Timestamp
-                            val photoURL = dogumGunuIt.get("photoURL").toString()
-
-
-
-                            if (dogumGunuBas.toDate() <= dogumGunu.time && dogumGunu.time <= dogumGunuSon.toDate()) {
-                                nameAndSurnameTextView.text =
-                                    "İyi ki Doğdun: " + it.get("nameAndSurname").toString()
-                                binding.YKSsayac.visibility = View.INVISIBLE
-                                okulLogo.visibility = View.INVISIBLE
-                                kocOgretmenTextView.visibility = View.INVISIBLE
-                                imageHalit.glide(photoURL, placeHolderYap(this))
-                                mp = MediaPlayer.create(this, R.raw.halay)
-                                mp.isLooping = true
-                                mp.start()
-                            }
-
-                        }
-                    }
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
@@ -694,13 +634,14 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
-            createExcel(this, secilenGrade, secilenZaman, workbook)
-        } else {
-            // Permission not granted, handle accordingly
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                createExcel(this, secilenGrade, secilenZaman, workbook)
+            } else {
+                // Permission not granted, handle accordingly
+            }
         }
-    }
 
     private fun askForPermissions() {
         if (ContextCompat.checkSelfPermission(
@@ -713,6 +654,4 @@ class MainActivity : AppCompatActivity() {
             createExcel(this, secilenGrade, secilenZaman, workbook)
         }
     }
-
-
 }

@@ -1,7 +1,6 @@
 package com.karaketir.coachingapp
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -20,7 +19,6 @@ import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.DutiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityDutiesBinding
 import com.karaketir.coachingapp.models.Duty
-import java.io.File
 
 class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
@@ -49,39 +47,6 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var dutyAddButton: FloatingActionButton
 
     private lateinit var binding: ActivityDutiesBinding
-
-    private fun deleteCache(context: Context) {
-        try {
-            val dir: File = context.cacheDir
-            deleteDir(dir)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun deleteDir(dir: File?): Boolean {
-        return if (dir != null && dir.isDirectory) {
-            val children = dir.list()
-            if (children != null) {
-                for (i in children.indices) {
-                    val success = deleteDir(File(dir, children[i]))
-                    if (!success) {
-                        return false
-                    }
-                }
-            }
-            dir.delete()
-        } else if (dir != null && dir.isFile) {
-            dir.delete()
-        } else {
-            false
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        deleteCache(this)
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {

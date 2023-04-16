@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
     compileOnly 'org.apache.poi:poi-ooxml:3.17'
-    implementation('com.google.firebase:firebase-auth-ktx:21.1.0') {
+    implementation('com.google.firebase:firebase-auth-ktx:21.3.0') {
         exclude module: "play-services-safetynet"
     }
 
@@ -60,14 +60,14 @@ dependencies {
     implementation 'com.github.dhaval2404:imagepicker:2.1'
     implementation 'com.giphy.sdk:ui:2.3.0'
 
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.5'
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.5.0'
+    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.2'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.6'
     implementation 'com.google.firebase:firebase-perf-ktx:20.3.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 
-    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    implementation 'com.google.android.gms:play-services-ads:22.0.0'
     implementation 'com.github.iwgang:countdownview:2.1.6'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.github.bumptech.glide:glide:4.14.2'
