@@ -97,8 +97,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:gravity="center"
-                        android:shadowRadius="10"
-                        android:text="@string/add_something" />
+                        android:shadowRadius="10" />
 
                     <LinearLayout
                         android:id="@+id/teacherSpinnerLayout"
