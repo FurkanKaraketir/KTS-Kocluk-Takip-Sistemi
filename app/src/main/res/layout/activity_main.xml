@@ -236,6 +236,19 @@
 
                             </Button>
 
+                            <Button
+                                android:id="@+id/topStudentsButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/renci_s_ralamas"
+                                android:visibility="gone"
+                                app:icon="@drawable/baseline_supervisor_account_24">
+
+                            </Button>
+
+
                         </LinearLayout>
 
                     </HorizontalScrollView>
@@ -253,6 +266,7 @@
                 android:layout_below="@id/welcomeText"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="10dp"
+                android:gravity="center"
                 android:text="" />
 
             <EditText

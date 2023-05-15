@@ -74,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
+    private var tVal = false
+    private lateinit var hexColor: String
 
     private var studentList = ArrayList<Student>()
 
@@ -108,6 +110,9 @@ class MainActivity : AppCompatActivity() {
         var sayacVisible = false
 
         val contentTextView = binding.contentTextView
+        val color: Int = contentTextView.currentTextColor
+        hexColor = String.format("#%06X", 0xFFFFFF and color)
+        val topStudentsButton = binding.topStudentsButton
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
         val gorevButton = binding.gorevButton
@@ -248,7 +253,7 @@ class MainActivity : AppCompatActivity() {
 
             if (it.get("personType").toString() == "Student") {
 
-                val cal = Calendar.getInstance()
+                var cal = Calendar.getInstance()
                 grade = it.get("grade").toString().toInt()
                 addStudyButton.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.VISIBLE
@@ -272,6 +277,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 searchBarTeacher.visibility = View.GONE
                 gradeSpinnerLayout.visibility = View.GONE
+                topStudentsButton.visibility = View.GONE
                 teacherSpinnerLayout.visibility = View.GONE
                 studySearchEditText.visibility = View.VISIBLE
                 searchEditText.visibility = View.GONE
@@ -284,20 +290,16 @@ class MainActivity : AppCompatActivity() {
                 allStudentsBtn.visibility = View.GONE
                 gorevButton.visibility = View.VISIBLE
 
-                contentTextView.text = "Bu Haftaki Çalışmalarım"
+                contentTextView.text = "Son 7 Gün İçindeki\nÇalışmalarım"
 
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+                cal.add(Calendar.DAY_OF_YEAR, 2)
+                val bitisTarihi = cal.time
 
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                cal = Calendar.getInstance()
+                cal.add(Calendar.DAY_OF_YEAR, -7)
                 val baslangicTarihi = cal.time
 
 
-                cal.add(Calendar.WEEK_OF_YEAR, 1)
-                val bitisTarihi = cal.time
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).collection("Studies")
@@ -341,6 +343,7 @@ class MainActivity : AppCompatActivity() {
                 hedeflerStudentButton.visibility = View.GONE
                 excelButton.visibility = View.VISIBLE
                 searchEditText.visibility = View.VISIBLE
+                topStudentsButton.visibility = View.VISIBLE
                 teacherSpinnerLayout.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.GONE
                 recyclerViewMyStudents.visibility = View.VISIBLE
@@ -516,6 +519,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, ClassesActivity::class.java)
             this.startActivity(intent)
         }
+
+        topStudentsButton.setOnClickListener {
+            val intent = Intent(this, TopStudentsActivity::class.java)
+            this.startActivity(intent)
+        }
+
         signOutButton.setOnClickListener {
 
             val signOutAlertDialog = AlertDialog.Builder(this)
@@ -589,16 +598,19 @@ class MainActivity : AppCompatActivity() {
                 eventDate[Calendar.MONTH] = 5
                 eventDate[Calendar.DAY_OF_MONTH] = 17
             }
+
             11 -> {
                 eventDate[Calendar.YEAR] = 2024
                 eventDate[Calendar.MONTH] = 5
                 eventDate[Calendar.DAY_OF_MONTH] = 15
             }
+
             10 -> {
                 eventDate[Calendar.YEAR] = 2025
                 eventDate[Calendar.MONTH] = 5
                 eventDate[Calendar.DAY_OF_MONTH] = 14
             }
+
             9 -> {
                 eventDate[Calendar.YEAR] = 2026
                 eventDate[Calendar.MONTH] = 5
@@ -618,6 +630,28 @@ class MainActivity : AppCompatActivity() {
         val seconds = (diff / 1000) % 60
 
         binding.YKSsayac.text = "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+
+        if (days in 0..50) {
+
+            if (grade == 12 || grade == 0) {
+                tVal = if (!tVal) {
+                    binding.YKSsayac.setTextColor(android.graphics.Color.parseColor(hexColor))
+
+                    true
+                } else {
+
+                    binding.YKSsayac.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity, R.color.red
+                        )
+                    )
+                    false
+
+                }
+            }
+
+        }
 
 
     }

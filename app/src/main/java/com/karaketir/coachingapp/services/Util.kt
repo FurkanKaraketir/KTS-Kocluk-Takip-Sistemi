@@ -10,7 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -34,6 +36,40 @@ fun ImageView.glide(url: String?, placeholder: CircularProgressDrawable) {
     val options = RequestOptions().placeholder(placeholder).error(R.drawable.blank)
 
     Glide.with(context.applicationContext).setDefaultRequestOptions(options).load(url).into(this)
+}
+
+fun TextView.setTextAnimation(
+    text: String, duration: Long = 300, completion: (() -> Unit)? = null
+) {
+    fadOutAnimation(duration) {
+        this.text = text
+        fadInAnimation(duration) {
+            completion?.let {
+                it()
+            }
+        }
+    }
+}
+
+fun View.fadOutAnimation(
+    duration: Long = 300, visibility: Int = View.INVISIBLE, completion: (() -> Unit)? = null
+) {
+    animate().alpha(0f).setDuration(duration).withEndAction {
+        this.visibility = visibility
+        completion?.let {
+            it()
+        }
+    }
+}
+
+fun View.fadInAnimation(duration: Long = 300, completion: (() -> Unit)? = null) {
+    alpha = 0f
+    visibility = View.VISIBLE
+    animate().alpha(1f).setDuration(duration).withEndAction {
+        completion?.let {
+            it()
+        }
+    }
 }
 
 fun openLink(link: String, context: Context) {
@@ -317,12 +353,14 @@ fun addData(
             cal.add(Calendar.DAY_OF_YEAR, 1)
             bitisTarihi = cal.time
         }
+
         "Dün" -> {
             bitisTarihi = cal.time
 
             cal.add(Calendar.DAY_OF_YEAR, -1)
             baslangicTarihi = cal.time
         }
+
         "Bu Hafta" -> {
             cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
             baslangicTarihi = cal.time
@@ -332,6 +370,7 @@ fun addData(
             bitisTarihi = cal.time
 
         }
+
         "Geçen Hafta" -> {
             cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
             bitisTarihi = cal.time
@@ -342,6 +381,7 @@ fun addData(
 
 
         }
+
         "Bu Ay" -> {
 
             cal = Calendar.getInstance()
@@ -360,6 +400,7 @@ fun addData(
 
 
         }
+
         "Geçen Ay" -> {
             cal = Calendar.getInstance()
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -511,6 +552,7 @@ fun addData(
 
 
                                             }
+
                                             "Coğrafya" -> {
 
                                                 cografyaSure += study.get("toplamCalisma")
@@ -520,6 +562,7 @@ fun addData(
 
 
                                             }
+
                                             "Din" -> {
 
                                                 dinSure += study.get("toplamCalisma").toString()
@@ -529,6 +572,7 @@ fun addData(
 
 
                                             }
+
                                             "Diğer" -> {
 
                                                 digerSure += study.get("toplamCalisma").toString()
@@ -538,6 +582,7 @@ fun addData(
 
 
                                             }
+
                                             "Felsefe" -> {
 
                                                 felsefeSure += study.get("toplamCalisma").toString()
@@ -547,6 +592,7 @@ fun addData(
 
 
                                             }
+
                                             "Fizik" -> {
 
                                                 fizikSure += study.get("toplamCalisma").toString()
@@ -556,6 +602,7 @@ fun addData(
 
 
                                             }
+
                                             "Geometri" -> {
 
                                                 geometriSure += study.get("toplamCalisma")
@@ -565,6 +612,7 @@ fun addData(
 
 
                                             }
+
                                             "Kimya" -> {
 
                                                 kimyaSure += study.get("toplamCalisma").toString()
@@ -574,6 +622,7 @@ fun addData(
 
 
                                             }
+
                                             "Matematik" -> {
 
                                                 matSure += study.get("toplamCalisma").toString()
@@ -583,6 +632,7 @@ fun addData(
 
 
                                             }
+
                                             "Paragraf" -> {
 
                                                 paragrafSure += study.get("toplamCalisma")
@@ -592,6 +642,7 @@ fun addData(
 
 
                                             }
+
                                             "Problem" -> {
 
                                                 problemSure += study.get("toplamCalisma").toString()
@@ -601,6 +652,7 @@ fun addData(
 
 
                                             }
+
                                             "Tarih" -> {
 
                                                 tarihSure += study.get("toplamCalisma").toString()
@@ -610,6 +662,7 @@ fun addData(
 
 
                                             }
+
                                             "Türkçe-Edebiyat" -> {
 
                                                 turkceSure += study.get("toplamCalisma").toString()
@@ -769,6 +822,7 @@ fun addData(
 
 
                                             }
+
                                             "Coğrafya" -> {
 
                                                 cografyaSure += study.get("toplamCalisma")
@@ -778,6 +832,7 @@ fun addData(
 
 
                                             }
+
                                             "Din" -> {
 
                                                 dinSure += study.get("toplamCalisma").toString()
@@ -787,6 +842,7 @@ fun addData(
 
 
                                             }
+
                                             "Diğer" -> {
 
                                                 digerSure += study.get("toplamCalisma").toString()
@@ -796,6 +852,7 @@ fun addData(
 
 
                                             }
+
                                             "Felsefe" -> {
 
                                                 felsefeSure += study.get("toplamCalisma").toString()
@@ -805,6 +862,7 @@ fun addData(
 
 
                                             }
+
                                             "Fizik" -> {
 
                                                 fizikSure += study.get("toplamCalisma").toString()
@@ -814,6 +872,7 @@ fun addData(
 
 
                                             }
+
                                             "Geometri" -> {
 
                                                 geometriSure += study.get("toplamCalisma")
@@ -823,6 +882,7 @@ fun addData(
 
 
                                             }
+
                                             "Kimya" -> {
 
                                                 kimyaSure += study.get("toplamCalisma").toString()
@@ -832,6 +892,7 @@ fun addData(
 
 
                                             }
+
                                             "Matematik" -> {
 
                                                 matSure += study.get("toplamCalisma").toString()
@@ -841,6 +902,7 @@ fun addData(
 
 
                                             }
+
                                             "Paragraf" -> {
 
                                                 paragrafSure += study.get("toplamCalisma")
@@ -850,6 +912,7 @@ fun addData(
 
 
                                             }
+
                                             "Problem" -> {
 
                                                 problemSure += study.get("toplamCalisma").toString()
@@ -859,6 +922,7 @@ fun addData(
 
 
                                             }
+
                                             "Tarih" -> {
 
                                                 tarihSure += study.get("toplamCalisma").toString()
@@ -868,6 +932,7 @@ fun addData(
 
 
                                             }
+
                                             "Türkçe-Edebiyat" -> {
 
                                                 turkceSure += study.get("toplamCalisma").toString()
