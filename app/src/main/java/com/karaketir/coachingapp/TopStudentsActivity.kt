@@ -101,7 +101,7 @@ class TopStudentsActivity : AppCompatActivity() {
 
                 for (i in it.documents) {
 
-                    if (i.get("teacher").toString() != "" && i.get("grade").toString() == "12") {
+                    if (i.get("grade").toString() == "12") {
                         idList.add(i.id)
 
                     }

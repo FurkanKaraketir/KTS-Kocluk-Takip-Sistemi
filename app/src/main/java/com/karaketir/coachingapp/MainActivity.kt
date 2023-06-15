@@ -594,63 +594,125 @@ class MainActivity : AppCompatActivity() {
         val eventDate = Calendar.getInstance()
         when (grade) {
             12, 0 -> {
-                eventDate[Calendar.YEAR] = 2023
-                eventDate[Calendar.MONTH] = 5
-                eventDate[Calendar.DAY_OF_MONTH] = 17
+                db.collection("Dates").document("date12").get().addOnSuccessListener {
+                    eventDate[Calendar.YEAR] = it.get("year").toString().toInt()
+                    eventDate[Calendar.MONTH] = it.get("month").toString().toInt() - 1
+                    eventDate[Calendar.DAY_OF_MONTH] = it.get("day").toString().toInt()
+
+                    eventDate[Calendar.HOUR_OF_DAY] = 10
+                    eventDate[Calendar.MINUTE] = 15
+                    eventDate[Calendar.SECOND] = 0
+
+                    val diff = eventDate.timeInMillis - currentDate.timeInMillis
+
+                    val days = diff / (24 * 60 * 60 * 1000)
+                    val hours = diff / (1000 * 60 * 60) % 24
+                    val minutes = diff / (1000 * 60) % 60
+                    val seconds = (diff / 1000) % 60
+
+                    binding.YKSsayac.text =
+                        "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+
+                    if (days in 0..60) {
+
+                        tVal = if (!tVal) {
+                            binding.YKSsayac.setTextColor(android.graphics.Color.parseColor(hexColor))
+
+                            true
+                        } else {
+
+                            binding.YKSsayac.setTextColor(
+                                ContextCompat.getColor(
+                                    this@MainActivity, R.color.red
+                                )
+                            )
+                            false
+
+                        }
+
+
+                    }
+
+
+                }
+
             }
 
             11 -> {
-                eventDate[Calendar.YEAR] = 2024
-                eventDate[Calendar.MONTH] = 5
-                eventDate[Calendar.DAY_OF_MONTH] = 15
-            }
+                db.collection("Dates").document("date11").get().addOnSuccessListener {
 
-            10 -> {
-                eventDate[Calendar.YEAR] = 2025
-                eventDate[Calendar.MONTH] = 5
-                eventDate[Calendar.DAY_OF_MONTH] = 14
-            }
+                    eventDate[Calendar.YEAR] = it.get("year").toString().toInt()
+                    eventDate[Calendar.MONTH] = it.get("month").toString().toInt() - 1
+                    eventDate[Calendar.DAY_OF_MONTH] = it.get("day").toString().toInt()
 
-            9 -> {
-                eventDate[Calendar.YEAR] = 2026
-                eventDate[Calendar.MONTH] = 5
-                eventDate[Calendar.DAY_OF_MONTH] = 13
-            }
-        }
+                    eventDate[Calendar.HOUR_OF_DAY] = 10
+                    eventDate[Calendar.MINUTE] = 15
+                    eventDate[Calendar.SECOND] = 0
 
-        eventDate[Calendar.HOUR_OF_DAY] = 10
-        eventDate[Calendar.MINUTE] = 15
-        eventDate[Calendar.SECOND] = 0
+                    val diff = eventDate.timeInMillis - currentDate.timeInMillis
 
-        val diff = eventDate.timeInMillis - currentDate.timeInMillis
+                    val days = diff / (24 * 60 * 60 * 1000)
+                    val hours = diff / (1000 * 60 * 60) % 24
+                    val minutes = diff / (1000 * 60) % 60
+                    val seconds = (diff / 1000) % 60
 
-        val days = diff / (24 * 60 * 60 * 1000)
-        val hours = diff / (1000 * 60 * 60) % 24
-        val minutes = diff / (1000 * 60) % 60
-        val seconds = (diff / 1000) % 60
+                    binding.YKSsayac.text =
+                        "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
 
-        binding.YKSsayac.text = "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
-
-
-        if (days in 0..50) {
-
-            if (grade == 12 || grade == 0) {
-                tVal = if (!tVal) {
-                    binding.YKSsayac.setTextColor(android.graphics.Color.parseColor(hexColor))
-
-                    true
-                } else {
-
-                    binding.YKSsayac.setTextColor(
-                        ContextCompat.getColor(
-                            this@MainActivity, R.color.red
-                        )
-                    )
-                    false
 
                 }
             }
 
+            10 -> {
+                db.collection("Dates").document("date10").get().addOnSuccessListener {
+
+                    eventDate[Calendar.YEAR] = it.get("year").toString().toInt()
+                    eventDate[Calendar.MONTH] = it.get("month").toString().toInt() - 1
+                    eventDate[Calendar.DAY_OF_MONTH] = it.get("day").toString().toInt()
+
+                    eventDate[Calendar.HOUR_OF_DAY] = 10
+                    eventDate[Calendar.MINUTE] = 15
+                    eventDate[Calendar.SECOND] = 0
+
+                    val diff = eventDate.timeInMillis - currentDate.timeInMillis
+
+                    val days = diff / (24 * 60 * 60 * 1000)
+                    val hours = diff / (1000 * 60 * 60) % 24
+                    val minutes = diff / (1000 * 60) % 60
+                    val seconds = (diff / 1000) % 60
+
+                    binding.YKSsayac.text =
+                        "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+
+                }
+            }
+
+            9 -> {
+                db.collection("Dates").document("date9").get().addOnSuccessListener {
+
+                    eventDate[Calendar.YEAR] = it.get("year").toString().toInt()
+                    eventDate[Calendar.MONTH] = it.get("month").toString().toInt() - 1
+                    eventDate[Calendar.DAY_OF_MONTH] = it.get("day").toString().toInt()
+
+                    eventDate[Calendar.HOUR_OF_DAY] = 10
+                    eventDate[Calendar.MINUTE] = 15
+                    eventDate[Calendar.SECOND] = 0
+
+                    val diff = eventDate.timeInMillis - currentDate.timeInMillis
+
+                    val days = diff / (24 * 60 * 60 * 1000)
+                    val hours = diff / (1000 * 60 * 60) % 24
+                    val minutes = diff / (1000 * 60) % 60
+                    val seconds = (diff / 1000) % 60
+
+                    binding.YKSsayac.text =
+                        "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+
+                }
+            }
         }
 
 
