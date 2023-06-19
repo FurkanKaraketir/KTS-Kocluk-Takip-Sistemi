@@ -74,8 +74,6 @@ class MainActivity : AppCompatActivity() {
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
-    private var tVal = false
-    private lateinit var hexColor: String
 
     private var studentList = ArrayList<Student>()
 
@@ -110,8 +108,6 @@ class MainActivity : AppCompatActivity() {
         var sayacVisible = false
 
         val contentTextView = binding.contentTextView
-        val color: Int = contentTextView.currentTextColor
-        hexColor = String.format("#%06X", 0xFFFFFF and color)
         val topStudentsButton = binding.topStudentsButton
         val addStudyButton = binding.addStudyButton
         val signOutButton = binding.signOutButton
@@ -612,27 +608,6 @@ class MainActivity : AppCompatActivity() {
 
                     binding.YKSsayac.text =
                         "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
-
-
-                    if (days in 0..60) {
-
-                        tVal = if (!tVal) {
-                            binding.YKSsayac.setTextColor(android.graphics.Color.parseColor(hexColor))
-
-                            true
-                        } else {
-
-                            binding.YKSsayac.setTextColor(
-                                ContextCompat.getColor(
-                                    this@MainActivity, R.color.red
-                                )
-                            )
-                            false
-
-                        }
-
-
-                    }
 
 
                 }
