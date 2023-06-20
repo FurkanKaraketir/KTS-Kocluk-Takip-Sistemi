@@ -105,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         val transitionsContainer = binding.transitionsContainer
         val sayacContainer = binding.sayacContainer
 
+        val developerButton = binding.developerButtonMain
         var sayacVisible = false
 
         val contentTextView = binding.contentTextView
@@ -131,6 +132,13 @@ class MainActivity : AppCompatActivity() {
         val updateButton = binding.updateButton
         val imageHalit = binding.imageHalit
         val excelButton = binding.excelButton
+
+
+        developerButton.setOnClickListener {
+            openLink(
+                "https://www.linkedin.com/in/furkankaraketir/", this
+            )
+        }
 
         db.collection("UserPhotos").document(auth.uid.toString()).get().addOnSuccessListener {
             imageHalit.glide(it.get("photoURL").toString(), placeHolderYap(applicationContext))
@@ -254,6 +262,7 @@ class MainActivity : AppCompatActivity() {
                 addStudyButton.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.VISIBLE
                 excelButton.visibility = View.GONE
+                binding.developerButtonMain.visibility = View.VISIBLE
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).get().addOnSuccessListener { student ->
@@ -353,6 +362,7 @@ class MainActivity : AppCompatActivity() {
                 gorevButton.visibility = View.GONE
                 gradeSpinnerLayout.visibility = View.VISIBLE
                 contentTextView.text = "Öğrencilerim"
+                binding.developerButtonMain.visibility = View.VISIBLE
 
                 val sheet: Sheet = workbook.createSheet("Sayfa 1")
 

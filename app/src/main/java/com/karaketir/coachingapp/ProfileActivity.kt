@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.karaketir.coachingapp.databinding.ActivityProfileBinding
 import com.karaketir.coachingapp.services.glide
+import com.karaketir.coachingapp.services.openLink
 import com.karaketir.coachingapp.services.placeHolderYap
 
 
@@ -73,6 +74,29 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
 
         auth = Firebase.auth
         db = Firebase.firestore
+
+        secilenGorsel = binding.secilenGorsel
+
+        db.collection("UserPhotos").document(auth.uid.toString()).get().addOnSuccessListener {
+            if (it.get("photoURL").toString() != " ") {
+                secilenGorsel.visibility = View.VISIBLE
+                secilenGorsel.glide(it.get("photoURL").toString(), placeHolderYap(this))
+            } else {
+                secilenGorsel.visibility = View.GONE
+            }
+        }.addOnFailureListener {
+            secilenGorsel.visibility = View.GONE
+        }
+
+
+        val developerButton = binding.developerButtonProfile
+
+        developerButton.setOnClickListener {
+            openLink(
+                "https://www.linkedin.com/in/furkankaraketir/", this
+            )
+        }
+
         storage = Firebase.storage
         db.collection("School").document("763455").collection("Student")
             .document("1BfRKDOOQmb3FAJqv6IQZpWyqyt1").get().addOnSuccessListener {
@@ -94,7 +118,6 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
         val gradeText = binding.currentGradeTextView
         val nameChangeEditText = binding.changeNameEditText
         val addPhoto = binding.addPhoto
-        secilenGorsel = binding.secilenGorsel
         val gradeChangeEditText = binding.changeGradeEditText
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
@@ -222,7 +245,9 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
             db.collection("UserPhotos").document(auth.uid.toString()).update("photoURL", " ")
                 .addOnSuccessListener {
                     Toast.makeText(this, "Resim Kaldırıldı", Toast.LENGTH_SHORT).show()
+                    secilenGorsel.visibility = View.GONE
                 }
+            spaceRef.delete()
         }
 
     }
@@ -252,6 +277,7 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
                         db.collection("UserPhotos").document(auth.uid.toString()).set(refFile)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT).show()
+                                secilenGorsel.visibility = View.VISIBLE
                                 secilenGorsel.setImageURI(uri)
                             }
                     }
@@ -260,6 +286,7 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
                 }
 
             }
+
             ImagePicker.RESULT_ERROR -> {
                 Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
             }
@@ -289,6 +316,8 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
         val newData = hashMapOf("photoURL" to a)
         db.collection("UserPhotos").document(auth.uid.toString()).set(newData)
             .addOnSuccessListener {
+                secilenGorsel.visibility = View.VISIBLE
+
                 Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
             }
 

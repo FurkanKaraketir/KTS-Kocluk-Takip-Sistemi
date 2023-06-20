@@ -76,6 +76,7 @@
 
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/secilenGorsel"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -121,6 +122,18 @@
             android:layout_margin="50dp"
             android:text="@string/hesab_sil"
             app:icon="@drawable/ic_baseline_error_outline_24" />
+
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/developerButtonProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:text="@string/furkan_karaketir_taraf_ndan_geli_tirildi"
+            app:icon="@drawable/baseline_developer_mode_24">
+
+        </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
     </LinearLayout>
 
