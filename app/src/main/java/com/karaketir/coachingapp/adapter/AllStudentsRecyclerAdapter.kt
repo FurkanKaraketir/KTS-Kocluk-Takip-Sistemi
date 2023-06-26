@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,6 +38,42 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                 var kurumKodu: Int
                 binding.studentDeleteButton.visibility = View.GONE
                 binding.studentAddButton.visibility = View.VISIBLE
+                binding.studentHardDeleteButton.visibility = View.VISIBLE
+
+                binding.studentHardDeleteButton.setOnClickListener {
+                    val alertDialog = AlertDialog.Builder(holder.itemView.context)
+                    alertDialog.setTitle("Hesabı Sil")
+                    alertDialog.setMessage("Hesabı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
+                    alertDialog.setPositiveButton("Sil") { _, _ ->
+                        db.collection("User").document(myItem.id).get().addOnSuccessListener {
+                            kurumKodu = it.get("kurumKodu").toString().toInt()
+                            val personType = it.get("personType").toString()
+
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection(personType).document(myItem.id).delete()
+                                .addOnSuccessListener {
+                                    db.collection("User").document(myItem.id).delete()
+                                        .addOnSuccessListener {
+                                            Toast.makeText(
+                                                holder.itemView.context,
+                                                "İşlem Başarılı!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                        }
+                                }
+
+
+                        }
+
+
+                    }
+                    alertDialog.setNegativeButton("İptal") { _, _ ->
+
+                    }
+                    alertDialog.show()
+                }
+
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     kurumKodu = it.get("kurumKodu").toString().toInt()
                     binding.studentNameTextView.text = myItem.studentName

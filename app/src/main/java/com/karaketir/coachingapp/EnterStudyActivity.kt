@@ -39,6 +39,25 @@ class EnterStudyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEnterStudyBinding
     private lateinit var auth: FirebaseAuth
     private var konuAdlari = ArrayList<String>()
+    private var values = arrayOf(
+        "0",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90",
+        "100",
+        "110",
+        "120",
+        "130",
+        "140",
+        "150",
+        "160",
+        "170",
+        "180"
+    )
 
 
     private var konuDk = 0
@@ -571,7 +590,6 @@ class EnterStudyActivity : AppCompatActivity() {
 
     private fun setupNumberPickerForStringValues() {
         val numberPicker = binding.numberPickerKonuDk
-        val values = arrayOf("0", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120")
         numberPicker.minValue = 0
         numberPicker.maxValue = values.size - 1
         numberPicker.displayedValues = values
@@ -581,23 +599,21 @@ class EnterStudyActivity : AppCompatActivity() {
         }
 
         val soruDkPicker = binding.numberPickerSoruDk
-        val values2 = arrayOf("0", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120")
         soruDkPicker.minValue = 0
-        soruDkPicker.maxValue = values2.size - 1
-        soruDkPicker.displayedValues = values2
+        soruDkPicker.maxValue = values.size - 1
+        soruDkPicker.displayedValues = values
         soruDkPicker.wrapSelectorWheel = true
         soruDkPicker.setOnValueChangedListener { _, _, newVal ->
-            soruDk = values2[newVal].toInt()
+            soruDk = values[newVal].toInt()
         }
 
         val soruSayiPicker = binding.numberPickerSoruSayi
-        val values3 = arrayOf("0", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120")
         soruSayiPicker.minValue = 0
-        soruSayiPicker.maxValue = values3.size - 1
-        soruSayiPicker.displayedValues = values3
+        soruSayiPicker.maxValue = values.size - 1
+        soruSayiPicker.displayedValues = values
         soruSayiPicker.wrapSelectorWheel = true
         soruSayiPicker.setOnValueChangedListener { _, _, newVal ->
-            soruSayi = values3[newVal].toInt()
+            soruSayi = values[newVal].toInt()
         }
 
 

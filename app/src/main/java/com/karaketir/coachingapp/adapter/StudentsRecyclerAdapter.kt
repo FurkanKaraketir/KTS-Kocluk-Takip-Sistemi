@@ -15,7 +15,7 @@ import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 
 open class StudentsRecyclerAdapter(
     private val studentList: ArrayList<Student>, private val secilenZaman: String
@@ -99,6 +99,7 @@ open class StudentsRecyclerAdapter(
                         cal.add(Calendar.DAY_OF_YEAR, 1)
                         bitisTarihi = cal.time
                     }
+
                     "Dün" -> {
                         bitisTarihi = cal.time
 
@@ -106,6 +107,7 @@ open class StudentsRecyclerAdapter(
                         baslangicTarihi = cal.time
 
                     }
+
                     "Bu Hafta" -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         baslangicTarihi = cal.time
@@ -115,6 +117,7 @@ open class StudentsRecyclerAdapter(
                         bitisTarihi = cal.time
 
                     }
+
                     "Geçen Hafta" -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         bitisTarihi = cal.time
@@ -125,6 +128,7 @@ open class StudentsRecyclerAdapter(
 
 
                     }
+
                     "Bu Ay" -> {
 
                         cal = Calendar.getInstance()
@@ -143,6 +147,7 @@ open class StudentsRecyclerAdapter(
 
 
                     }
+
                     "Geçen Ay" -> {
                         cal = Calendar.getInstance()
                         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -159,6 +164,7 @@ open class StudentsRecyclerAdapter(
                         baslangicTarihi = cal.time
 
                     }
+
                     "Tüm Zamanlar" -> {
                         cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                         baslangicTarihi = cal.time
@@ -222,12 +228,14 @@ open class StudentsRecyclerAdapter(
                                                 binding.starFour.visibility = View.VISIBLE
                                                 binding.starFive.visibility = View.VISIBLE
                                             }
+
                                             4 -> {
                                                 binding.starTwo.visibility = View.VISIBLE
                                                 binding.starThree.visibility = View.VISIBLE
                                                 binding.starFour.visibility = View.VISIBLE
                                                 binding.starFive.visibility = View.GONE
                                             }
+
                                             3 -> {
                                                 binding.starTwo.visibility = View.VISIBLE
                                                 binding.starThree.visibility = View.VISIBLE
@@ -235,12 +243,14 @@ open class StudentsRecyclerAdapter(
                                                 binding.starFive.visibility = View.GONE
 
                                             }
+
                                             2 -> {
                                                 binding.starTwo.visibility = View.VISIBLE
                                                 binding.starThree.visibility = View.GONE
                                                 binding.starFour.visibility = View.GONE
                                                 binding.starFive.visibility = View.GONE
                                             }
+
                                             1 -> {
                                                 binding.starTwo.visibility = View.GONE
                                                 binding.starThree.visibility = View.GONE

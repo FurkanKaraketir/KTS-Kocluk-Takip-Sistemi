@@ -34,6 +34,25 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var soruDk = 0
     private var soruSayi = 0
+    private var values = arrayOf(
+        "0",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90",
+        "100",
+        "110",
+        "120",
+        "130",
+        "140",
+        "150",
+        "160",
+        "170",
+        "180"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityAddPrgrphPrblmBinding.inflate(layoutInflater)
@@ -491,7 +510,6 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
 
     private fun setupNumberPickerForStringValues() {
         val numberPicker = binding.numberPickerSoruDk
-        val values = arrayOf("0", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120")
         numberPicker.minValue = 0
         numberPicker.maxValue = values.size - 1
         numberPicker.displayedValues = values
@@ -501,13 +519,12 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
         }
 
         val soruSayiPicker = binding.numberPickerSoruSayi
-        val values3 = arrayOf("0", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120")
         soruSayiPicker.minValue = 0
-        soruSayiPicker.maxValue = values3.size - 1
-        soruSayiPicker.displayedValues = values3
+        soruSayiPicker.maxValue = values.size - 1
+        soruSayiPicker.displayedValues = values
         soruSayiPicker.wrapSelectorWheel = true
         soruSayiPicker.setOnValueChangedListener { _, _, newVal ->
-            soruSayi = values3[newVal].toInt()
+            soruSayi = values[newVal].toInt()
         }
 
 
