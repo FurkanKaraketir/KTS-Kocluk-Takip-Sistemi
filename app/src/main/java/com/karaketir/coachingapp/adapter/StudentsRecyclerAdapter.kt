@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.karaketir.coachingapp.R
+import com.karaketir.coachingapp.StudentClassUpdateActivity
 import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
@@ -41,20 +42,41 @@ open class StudentsRecyclerAdapter(
 
                 val myItem = studentList[position]
 
+                val studentNameTextView = binding.studentNameTextView
+                val studentGradeTextView = binding.studentGradeTextView
+                val studentAddButton = binding.studentAddButton
+                val studentDeleteButton = binding.studentDeleteButton
+                val studentCard = binding.studentCard
+                val todayStudyImageView = binding.todayStudyImageView
+                val fiveStarButton = binding.fiveStarButton
+                val degerlendirmeDate = binding.degerlendirmeDate
+                val starTwo = binding.starTwo
+                val starThree = binding.starThree
+                val starFour = binding.starFour
+                val starFive = binding.starFive
+
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
-                binding.studentNameTextView.text = myItem.studentName
-                binding.studentGradeTextView.text = myItem.grade.toString()
+                studentNameTextView.text = myItem.studentName
+                studentGradeTextView.text = myItem.grade.toString()
 
-                binding.studentAddButton.visibility = View.GONE
-                binding.studentDeleteButton.visibility = View.VISIBLE
+                studentGradeTextView.setOnClickListener {
 
-                binding.studentDeleteButton.setOnClickListener {
+                    val newIntent =
+                        Intent(holder.itemView.context, StudentClassUpdateActivity::class.java)
+                    newIntent.putExtra("id", myItem.id)
+                    holder.itemView.context.startActivity(newIntent)
+
+                }
+                studentAddButton.visibility = View.GONE
+                studentDeleteButton.visibility = View.VISIBLE
+
+                studentDeleteButton.setOnClickListener {
 
                     db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                         val kurumKodu = it.get("kurumKodu").toString().toInt()
-                        binding.studentNameTextView.text = myItem.studentName
+                        studentNameTextView.text = myItem.studentName
                         val removeStudent = AlertDialog.Builder(holder.itemView.context)
                         removeStudent.setTitle("Öğrenci Çıkar")
                         removeStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
@@ -72,10 +94,11 @@ open class StudentsRecyclerAdapter(
 
                 }
 
-                binding.studentCard.setOnClickListener {
+                studentCard.setOnClickListener {
                     val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
                     intent.putExtra("secilenZaman", secilenZaman)
                     intent.putExtra("studentID", myItem.id)
+                    println(myItem.id)
                     holder.itemView.context.startActivity(intent)
                 }
 
@@ -190,13 +213,13 @@ open class StudentsRecyclerAdapter(
                             if (value != null) {
 
                                 if (value.isEmpty) {
-                                    binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                                    todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
                                 } else {
-                                    binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                                    todayStudyImageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                                 }
 
                             } else {
-                                binding.todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                                todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
                             }
 
                         }
@@ -212,57 +235,57 @@ open class StudentsRecyclerAdapter(
 
                             if (value != null) {
                                 if (value.isEmpty) {
-                                    binding.fiveStarButton.visibility = View.GONE
+                                    fiveStarButton.visibility = View.GONE
                                 } else {
-                                    binding.fiveStarButton.visibility = View.VISIBLE
+                                    fiveStarButton.visibility = View.VISIBLE
                                     for (i in value) {
                                         val tarih =
                                             i.get("degerlendirmeDate") as com.google.firebase.Timestamp
                                         val dateFormated =
                                             SimpleDateFormat("dd/MM/yyyy").format(tarih.toDate())
-                                        binding.degerlendirmeDate.text = dateFormated
+                                        degerlendirmeDate.text = dateFormated
                                         when (i.get("yildizSayisi").toString().toInt()) {
                                             5 -> {
-                                                binding.starTwo.visibility = View.VISIBLE
-                                                binding.starThree.visibility = View.VISIBLE
-                                                binding.starFour.visibility = View.VISIBLE
-                                                binding.starFive.visibility = View.VISIBLE
+                                                starTwo.visibility = View.VISIBLE
+                                                starThree.visibility = View.VISIBLE
+                                                starFour.visibility = View.VISIBLE
+                                                starFive.visibility = View.VISIBLE
                                             }
 
                                             4 -> {
-                                                binding.starTwo.visibility = View.VISIBLE
-                                                binding.starThree.visibility = View.VISIBLE
-                                                binding.starFour.visibility = View.VISIBLE
-                                                binding.starFive.visibility = View.GONE
+                                                starTwo.visibility = View.VISIBLE
+                                                starThree.visibility = View.VISIBLE
+                                                starFour.visibility = View.VISIBLE
+                                                starFive.visibility = View.GONE
                                             }
 
                                             3 -> {
-                                                binding.starTwo.visibility = View.VISIBLE
-                                                binding.starThree.visibility = View.VISIBLE
-                                                binding.starFour.visibility = View.GONE
-                                                binding.starFive.visibility = View.GONE
+                                                starTwo.visibility = View.VISIBLE
+                                                starThree.visibility = View.VISIBLE
+                                                starFour.visibility = View.GONE
+                                                starFive.visibility = View.GONE
 
                                             }
 
                                             2 -> {
-                                                binding.starTwo.visibility = View.VISIBLE
-                                                binding.starThree.visibility = View.GONE
-                                                binding.starFour.visibility = View.GONE
-                                                binding.starFive.visibility = View.GONE
+                                                starTwo.visibility = View.VISIBLE
+                                                starThree.visibility = View.GONE
+                                                starFour.visibility = View.GONE
+                                                starFive.visibility = View.GONE
                                             }
 
                                             1 -> {
-                                                binding.starTwo.visibility = View.GONE
-                                                binding.starThree.visibility = View.GONE
-                                                binding.starFour.visibility = View.GONE
-                                                binding.starFive.visibility = View.GONE
+                                                starTwo.visibility = View.GONE
+                                                starThree.visibility = View.GONE
+                                                starFour.visibility = View.GONE
+                                                starFive.visibility = View.GONE
                                             }
                                         }
                                     }
                                 }
 
                             } else {
-                                binding.fiveStarButton.visibility = View.GONE
+                                fiveStarButton.visibility = View.GONE
                             }
                         }
 

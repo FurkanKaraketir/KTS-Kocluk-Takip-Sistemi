@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
             finish()
         } else {
+            FirebaseMessaging.getInstance().subscribeToTopic("all")
             FirebaseMessaging.getInstance().subscribeToTopic(auth.uid.toString())
         }
     }
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         val updateButton = binding.updateButton
         val imageHalit = binding.imageHalit
         val excelButton = binding.excelButton
+        val messageButton = binding.sendMessageButton
 
 
         developerButton.setOnClickListener {
@@ -344,6 +346,14 @@ class MainActivity : AppCompatActivity() {
 
 
             } else if (it.get("personType").toString() == "Teacher") {
+
+
+                if (it.get("subjectType").toString() == "İdare") {
+                    messageButton.visibility = View.VISIBLE
+                } else {
+                    messageButton.visibility = View.GONE
+                }
+
                 studySearchEditText.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.GONE
                 excelButton.visibility = View.VISIBLE
@@ -560,6 +570,12 @@ class MainActivity : AppCompatActivity() {
                 updateTime(grade)
             }
         })
+
+
+        messageButton.setOnClickListener {
+            val newIntent = Intent(this, MessageActivity::class.java)
+            this.startActivity(newIntent)
+        }
 
 
     }

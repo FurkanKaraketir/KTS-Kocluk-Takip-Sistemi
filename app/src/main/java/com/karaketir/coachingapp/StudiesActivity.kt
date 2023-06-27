@@ -122,10 +122,12 @@ class StudiesActivity : AppCompatActivity() {
         setupStudyRecyclerView(studyList)
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+        println(studentID)
+
         db.collection("User").document(studentID).get().addOnSuccessListener {
             name = it.get("nameAndSurname").toString()
             nameTextView.text = name
-
         }
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)

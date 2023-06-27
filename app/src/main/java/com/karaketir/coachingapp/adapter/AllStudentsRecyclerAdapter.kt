@@ -32,15 +32,30 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
             if (studentList.isNotEmpty() && position >= 0 && position < studentList.size) {
 
                 val myItem = studentList[position]
+                val studentDeleteButton = binding.studentDeleteButton
+                val studentAddButton = binding.studentAddButton
+                val studentHardDeleteButton = binding.studentHardDeleteButton
+                val studentGradeTextView = binding.studentGradeTextView
+                val studentNameTextView = binding.studentNameTextView
 
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
                 var kurumKodu: Int
-                binding.studentDeleteButton.visibility = View.GONE
-                binding.studentAddButton.visibility = View.VISIBLE
-                binding.studentHardDeleteButton.visibility = View.VISIBLE
+                studentDeleteButton.visibility = View.GONE
+                studentAddButton.visibility = View.VISIBLE
 
-                binding.studentHardDeleteButton.setOnClickListener {
+
+
+                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                    if (it.get("subjectType").toString() == "İdare") {
+                        studentHardDeleteButton.visibility = View.VISIBLE
+                    } else {
+                        studentHardDeleteButton.visibility = View.GONE
+                    }
+                }
+
+
+                studentHardDeleteButton.setOnClickListener {
                     val alertDialog = AlertDialog.Builder(holder.itemView.context)
                     alertDialog.setTitle("Hesabı Sil")
                     alertDialog.setMessage("Hesabı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
@@ -76,9 +91,9 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     kurumKodu = it.get("kurumKodu").toString().toInt()
-                    binding.studentNameTextView.text = myItem.studentName
+                    studentNameTextView.text = myItem.studentName
 
-                    binding.studentAddButton.setOnClickListener {
+                    studentAddButton.setOnClickListener {
 
                         val addStudent = AlertDialog.Builder(holder.itemView.context)
                         addStudent.setTitle("Öğrenci Ekle")
@@ -98,7 +113,7 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
                     }
                 }
-                binding.studentGradeTextView.text = myItem.grade.toString()
+                studentGradeTextView.text = myItem.grade.toString()
 
 
             }

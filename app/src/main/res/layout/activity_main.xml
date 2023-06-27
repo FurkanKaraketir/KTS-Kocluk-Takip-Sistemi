@@ -249,6 +249,19 @@
                             </Button>
 
                             <Button
+                                android:id="@+id/sendMessageButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/mesaj_g_nder"
+                                android:visibility="gone"
+                                app:icon="@drawable/baseline_message_24">
+
+                            </Button>
+
+
+                            <Button
                                 android:id="@+id/developerButtonMain"
                                 style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                                 android:layout_width="wrap_content"
