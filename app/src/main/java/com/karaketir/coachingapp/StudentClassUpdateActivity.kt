@@ -17,7 +17,7 @@ class StudentClassUpdateActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityStudentClassUpdateBinding
     private var name = ""
-    private var kurumKodu = 763455
+    private var kurumKodu = 0
     private var grade = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {

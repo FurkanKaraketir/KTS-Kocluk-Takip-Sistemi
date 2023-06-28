@@ -51,6 +51,30 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
+    <LinearLayout
+        android:id="@+id/messageSpinnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hedef_se_iniz"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/messageSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog"
+            android:tooltipText="Alan Seçimi Yapınız"
+            tools:ignore="UnusedAttribute" />
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/sendMessageButton"
         style="@style/Widget.Material3.Button.ElevatedButton"

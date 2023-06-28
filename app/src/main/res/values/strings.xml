@@ -130,4 +130,5 @@
     <string name="mesaj_eri_i">Mesaj İçeriği</string>
     <string name="mesaj_g_nder">Mesaj Gönder</string>
     <string name="g_nder">Gönder</string>
+    <string name="hedef_se_iniz">Hedef Seçiniz:</string>
 </resources>

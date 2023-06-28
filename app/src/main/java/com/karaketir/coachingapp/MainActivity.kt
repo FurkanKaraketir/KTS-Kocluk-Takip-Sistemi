@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         val imageHalit = binding.imageHalit
         val excelButton = binding.excelButton
         val messageButton = binding.sendMessageButton
-
+        var kocID = ""
 
         developerButton.setOnClickListener {
             openLink(
@@ -249,6 +249,8 @@ class MainActivity : AppCompatActivity() {
 
             if (kurumKodu != null) {
                 currentKurumKodu = kurumKodu
+                FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
+
             }
 
 
@@ -268,10 +270,13 @@ class MainActivity : AppCompatActivity() {
 
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(auth.uid.toString()).get().addOnSuccessListener { student ->
-                        val kocID = student.get("teacher").toString()
+                        kocID = student.get("teacher").toString()
                         if (kocID.isEmpty()) {
                             kocOgretmenTextView.text = "Koç Öğretmenin Bulunmuyor"
                         } else {
+
+                            FirebaseMessaging.getInstance().subscribeToTopic(kocID)
+
                             db.collection("School").document(kurumKodu.toString())
                                 .collection("Teacher").document(kocID).get()
                                 .addOnSuccessListener { teacher ->
@@ -347,13 +352,7 @@ class MainActivity : AppCompatActivity() {
 
             } else if (it.get("personType").toString() == "Teacher") {
 
-
-                if (it.get("subjectType").toString() == "İdare") {
-                    messageButton.visibility = View.VISIBLE
-                } else {
-                    messageButton.visibility = View.GONE
-                }
-
+                messageButton.visibility = View.VISIBLE
                 studySearchEditText.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.GONE
                 excelButton.visibility = View.VISIBLE
@@ -547,8 +546,12 @@ class MainActivity : AppCompatActivity() {
             signOutAlertDialog.setTitle("Çıkış Yap")
             signOutAlertDialog.setMessage("Hesabınızdan Çıkış Yapmak İstediğinize Emin misiniz?")
             signOutAlertDialog.setPositiveButton("Çıkış") { _, _ ->
+
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(auth.uid.toString())
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(currentKurumKodu.toString())
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(kocID)
+
                 signOut()
-                finish()
             }
             signOutAlertDialog.setNegativeButton("İptal") { _, _ ->
 
