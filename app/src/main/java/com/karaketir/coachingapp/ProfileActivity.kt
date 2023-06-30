@@ -98,9 +98,8 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
         }
 
         storage = Firebase.storage
-        db.collection("School").document("763455").collection("Student")
-            .document("1BfRKDOOQmb3FAJqv6IQZpWyqyt1").get().addOnSuccessListener {
-                Giphy.configure(this, it.get("giphyKey").toString())
+        db.collection("VersionCode").document("giphyKey").get().addOnSuccessListener {
+                Giphy.configure(this, it.get("key").toString())
             }
         val settings = GPHSettings(GridType.waterfall, GPHTheme.Dark)
         settings.mediaTypeConfig = arrayOf(GPHContentType.gif)
