@@ -105,6 +105,7 @@ class StudiesActivity : AppCompatActivity() {
         //Creating sheet header row
         createSheetHeader(cellStyle, sheet)
 
+        val previousRatingsButton = binding.previousRatingsButton
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
@@ -120,6 +121,14 @@ class StudiesActivity : AppCompatActivity() {
         val excelCreateButton = binding.excelStudentButton
 
         setupStudyRecyclerView(studyList)
+
+        previousRatingsButton.setOnClickListener {
+            val newIntent = Intent(this, PreviousRatingsActivity::class.java)
+            newIntent.putExtra("studentID",studentID)
+            this.startActivity(newIntent)
+        }
+
+
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 

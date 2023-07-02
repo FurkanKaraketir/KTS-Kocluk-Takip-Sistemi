@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.karaketir.coachingapp
 
 import android.content.Intent
@@ -72,10 +70,14 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
         auth = Firebase.auth
         db = Firebase.firestore
+
+
         val denemeAdiSpinner = binding.denemeAdiSpinner
 
+        setupNumberPickerForStringValues()
+
         val cal = Calendar.getInstance()
-        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+        cal[Calendar.HOUR_OF_DAY] = 0
 
         cal.clear(Calendar.MINUTE)
         cal.clear(Calendar.SECOND)
@@ -132,61 +134,36 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val documentID = UUID.randomUUID().toString()
 
         val button = binding.denemeKaydetButton
-
-        val turDogru = binding.turkDogru
-        val turkYanlisEditText = binding.turkYanlisEditText
         val turkYanlisBtn = binding.turkYanlisButton
 
-        val cogDogru = binding.cogDogru
-        val cogYanlisEditText = binding.cogYanlisEditText
-
         val cogYanlis = binding.cogYanlis
+        val tarihYanlis = binding.tarihYanlisButton
 
-        val tarihDogru = binding.tarihDogru
-
-        val tarihYanlis = binding.tarihYanlis
-        val tarihYanlisEdit = binding.tarihYanlisEditText
-
-        val felDogru = binding.felDogru
         val felYanlis = binding.felYanlis
-        val felYanlisEdit = binding.felYanlisEditText
 
-        val dinDogru = binding.dinDogru
-        val dinYanlis = binding.dinYanlis
-        val dinYanlisEdit = binding.dinYanlisEditText
+        val dinYanlisButton = binding.dinYanlisButton
 
+        val matYanlisButton = binding.matYanlisButton
 
-        val matDogru = binding.matDogru
-        val matYanlis = binding.matYanlis
-        val matYanlisEdit = binding.matYanlisEditText
+        val geoYanlisButton = binding.geoYanlisButton
 
-        val geometriDogru = binding.geometriDogru
-        val geometriYanlis = binding.geometriYanlis
-        val geoYanlisEdit = binding.geometriYanlisEditText
+        val fizYanlisButton = binding.fizYanlisButton
 
-        val fizDogru = binding.fizDogru
-        val fizYanlis = binding.fizYanlis
-        val fizYanlisEdit = binding.fizYanlisEditText
+        val kimYanlis = binding.kimYanlisButton
 
-        val kimyaDogru = binding.kimyaDogru
-        val kimyaYanlis = binding.kimyaYanlis
-        val kimyaYanlisEdit = binding.kimyaYanlisEditText
-
-        val biyolojiDogru = binding.biyolojiDogru
-        val biyolojiYanlis = binding.biyolojiYanlis
-        val biyolojiYanlisEdit = binding.biyolojiYanlisEditText
+        val biYanlisButton = binding.biYanlisButton
 
 
 
 
-        fizYanlis.setOnClickListener {
+        fizYanlisButton.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
             intent.putExtra("dersAdi", "Fizik")
             this.startActivity(intent)
         }
-        biyolojiYanlis.setOnClickListener {
+        biYanlisButton.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
@@ -194,7 +171,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this.startActivity(intent)
         }
 
-        kimyaYanlis.setOnClickListener {
+        kimYanlis.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
@@ -202,7 +179,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this.startActivity(intent)
         }
 
-        geometriYanlis.setOnClickListener {
+        geoYanlisButton.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
@@ -210,7 +187,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this.startActivity(intent)
         }
 
-        matYanlis.setOnClickListener {
+        matYanlisButton.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
@@ -218,7 +195,7 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             this.startActivity(intent)
         }
 
-        dinYanlis.setOnClickListener {
+        dinYanlisButton.setOnClickListener {
             val intent = Intent(this, DenemeYanlisKonuActivity::class.java)
             intent.putExtra("tür", studyType)
             intent.putExtra("documentID", documentID)
@@ -263,124 +240,6 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 auth.uid.toString()
             ).get().addOnSuccessListener {
                 val kurumKodu = it.get("kurumKodu").toString().toInt()
-                turkceDogruDegeri = if (turDogru.text.isNotEmpty()) {
-                    turDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                turkceYanlisDegeri = if (turkYanlisEditText.text.isNotEmpty()) {
-                    turkYanlisEditText.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                cogDogruDegeri = if (cogDogru.text.isNotEmpty()) {
-                    cogDogru.text.toString().toInt()
-
-
-                } else {
-                    0
-                }
-                cogYanlisDegeri = if (cogYanlisEditText.text.isNotEmpty()) {
-                    cogYanlisEditText.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                tarihDogruDegeri = if (tarihDogru.text.isNotEmpty()) {
-                    tarihDogru.text.toString().toInt()
-
-
-                } else {
-                    0
-                }
-                tarihYanlisDegeri = if (tarihYanlisEdit.text.isNotEmpty()) {
-                    tarihYanlisEdit.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                felsefeDogruDegeri = if (felDogru.text.isNotEmpty()) {
-                    felDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                felsefeYanlisDegeri = if (felYanlisEdit.text.isNotEmpty()) {
-                    felYanlisEdit.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                dinDogruDegeri = if (dinDogru.text.isNotEmpty()) {
-                    dinDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                dinYanlisDegeri = if (dinYanlisEdit.text.isNotEmpty()) {
-                    dinYanlisEdit.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                matDogruDegeri = if (matDogru.text.isNotEmpty()) {
-                    matDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                matYanlisDegeri = if (matYanlisEdit.text.isNotEmpty()) {
-                    matYanlisEdit.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                geoDogruDegeri = if (geometriDogru.text.isNotEmpty()) {
-                    geometriDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                geoYanlisDegeri = if (geoYanlisEdit.text.isNotEmpty()) {
-                    geoYanlisEdit.text.toString().toInt()
-                } else {
-                    0
-                }
-                fizikDogruDegeri = if (fizDogru.text.isNotEmpty()) {
-                    fizDogru.text.toString().toInt()
-                } else {
-                    0
-                }
-                fizikYanlisDegeri = if (fizYanlisEdit.text.isNotEmpty()) {
-                    fizYanlisEdit.text.toString().toInt()
-                } else {
-                    0
-                }
-                kimyaDogruDegeri = if (kimyaDogru.text.isNotEmpty()) {
-                    kimyaDogru.text.toString().toInt()
-                } else {
-                    0
-                }
-                kimyaYanlisDegeri = if (kimyaYanlisEdit.text.isNotEmpty()) {
-                    kimyaYanlisEdit.text.toString().toInt()
-                } else {
-                    0
-                }
-                biyolojiDogruDegeri = if (biyolojiDogru.text.isNotEmpty()) {
-                    biyolojiDogru.text.toString().toInt()
-
-                } else {
-                    0
-                }
-                biyolojiYanlisDegeri = if (biyolojiYanlisEdit.text.isNotEmpty()) {
-                    biyolojiYanlisEdit.text.toString().toInt()
-
-
-                } else {
-                    0
-                }
 
                 button.isClickable = false
                 val turkceNet = turkceDogruDegeri - (turkceYanlisDegeri * 0.25f)
@@ -500,8 +359,176 @@ class EnterTytActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
     }
-}
 
+    private fun setupNumberPickerForStringValues() {
+
+        val turkceDogru = binding.turkceDogru
+        turkceDogru.minValue = 0
+        turkceDogru.maxValue = 40
+        turkceDogru.wrapSelectorWheel = true
+        turkceDogru.setOnValueChangedListener { _, _, newVal ->
+            turkceDogruDegeri = newVal
+        }
+
+        val turkceYanlis = binding.turkceYanlis
+
+        turkceYanlis.minValue = 0
+        turkceYanlis.maxValue = 40
+        turkceYanlis.wrapSelectorWheel = true
+        turkceYanlis.setOnValueChangedListener { _, _, newVal ->
+            turkceYanlisDegeri = newVal
+        }
+
+
+        val tarihDogru = binding.tarihDogru
+        tarihDogru.minValue = 0
+        tarihDogru.maxValue = 40
+        tarihDogru.wrapSelectorWheel = true
+        tarihDogru.setOnValueChangedListener { _, _, newVal ->
+            tarihDogruDegeri = newVal
+        }
+
+        val tarihYanlis = binding.tarihYanlis
+
+        tarihYanlis.minValue = 0
+        tarihYanlis.maxValue = 40
+        tarihYanlis.wrapSelectorWheel = true
+        tarihYanlis.setOnValueChangedListener { _, _, newVal ->
+            tarihYanlisDegeri = newVal
+        }
+
+        val cografyaDogru = binding.cografyaDogru
+        cografyaDogru.minValue = 0
+        cografyaDogru.maxValue = 40
+        cografyaDogru.wrapSelectorWheel = true
+        cografyaDogru.setOnValueChangedListener { _, _, newVal ->
+            cogDogruDegeri = newVal
+        }
+
+        val cografyaYanlis = binding.cografyaYanlis
+        cografyaYanlis.minValue = 0
+        cografyaYanlis.maxValue = 40
+        cografyaYanlis.wrapSelectorWheel = true
+        cografyaYanlis.setOnValueChangedListener { _, _, newVal ->
+            cogYanlisDegeri = newVal
+        }
+
+        val felsefeDogru = binding.felsefeDogru
+        felsefeDogru.minValue = 0
+        felsefeDogru.maxValue = 40
+        felsefeDogru.wrapSelectorWheel = true
+        felsefeDogru.setOnValueChangedListener { _, _, newVal ->
+            felsefeDogruDegeri = newVal
+        }
+
+        val felsefeYanlis = binding.felsefeYanlis
+        felsefeYanlis.minValue = 0
+        felsefeYanlis.maxValue = 40
+        felsefeYanlis.wrapSelectorWheel = true
+        felsefeYanlis.setOnValueChangedListener { _, _, newVal ->
+            felsefeYanlisDegeri = newVal
+        }
+
+
+        val dinDogru = binding.dinDogru
+        dinDogru.minValue = 0
+        dinDogru.maxValue = 40
+        dinDogru.wrapSelectorWheel = true
+        dinDogru.setOnValueChangedListener { _, _, newVal ->
+            dinDogruDegeri = newVal
+        }
+
+        val dinYanlis = binding.dinYanlis
+        dinYanlis.minValue = 0
+        dinYanlis.maxValue = 40
+        dinYanlis.wrapSelectorWheel = true
+        dinYanlis.setOnValueChangedListener { _, _, newVal ->
+            dinYanlisDegeri = newVal
+        }
+
+        val matDogru = binding.matDogru
+        matDogru.minValue = 0
+        matDogru.maxValue = 40
+        matDogru.wrapSelectorWheel = true
+        matDogru.setOnValueChangedListener { _, _, newVal ->
+            matDogruDegeri = newVal
+        }
+
+        val matYanlis = binding.matYanlis
+        matYanlis.minValue = 0
+        matYanlis.maxValue = 40
+        matYanlis.wrapSelectorWheel = true
+        matYanlis.setOnValueChangedListener { _, _, newVal ->
+            matYanlisDegeri = newVal
+        }
+
+        val geoDogru = binding.geoDogru
+        geoDogru.minValue = 0
+        geoDogru.maxValue = 40
+        geoDogru.wrapSelectorWheel = true
+        geoDogru.setOnValueChangedListener { _, _, newVal ->
+            geoDogruDegeri = newVal
+        }
+
+        val geoYanlis = binding.geoYanlis
+        geoYanlis.minValue = 0
+        geoYanlis.maxValue = 40
+        geoYanlis.wrapSelectorWheel = true
+        geoYanlis.setOnValueChangedListener { _, _, newVal ->
+            geoYanlisDegeri = newVal
+        }
+
+        val fizDogru = binding.fizDogru
+        fizDogru.minValue = 0
+        fizDogru.maxValue = 40
+        fizDogru.wrapSelectorWheel = true
+        fizDogru.setOnValueChangedListener { _, _, newVal ->
+            fizikDogruDegeri = newVal
+        }
+
+        val fizYanlis = binding.fizYanlis
+        fizYanlis.minValue = 0
+        fizYanlis.maxValue = 40
+        fizYanlis.wrapSelectorWheel = true
+        fizYanlis.setOnValueChangedListener { _, _, newVal ->
+            fizikYanlisDegeri = newVal
+        }
+
+        val kimDogru = binding.kimDogru
+        kimDogru.minValue = 0
+        kimDogru.maxValue = 40
+        kimDogru.wrapSelectorWheel = true
+        kimDogru.setOnValueChangedListener { _, _, newVal ->
+            kimyaDogruDegeri = newVal
+        }
+
+        val kimYanlis = binding.kimYanlis
+        kimYanlis.minValue = 0
+        kimYanlis.maxValue = 40
+        kimYanlis.wrapSelectorWheel = true
+        kimYanlis.setOnValueChangedListener { _, _, newVal ->
+            kimyaYanlisDegeri = newVal
+        }
+
+        val biDogru = binding.biDogru
+        biDogru.minValue = 0
+        biDogru.maxValue = 40
+        biDogru.wrapSelectorWheel = true
+        biDogru.setOnValueChangedListener { _, _, newVal ->
+            biyolojiDogruDegeri = newVal
+        }
+
+        val biYanlis = binding.biYanlis
+        biYanlis.minValue = 0
+        biYanlis.maxValue = 40
+        biYanlis.wrapSelectorWheel = true
+        biYanlis.setOnValueChangedListener { _, _, newVal ->
+            biyolojiYanlisDegeri = newVal
+        }
+
+
+    }
+}
 
 
 

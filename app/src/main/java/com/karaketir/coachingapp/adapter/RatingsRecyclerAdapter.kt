@@ -77,7 +77,7 @@ class RatingsRecyclerAdapter(private val ratingsList: ArrayList<Rating>) :
                 }
 
                 val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(myItem.ratingDate.toDate())
-                binding.raingDateText.text = "Çalışma Tarihi: $dateFormated"
+                binding.raingDateText.text = dateFormated
             }
 
         }

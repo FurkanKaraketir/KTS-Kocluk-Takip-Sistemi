@@ -33,7 +33,7 @@
             android:layout_below="@id/studentNameTextView"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_margin="20dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone"

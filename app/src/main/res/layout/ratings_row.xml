@@ -8,74 +8,69 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="30dp">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <TextView
+            android:id="@+id/raingDateText"
+            style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
+            android:layout_margin="10dp" />
 
-            <TextView
-                android:id="@+id/raingDateText"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp" />
+        <ImageView
+            android:id="@+id/starOne"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/add_something"
+            android:src="@drawable/baseline_stars_24" />
 
-            <ImageView
-                android:id="@+id/starOne"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24" />
+        <ImageView
+            android:id="@+id/starTwo"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/add_something"
+            android:src="@drawable/baseline_stars_24"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/starTwo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
+        <ImageView
+            android:id="@+id/starThree"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/add_something"
+            android:src="@drawable/baseline_stars_24"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/starThree"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
+        <ImageView
+            android:id="@+id/starFour"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/add_something"
+            android:src="@drawable/baseline_stars_24"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/starFour"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
+        <ImageView
+            android:id="@+id/starFive"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/add_something"
+            android:src="@drawable/baseline_stars_24"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/starFive"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
+        <TextView
+            android:id="@+id/degerlendirmeDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
 
-            <TextView
-                android:id="@+id/degerlendirmeDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="" />
-
-        </LinearLayout>
-
-    </HorizontalScrollView>
+    </LinearLayout>
 
 
 </androidx.cardview.widget.CardView>

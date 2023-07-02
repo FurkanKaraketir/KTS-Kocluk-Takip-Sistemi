@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -41,9 +42,9 @@
                         android:layout_width="250dp"
                         android:layout_height="wrap_content"
                         android:autofillHints="name"
-                        android:visibility="gone"
                         android:hint="@string/deneme_ad"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/denemeSpinnerLayout"
@@ -91,27 +92,74 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/turkDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/turkYanlisEditText"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/do_ru">
+
+                        </TextView>
+
+                        <com.shawnlin.numberpicker.NumberPicker
+                            android:id="@+id/turkce_dogru"
+                            android:layout_width="50dp"
+                            android:layout_height="150dp"
+                            android:layout_margin="10dp"
+                            android:dividerPadding="5dp"
+                            app:np_dividerColor="#03A9F4"
+                            app:np_dividerDistance="30dp"
+                            app:np_dividerThickness="5dp"
+                            app:np_dividerType="underline"
+                            app:np_height="180dp"
+                            app:np_itemSpacing="-10dp"
+                            app:np_max="59"
+                            app:np_min="0"
+                            app:np_selectedTextColor="#2196F3"
+                            app:np_selectedTextSize="20dp"
+                            app:np_textColor="#CB6A6A6A"
+                            app:np_textSize="20dp"
+                            app:np_width="64dp" />
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/yanl">
+
+                        </TextView>
+
+
+                        <com.shawnlin.numberpicker.NumberPicker
+                            android:id="@+id/turkce_yanlis"
+                            android:layout_width="50dp"
+                            android:layout_height="150dp"
+                            android:layout_margin="10dp"
+                            android:dividerPadding="5dp"
+                            app:np_dividerColor="#03A9F4"
+                            app:np_dividerDistance="30dp"
+                            app:np_dividerThickness="5dp"
+                            app:np_dividerType="underline"
+                            app:np_height="180dp"
+                            app:np_itemSpacing="-10dp"
+                            app:np_max="59"
+                            app:np_min="0"
+                            app:np_selectedTextColor="#2196F3"
+                            app:np_selectedTextSize="20dp"
+                            app:np_textColor="#CB6A6A6A"
+                            app:np_textSize="20dp"
+                            app:np_width="64dp" />
+
+                    </LinearLayout>
+
 
                     <Button
                         android:id="@+id/turkYanlisButton"
@@ -153,30 +201,77 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/tarihDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints="doru"
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/tarihYanlisEditText"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/do_ru">
+
+                        </TextView>
+
+                        <com.shawnlin.numberpicker.NumberPicker
+                            android:id="@+id/tarihDogru"
+                            android:layout_width="50dp"
+                            android:layout_height="150dp"
+                            android:layout_margin="10dp"
+                            android:dividerPadding="5dp"
+                            app:np_dividerColor="#03A9F4"
+                            app:np_dividerDistance="30dp"
+                            app:np_dividerThickness="5dp"
+                            app:np_dividerType="underline"
+                            app:np_height="180dp"
+                            app:np_itemSpacing="-10dp"
+                            app:np_max="59"
+                            app:np_min="0"
+                            app:np_selectedTextColor="#2196F3"
+                            app:np_selectedTextSize="20dp"
+                            app:np_textColor="#CB6A6A6A"
+                            app:np_textSize="20dp"
+                            app:np_width="64dp" />
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/yanl">
+
+                        </TextView>
+
+
+                        <com.shawnlin.numberpicker.NumberPicker
+                            android:id="@+id/tarih_yanlis"
+                            android:layout_width="50dp"
+                            android:layout_height="150dp"
+                            android:layout_margin="10dp"
+                            android:dividerPadding="5dp"
+                            app:np_dividerColor="#03A9F4"
+                            app:np_dividerDistance="30dp"
+                            app:np_dividerThickness="5dp"
+                            app:np_dividerType="underline"
+                            app:np_height="180dp"
+                            app:np_itemSpacing="-10dp"
+                            app:np_max="59"
+                            app:np_min="0"
+                            app:np_selectedTextColor="#2196F3"
+                            app:np_selectedTextSize="20dp"
+                            app:np_textColor="#CB6A6A6A"
+                            app:np_textSize="20dp"
+                            app:np_width="64dp" />
+
+                    </LinearLayout>
+
 
                     <Button
-                        android:id="@+id/tarihYanlis"
+                        android:id="@+id/tarihYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -201,6 +296,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -213,27 +309,64 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/cogDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/cogYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/cografyaDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/cografyaYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
 
                     <Button
                         android:id="@+id/cogYanlis"
@@ -261,6 +394,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -273,27 +407,65 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/felDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/felYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/felsefeDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/felsefeYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
                         android:id="@+id/felYanlis"
@@ -322,6 +494,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -334,30 +507,68 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/dinDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/dinYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/dinDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/dinYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/dinYanlis"
+                        android:id="@+id/dinYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -384,6 +595,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -396,30 +608,68 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/matDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/matYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/matDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/matYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/matYanlis"
+                        android:id="@+id/matYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -444,6 +694,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -456,30 +707,68 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/geometriDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/geometriYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/geoDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/geoYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/geometriYanlis"
+                        android:id="@+id/geoYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -505,6 +794,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -517,30 +807,69 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/fizDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/fizYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/fizDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp"
+                        tools:ignore="TooManyViews" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/fizYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/fizYanlis"
+                        android:id="@+id/fizYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -566,6 +895,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -577,33 +907,74 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/kimyaDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/kimyaYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/kimDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/kimYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/kimyaYanlis"
+                        android:id="@+id/kimYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="@string/yanl_konular">
+                        android:text="@string/yanl_konular"
+                        tools:ignore="TooManyViews">
 
                     </Button>
                 </LinearLayout>
@@ -622,6 +993,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -633,28 +1005,68 @@
 
                     </TextView>
 
-                    <EditText
-                        android:id="@+id/biyolojiDogru"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:autofillHints=""
-                        android:hint="@string/do_ru"
-                        android:inputType="number"
-                        android:maxLength="2" />
-
-                    <EditText
-                        android:id="@+id/biyolojiYanlisEditText"
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:autofillHints="Yanlış"
-                        android:hint="@string/yanl"
-                        android:inputType="number"
-                        android:maxLength="2" />
+                        android:text="@string/do_ru">
+
+                    </TextView>
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/biDogru"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/yanl">
+
+                    </TextView>
+
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/biYanlis"
+                        android:layout_width="50dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="10dp"
+                        android:dividerPadding="5dp"
+                        app:np_dividerColor="#03A9F4"
+                        app:np_dividerDistance="30dp"
+                        app:np_dividerThickness="5dp"
+                        app:np_dividerType="underline"
+                        app:np_height="180dp"
+                        app:np_itemSpacing="-10dp"
+                        app:np_max="59"
+                        app:np_min="0"
+                        app:np_selectedTextColor="#2196F3"
+                        app:np_selectedTextSize="20dp"
+                        app:np_textColor="#CB6A6A6A"
+                        app:np_textSize="20dp"
+                        app:np_width="64dp" />
+
 
                     <Button
-                        android:id="@+id/biyolojiYanlis"
+                        android:id="@+id/biYanlisButton"
                         style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -670,7 +1082,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/gray" />
+                android:background="@color/gray"
+                tools:ignore="TooManyViews" />
 
             <Button
                 android:id="@+id/denemeKaydetButton"
