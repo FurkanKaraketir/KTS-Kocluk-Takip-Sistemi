@@ -1,137 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".AddPrgrphPrblmActivity">
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/paragrafTitle"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:text="" />
 
-        <TextView
-            android:id="@+id/paragrafTitle"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputParagrafDK"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:hint="@string/ka_dakika_testi_zd_n"
+        android:maxLength="3">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/paragrafDkEditText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:text="" />
+            android:inputType="number"
+            android:maxLength="3" />
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputParagrafSoru"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:hint="@string/ka_tane_soru_zd_n"
+        android:maxLength="3">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/paragrafSoruEditText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="10dp">
+            android:inputType="number"
+            android:maxLength="3" />
 
-            <LinearLayout
-                android:id="@+id/containerLayout2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/ka_dakika_testi_zd_n">
-
-                </TextView>
-
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:id="@+id/numberPickerSoruDk"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:dividerPadding="5dp"
-                    app:np_dividerColor="#03A9F4"
-                    app:np_dividerDistance="30dp"
-                    app:np_dividerThickness="5dp"
-                    app:np_dividerType="underline"
-                    app:np_height="180dp"
-                    app:np_itemSpacing="-10dp"
-                    app:np_max="59"
-                    app:np_min="0"
-                    app:np_selectedTextColor="#2196F3"
-                    app:np_selectedTextSize="20dp"
-                    app:np_textColor="#CB6A6A6A"
-                    app:np_textSize="20dp"
-                    app:np_width="64dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="10dp">
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/paragrafSaveButton"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:text="@string/b_tt"
+        android:textSize="18sp" />
 
-            <LinearLayout
-                android:id="@+id/containerLayout3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/ka_tane_soru_zd_n">
-
-                </TextView>
-
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:id="@+id/numberPickerSoruSayi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:dividerPadding="5dp"
-                    app:np_dividerColor="#03A9F4"
-                    app:np_dividerDistance="30dp"
-                    app:np_dividerThickness="5dp"
-                    app:np_dividerType="underline"
-                    app:np_height="180dp"
-                    app:np_itemSpacing="-10dp"
-                    app:np_max="59"
-                    app:np_min="0"
-                    app:np_selectedTextColor="#2196F3"
-                    app:np_selectedTextSize="20dp"
-                    app:np_textColor="#CB6A6A6A"
-                    app:np_textSize="20dp"
-                    app:np_width="64dp" />
-
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/paragrafSaveButton"
-            android:layout_width="320dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="30dp"
-            android:text="@string/kaydet"
-            android:textSize="18sp" />
-
-
-    </LinearLayout>
-
-
-</ScrollView>
+</LinearLayout>

@@ -1,220 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EnterStudyActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/subjectTypeTitle"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/t_r">
+
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/studySpinnerLayout"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subjectTypeTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/subjectTypeTitle"
-            style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="30dp"
-            android:text="@string/t_r">
+            android:layout_gravity="center"
+            android:text="@string/konu_se_iniz"
+            android:textSize="18sp" />
 
-        </TextView>
-
-        <LinearLayout
-            android:id="@+id/studySpinnerLayout"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/konu_se_iniz"
-                android:textSize="18sp" />
-
-            <Spinner
-                android:id="@+id/studySpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:spinnerMode="dialog"
-                android:tooltipText="Konu Seçimi Yapınız"
-                tools:ignore="UnusedAttribute" />
-        </LinearLayout>
-
-        <androidx.cardview.widget.CardView
+        <Spinner
+            android:id="@+id/studySpinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="10dp">
-
-            <LinearLayout
-                android:id="@+id/containerLayout1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/ka_dakika_konu_al_t_n">
-
-                </TextView>
-
-
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:id="@+id/numberPickerKonuDk"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:dividerPadding="5dp"
-                    app:np_dividerColor="#03A9F4"
-                    app:np_dividerDistance="30dp"
-                    app:np_dividerThickness="5dp"
-                    app:np_dividerType="underline"
-                    app:np_height="180dp"
-                    app:np_itemSpacing="-10dp"
-                    app:np_max="59"
-                    app:np_min="0"
-                    app:np_selectedTextColor="#2196F3"
-                    app:np_selectedTextSize="20dp"
-                    app:np_textColor="#CB6A6A6A"
-                    app:np_textSize="20dp"
-                    app:np_width="64dp" />
-
-
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="10dp">
-
-            <LinearLayout
-                android:id="@+id/containerLayout2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/ka_dakika_testi_zd_n">
-
-                </TextView>
-
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:id="@+id/numberPickerSoruDk"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:dividerPadding="5dp"
-                    app:np_dividerColor="#03A9F4"
-                    app:np_dividerDistance="30dp"
-                    app:np_dividerThickness="5dp"
-                    app:np_dividerType="underline"
-                    app:np_height="180dp"
-                    app:np_itemSpacing="-10dp"
-                    app:np_max="59"
-                    app:np_min="0"
-                    app:np_selectedTextColor="#2196F3"
-                    app:np_selectedTextSize="20dp"
-                    app:np_textColor="#CB6A6A6A"
-                    app:np_textSize="20dp"
-                    app:np_width="64dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="10dp">
-
-            <LinearLayout
-                android:id="@+id/containerLayout3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="@string/ka_tane_soru_zd_n">
-
-                </TextView>
-
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:id="@+id/numberPickerSoruSayi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:dividerPadding="5dp"
-                    app:np_dividerColor="#03A9F4"
-                    app:np_dividerDistance="30dp"
-                    app:np_dividerThickness="5dp"
-                    app:np_dividerType="underline"
-                    app:np_height="180dp"
-                    app:np_itemSpacing="-10dp"
-                    app:np_max="59"
-                    app:np_min="0"
-                    app:np_selectedTextColor="#2196F3"
-                    app:np_selectedTextSize="20dp"
-                    app:np_textColor="#CB6A6A6A"
-                    app:np_textSize="20dp"
-                    app:np_width="64dp" />
-
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-
-        <Button
-            android:id="@+id/studySaveButton"
-            style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="320dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="30dp"
-            android:text="@string/kaydet"
-            android:textSize="18sp">
-
-        </Button>
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:spinnerMode="dialog"
+            android:tooltipText="Konu Seçimi Yapınız"
+            tools:ignore="UnusedAttribute" />
     </LinearLayout>
 
 
-</ScrollView>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputCurrentMinutes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/studySpinnerLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:hint="@string/ka_dakika_konu_al_t_n"
+        android:maxLength="3">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/currentMinutesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputCurrentTestsMinutes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TextInputCurrentMinutes"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:hint="@string/ka_dakika_testi_zd_n"
+        android:maxLength="3">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/currentTestsMinutesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/TextInputCurrentTests"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TextInputCurrentTestsMinutes"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:hint="@string/ka_tane_soru_zd_n"
+        android:maxLength="3">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/currentTestsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/studySaveButton"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/b_tt"
+        android:textSize="18sp">
+
+    </Button>
+</RelativeLayout>
