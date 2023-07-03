@@ -81,6 +81,19 @@
                         android:textSize="15sp"
                         app:icon="@drawable/ic_baseline_bookmark_24" />
 
+
+                    <Button
+                        android:id="@+id/dersProgramiTeacherButton"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:text="@string/ders_program"
+                        android:textSize="15sp"
+                        app:icon="@drawable/baseline_table_chart_24" />
+
+
                     <Button
                         android:id="@+id/hedefTeacherButton"
                         style="@style/Widget.Material3.Button.ElevatedButton.Icon"

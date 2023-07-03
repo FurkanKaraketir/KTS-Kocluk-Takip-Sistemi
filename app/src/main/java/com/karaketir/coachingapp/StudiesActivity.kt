@@ -105,6 +105,7 @@ class StudiesActivity : AppCompatActivity() {
         //Creating sheet header row
         createSheetHeader(cellStyle, sheet)
 
+        val dersProgramiTeacherButton = binding.dersProgramiTeacherButton
         val previousRatingsButton = binding.previousRatingsButton
         val gorevlerButton = binding.gorevTeacherButton
         val denemelerButton = binding.denemeTeacherButton
@@ -124,7 +125,7 @@ class StudiesActivity : AppCompatActivity() {
 
         previousRatingsButton.setOnClickListener {
             val newIntent = Intent(this, PreviousRatingsActivity::class.java)
-            newIntent.putExtra("studentID",studentID)
+            newIntent.putExtra("studentID", studentID)
             this.startActivity(newIntent)
         }
 
@@ -159,6 +160,7 @@ class StudiesActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Dün" -> {
                 binding.starScroll.visibility = View.VISIBLE
                 bitisTarihi = cal.time
@@ -167,6 +169,7 @@ class StudiesActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
@@ -176,6 +179,7 @@ class StudiesActivity : AppCompatActivity() {
                 bitisTarihi = cal.time
 
             }
+
             "Geçen Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
@@ -186,6 +190,7 @@ class StudiesActivity : AppCompatActivity() {
 
 
             }
+
             "Bu Ay" -> {
 
                 cal = Calendar.getInstance()
@@ -204,6 +209,7 @@ class StudiesActivity : AppCompatActivity() {
 
 
             }
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -220,6 +226,7 @@ class StudiesActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
@@ -338,6 +345,12 @@ class StudiesActivity : AppCompatActivity() {
             val intent2 = Intent(this, DutiesActivity::class.java)
             intent2.putExtra("studentID", studentID)
             this.startActivity(intent2)
+        }
+
+        dersProgramiTeacherButton.setOnClickListener {
+            val newIntent = Intent(this, ProgramActivity::class.java)
+            newIntent.putExtra("studentID", studentID)
+            this.startActivity(newIntent)
         }
     }
 
@@ -607,12 +620,14 @@ class StudiesActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Dün" -> {
                 bitisTarihi = cal.time
 
                 cal.add(Calendar.DAY_OF_YEAR, -1)
                 baslangicTarihi = cal.time
             }
+
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
@@ -622,6 +637,7 @@ class StudiesActivity : AppCompatActivity() {
                 bitisTarihi = cal.time
 
             }
+
             "Geçen Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
@@ -632,6 +648,7 @@ class StudiesActivity : AppCompatActivity() {
 
 
             }
+
             "Bu Ay" -> {
 
                 cal = Calendar.getInstance()
@@ -650,6 +667,7 @@ class StudiesActivity : AppCompatActivity() {
 
 
             }
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !

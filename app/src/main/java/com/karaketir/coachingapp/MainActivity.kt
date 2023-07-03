@@ -134,6 +134,8 @@ class MainActivity : AppCompatActivity() {
         val imageHalit = binding.imageHalit
         val excelButton = binding.excelButton
         val messageButton = binding.sendMessageButton
+        val dersProgramiButton = binding.dersProgramiButton
+
         var kocID = ""
 
         developerButton.setOnClickListener {
@@ -152,6 +154,12 @@ class MainActivity : AppCompatActivity() {
                 "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp", this
             )
         }
+
+        dersProgramiButton.setOnClickListener {
+            val newIntent = Intent(this, ProgramActivity::class.java)
+            this.startActivity(newIntent)
+        }
+
 
 
         db.collection("VersionCode").document("60qzy2yuxMwCCau44HdF").get().addOnSuccessListener {
@@ -263,6 +271,7 @@ class MainActivity : AppCompatActivity() {
 
                 var cal = Calendar.getInstance()
                 grade = it.get("grade").toString().toInt()
+                dersProgramiButton.visibility = View.VISIBLE
                 addStudyButton.visibility = View.VISIBLE
                 kocOgretmenTextView.visibility = View.VISIBLE
                 excelButton.visibility = View.GONE
@@ -353,6 +362,7 @@ class MainActivity : AppCompatActivity() {
             } else if (it.get("personType").toString() == "Teacher") {
 
                 messageButton.visibility = View.VISIBLE
+                dersProgramiButton.visibility = View.GONE
                 studySearchEditText.visibility = View.GONE
                 hedeflerStudentButton.visibility = View.GONE
                 excelButton.visibility = View.VISIBLE

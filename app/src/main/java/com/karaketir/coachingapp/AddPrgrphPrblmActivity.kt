@@ -36,9 +36,16 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
     private var soruSayi = 0
     private var values = arrayOf(
         "0",
+        "10",
+        "15",
+        "20",
+        "25",
         "30",
+        "35",
         "40",
+        "45",
         "50",
+        "55",
         "60",
         "70",
         "80",
@@ -53,6 +60,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
         "170",
         "180"
     )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityAddPrgrphPrblmBinding.inflate(layoutInflater)

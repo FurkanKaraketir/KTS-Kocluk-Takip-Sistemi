@@ -74,11 +74,27 @@
 
                 </TextView>
 
-                <NumberPicker
+
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/numberPickerKonuDk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp" />
+                    android:layout_margin="10dp"
+                    android:dividerPadding="5dp"
+                    app:np_dividerColor="#03A9F4"
+                    app:np_dividerDistance="30dp"
+                    app:np_dividerThickness="5dp"
+                    app:np_dividerType="underline"
+                    app:np_height="180dp"
+                    app:np_itemSpacing="-10dp"
+                    app:np_max="59"
+                    app:np_min="0"
+                    app:np_selectedTextColor="#2196F3"
+                    app:np_selectedTextSize="20dp"
+                    app:np_textColor="#CB6A6A6A"
+                    app:np_textSize="20dp"
+                    app:np_width="64dp" />
+
 
             </LinearLayout>
 
@@ -110,11 +126,25 @@
 
                 </TextView>
 
-                <NumberPicker
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/numberPickerSoruDk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp" />
+                    android:layout_margin="10dp"
+                    android:dividerPadding="5dp"
+                    app:np_dividerColor="#03A9F4"
+                    app:np_dividerDistance="30dp"
+                    app:np_dividerThickness="5dp"
+                    app:np_dividerType="underline"
+                    app:np_height="180dp"
+                    app:np_itemSpacing="-10dp"
+                    app:np_max="59"
+                    app:np_min="0"
+                    app:np_selectedTextColor="#2196F3"
+                    app:np_selectedTextSize="20dp"
+                    app:np_textColor="#CB6A6A6A"
+                    app:np_textSize="20dp"
+                    app:np_width="64dp" />
 
             </LinearLayout>
 
@@ -144,11 +174,25 @@
 
                 </TextView>
 
-                <NumberPicker
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/numberPickerSoruSayi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp" />
+                    android:layout_margin="10dp"
+                    android:dividerPadding="5dp"
+                    app:np_dividerColor="#03A9F4"
+                    app:np_dividerDistance="30dp"
+                    app:np_dividerThickness="5dp"
+                    app:np_dividerType="underline"
+                    app:np_height="180dp"
+                    app:np_itemSpacing="-10dp"
+                    app:np_max="59"
+                    app:np_min="0"
+                    app:np_selectedTextColor="#2196F3"
+                    app:np_selectedTextSize="20dp"
+                    app:np_textColor="#CB6A6A6A"
+                    app:np_textSize="20dp"
+                    app:np_width="64dp" />
 
             </LinearLayout>
 
