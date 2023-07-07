@@ -131,7 +131,7 @@
     <string name="mesaj_g_nder">Mesaj Gönder</string>
     <string name="g_nder">Gönder</string>
     <string name="hedef_se_iniz">Hedef Seçiniz:</string>
-    <string name="ders_program">Çalışma Programı (Test Ediliyor)</string>
+    <string name="ders_program">Çalışma Programı</string>
     <string name="pazartesi">Pazartesi</string>
     <string name="sal">Salı</string>
     <string name="ar_amba">Çarşamba</string>
@@ -142,4 +142,5 @@
     <string name="ka_dakika">Kaç Dakika?</string>
     <string name="g_n_se_iniz">Gün Seçiniz</string>
     <string name="ka_nc_ders">Kaçıncı Ders?</string>
+    <string name="rapor_g_ndermeyenler">Rapor Göndermeyenler</string>
 </resources>

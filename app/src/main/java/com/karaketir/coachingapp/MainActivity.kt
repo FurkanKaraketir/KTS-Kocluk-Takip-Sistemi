@@ -37,6 +37,7 @@ import com.karaketir.coachingapp.services.*
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var auth: FirebaseAuth
+    private var kurumKodu = 763455
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerViewPreviousStudies: RecyclerView
     private lateinit var recyclerViewMyStudents: RecyclerView
@@ -70,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private var secilenGrade = "Bütün Sınıflar"
     private var secilenZaman = "Bugün"
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
+    private var raporGondermeyenList = ArrayList<Student>()
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
     private lateinit var filteredList: ArrayList<Student>
@@ -135,6 +138,7 @@ class MainActivity : AppCompatActivity() {
         val excelButton = binding.excelButton
         val messageButton = binding.sendMessageButton
         val dersProgramiButton = binding.dersProgramiButton
+        val noReportButton = binding.noReportButton
 
         var kocID = ""
 
@@ -253,13 +257,10 @@ class MainActivity : AppCompatActivity() {
         var visible = false
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
             nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
-            val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
+            kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
 
-            if (kurumKodu != null) {
-                currentKurumKodu = kurumKodu
-                FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
-
-            }
+            currentKurumKodu = kurumKodu
+            FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
 
 
             TransitionManager.beginDelayedTransition(transitionsContainer)
@@ -309,6 +310,7 @@ class MainActivity : AppCompatActivity() {
                 recyclerViewPreviousStudies.visibility = View.VISIBLE
                 istatistikButton.visibility = View.GONE
                 allStudentsBtn.visibility = View.GONE
+                noReportButton.visibility = View.GONE
                 gorevButton.visibility = View.VISIBLE
 
                 contentTextView.text = "Son 7 Gün İçindeki\nÇalışmalarım"
@@ -372,6 +374,7 @@ class MainActivity : AppCompatActivity() {
                 kocOgretmenTextView.visibility = View.GONE
                 recyclerViewMyStudents.visibility = View.VISIBLE
                 searchBarTeacher.visibility = View.VISIBLE
+                noReportButton.visibility = View.VISIBLE
                 studentDenemeButton.visibility = View.GONE
                 previousRatingsButton.visibility = View.GONE
                 teacherDenemeButton.visibility = View.VISIBLE
@@ -419,7 +422,6 @@ class MainActivity : AppCompatActivity() {
                             db.collection("School").document(kurumKodu.toString())
                                 .collection("Student").whereEqualTo("teacher", auth.uid.toString())
                                 .addSnapshotListener { documents, _ ->
-
                                     studentList.clear()
                                     if (documents != null) {
                                         for (document in documents) {
@@ -489,12 +491,17 @@ class MainActivity : AppCompatActivity() {
                 val tarihAdapter = ArrayAdapter(
                     this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
                 )
+
+
+
                 tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 teacherSpinner.adapter = tarihAdapter
                 teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                         secilenZaman = zamanAraliklari[p2]
                         setupStudentRecyclerView(studentList)
+
+
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -548,6 +555,145 @@ class MainActivity : AppCompatActivity() {
         topStudentsButton.setOnClickListener {
             val intent = Intent(this, TopStudentsActivity::class.java)
             this.startActivity(intent)
+        }
+
+        noReportButton.setOnClickListener {
+            val myIntent = Intent(this, NoReportActivity::class.java)
+
+            var cal = Calendar.getInstance()
+            cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+            cal.clear(Calendar.MINUTE)
+            cal.clear(Calendar.SECOND)
+            cal.clear(Calendar.MILLISECOND)
+
+            var baslangicTarihi = cal.time
+            var bitisTarihi = cal.time
+
+
+            when (secilenZaman) {
+
+                "Bugün" -> {
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.DAY_OF_YEAR, 1)
+                    bitisTarihi = cal.time
+                }
+
+                "Dün" -> {
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.DAY_OF_YEAR, -1)
+                    baslangicTarihi = cal.time
+
+                }
+
+                "Bu Hafta" -> {
+                    cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.WEEK_OF_YEAR, 1)
+                    bitisTarihi = cal.time
+
+                }
+
+                "Geçen Hafta" -> {
+                    cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                    bitisTarihi = cal.time
+
+
+                    cal.add(Calendar.DAY_OF_YEAR, -7)
+                    baslangicTarihi = cal.time
+
+
+                }
+
+                "Bu Ay" -> {
+
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    cal.set(Calendar.DAY_OF_MONTH, 1)
+                    baslangicTarihi = cal.time
+
+
+                    cal.add(Calendar.MONTH, 1)
+                    bitisTarihi = cal.time
+
+
+                }
+
+                "Geçen Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    cal.set(Calendar.DAY_OF_MONTH, 1)
+                    bitisTarihi = cal.time
+
+
+                    cal.add(Calendar.MONTH, -1)
+                    baslangicTarihi = cal.time
+
+                }
+
+                "Tüm Zamanlar" -> {
+                    cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                    baslangicTarihi = cal.time
+
+
+                    cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                    bitisTarihi = cal.time
+
+                }
+            }
+            raporGondermeyenList.clear()
+
+            var my = 0
+            for (i in studentList) {
+
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(i.id).collection("Studies")
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, error ->
+                        if (error != null) {
+                            println(error.localizedMessage)
+                        }
+
+                        if (value != null) {
+
+                            if (value.isEmpty) {
+                                raporGondermeyenList.add(i)
+                            }
+
+                        } else {
+                            raporGondermeyenList.add(i)
+                        }
+
+                        my += 1
+                        if (my == studentList.size) {
+                            println(raporGondermeyenList.size)
+                            for (a in raporGondermeyenList) {
+                                println(a.studentName)
+                            }
+                            myIntent.putExtra("list", raporGondermeyenList)
+                            myIntent.putExtra("secilenZaman", secilenZaman)
+                            this@MainActivity.startActivity(myIntent)
+                        }
+
+                    }
+            }
+
+
         }
 
         signOutButton.setOnClickListener {

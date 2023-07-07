@@ -28,6 +28,11 @@
         android:theme="@style/Theme.CoachingApp"
         tools:targetApi="31">
         <activity
+            android:name=".NoReportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".AddProgramActivity"
             android:exported="false"
             android:screenOrientation="portrait"
