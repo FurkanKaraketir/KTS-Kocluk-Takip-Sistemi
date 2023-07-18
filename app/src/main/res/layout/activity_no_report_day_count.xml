@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NoReportDayCountActivity">
+
+    <LinearLayout
+        android:id="@+id/teacherSpinnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/bodyMenuText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowRadius="10"
+            android:text="@string/zaman_aral"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/studyZamanAraligiSpinner"
+            style="@style/bodyMenuText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:shadowRadius="10"
+            android:spinnerMode="dialog"
+            android:tooltipText="Alan Seçimi Yapınız"
+            tools:ignore="UnusedAttribute" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/no_report_day_counter_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

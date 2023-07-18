@@ -255,270 +255,288 @@ class MainActivity : AppCompatActivity() {
 
 
         var visible = false
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
-            kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
-
-            currentKurumKodu = kurumKodu
-            FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
 
 
-            TransitionManager.beginDelayedTransition(transitionsContainer)
-            visible = !visible
-            nameAndSurnameTextView.visibility = if (visible) View.VISIBLE else View.GONE
+        try {
+            db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
+                nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
+                try {
+                    kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
+                } catch (eP: Exception) {
+                    println(eP.localizedMessage)
+                }
+
+                currentKurumKodu = kurumKodu
+                FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
 
 
-            if (it.get("personType").toString() == "Student") {
+                TransitionManager.beginDelayedTransition(transitionsContainer)
+                visible = !visible
+                nameAndSurnameTextView.visibility = if (visible) View.VISIBLE else View.GONE
 
-                var cal = Calendar.getInstance()
-                grade = it.get("grade").toString().toInt()
-                dersProgramiButton.visibility = View.VISIBLE
-                addStudyButton.visibility = View.VISIBLE
-                kocOgretmenTextView.visibility = View.VISIBLE
-                excelButton.visibility = View.GONE
-                binding.developerButtonMain.visibility = View.VISIBLE
 
-                db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .document(auth.uid.toString()).get().addOnSuccessListener { student ->
-                        kocID = student.get("teacher").toString()
-                        if (kocID.isEmpty()) {
-                            kocOgretmenTextView.text = "Koç Öğretmenin Bulunmuyor"
-                        } else {
+                if (it.get("personType").toString() == "Student") {
 
-                            FirebaseMessaging.getInstance().subscribeToTopic(kocID)
+                    var cal = Calendar.getInstance()
+                    grade = it.get("grade").toString().toInt()
+                    dersProgramiButton.visibility = View.VISIBLE
+                    addStudyButton.visibility = View.VISIBLE
+                    kocOgretmenTextView.visibility = View.VISIBLE
+                    excelButton.visibility = View.GONE
+                    binding.developerButtonMain.visibility = View.VISIBLE
 
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Teacher").document(kocID).get()
-                                .addOnSuccessListener { teacher ->
-                                    kocOgretmenTextView.text =
-                                        "Koç Öğretmenin: " + teacher.get("nameAndSurname")
-                                            .toString()
-                                }
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(auth.uid.toString()).get().addOnSuccessListener { student ->
+                            kocID = student.get("teacher").toString()
+                            if (kocID.isEmpty()) {
+                                kocOgretmenTextView.text = "Koç Öğretmenin Bulunmuyor"
+                            } else {
+
+                                FirebaseMessaging.getInstance().subscribeToTopic(kocID)
+
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Teacher").document(kocID).get()
+                                    .addOnSuccessListener { teacher ->
+                                        kocOgretmenTextView.text =
+                                            "Koç Öğretmenin: " + teacher.get("nameAndSurname")
+                                                .toString()
+                                    }
+
+                            }
+                        }
+                    searchBarTeacher.visibility = View.GONE
+                    gradeSpinnerLayout.visibility = View.GONE
+                    topStudentsButton.visibility = View.GONE
+                    teacherSpinnerLayout.visibility = View.GONE
+                    studySearchEditText.visibility = View.VISIBLE
+                    searchEditText.visibility = View.GONE
+                    previousRatingsButton.visibility = View.VISIBLE
+                    studentDenemeButton.visibility = View.VISIBLE
+                    teacherDenemeButton.visibility = View.GONE
+                    hedeflerStudentButton.visibility = View.VISIBLE
+                    recyclerViewPreviousStudies.visibility = View.VISIBLE
+                    istatistikButton.visibility = View.GONE
+                    allStudentsBtn.visibility = View.GONE
+                    noReportButton.visibility = View.GONE
+                    gorevButton.visibility = View.VISIBLE
+
+                    contentTextView.text = "Son 7 Gün İçindeki\nÇalışmalarım"
+
+                    cal.add(Calendar.DAY_OF_YEAR, 2)
+                    val bitisTarihi = cal.time
+
+                    cal = Calendar.getInstance()
+                    cal.add(Calendar.DAY_OF_YEAR, -7)
+                    val baslangicTarihi = cal.time
+
+
+
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(auth.uid.toString()).collection("Studies")
+                        .whereGreaterThan("timestamp", baslangicTarihi)
+                        .whereLessThan("timestamp", bitisTarihi)
+                        .orderBy("timestamp", Query.Direction.DESCENDING)
+                        .addSnapshotListener { it1, _ ->
+                            studyList.clear()
+                            val documents = it1!!.documents
+                            for (document in documents) {
+                                val subjectTheme = document.get("konuAdi").toString()
+                                val subjectCount = document.get("toplamCalisma").toString()
+                                val studyDersAdi = document.get("dersAdi").toString()
+                                val studyTur = document.get("tür").toString()
+                                val soruSayisi = document.get("çözülenSoru").toString()
+                                val timestamp = document.get("timestamp") as Timestamp
+                                val currentStudy = Study(
+                                    subjectTheme,
+                                    subjectCount,
+                                    auth.uid.toString(),
+                                    studyDersAdi,
+                                    studyTur,
+                                    soruSayisi,
+                                    timestamp,
+                                    document.id
+                                )
+
+                                studyList.add(currentStudy)
+
+                            }
+
+                            setupStudyRecyclerView(studyList)
+
+                            recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
 
                         }
+
+
+                } else if (it.get("personType").toString() == "Teacher") {
+
+                    messageButton.visibility = View.VISIBLE
+                    dersProgramiButton.visibility = View.GONE
+                    studySearchEditText.visibility = View.GONE
+                    hedeflerStudentButton.visibility = View.GONE
+                    excelButton.visibility = View.VISIBLE
+                    searchEditText.visibility = View.VISIBLE
+                    topStudentsButton.visibility = View.VISIBLE
+                    teacherSpinnerLayout.visibility = View.VISIBLE
+                    kocOgretmenTextView.visibility = View.GONE
+                    recyclerViewMyStudents.visibility = View.VISIBLE
+                    searchBarTeacher.visibility = View.VISIBLE
+                    noReportButton.visibility = View.VISIBLE
+                    studentDenemeButton.visibility = View.GONE
+                    previousRatingsButton.visibility = View.GONE
+                    teacherDenemeButton.visibility = View.VISIBLE
+                    allStudentsBtn.visibility = View.VISIBLE
+                    addStudyButton.visibility = View.GONE
+                    istatistikButton.visibility = View.VISIBLE
+                    gorevButton.visibility = View.GONE
+                    gradeSpinnerLayout.visibility = View.VISIBLE
+                    contentTextView.text = "Öğrencilerim"
+                    binding.developerButtonMain.visibility = View.VISIBLE
+
+                    val sheet: Sheet = workbook.createSheet("Sayfa 1")
+
+                    //Create Header Cell Style
+                    val cellStyle = getHeaderStyle(workbook)
+
+                    //Creating sheet header row
+                    createSheetHeader(cellStyle, sheet)
+
+                    excelButton.setOnClickListener {
+                        addData(
+                            sheet,
+                            secilenZaman,
+                            secilenGrade,
+                            currentKurumKodu.toString(),
+                            auth,
+                            db,
+                            this,
+                            workbook
+                        )
+
+                        askForPermissions()
                     }
-                searchBarTeacher.visibility = View.GONE
-                gradeSpinnerLayout.visibility = View.GONE
-                topStudentsButton.visibility = View.GONE
-                teacherSpinnerLayout.visibility = View.GONE
-                studySearchEditText.visibility = View.VISIBLE
-                searchEditText.visibility = View.GONE
-                previousRatingsButton.visibility = View.VISIBLE
-                studentDenemeButton.visibility = View.VISIBLE
-                teacherDenemeButton.visibility = View.GONE
-                hedeflerStudentButton.visibility = View.VISIBLE
-                recyclerViewPreviousStudies.visibility = View.VISIBLE
-                istatistikButton.visibility = View.GONE
-                allStudentsBtn.visibility = View.GONE
-                noReportButton.visibility = View.GONE
-                gorevButton.visibility = View.VISIBLE
-
-                contentTextView.text = "Son 7 Gün İçindeki\nÇalışmalarım"
-
-                cal.add(Calendar.DAY_OF_YEAR, 2)
-                val bitisTarihi = cal.time
-
-                cal = Calendar.getInstance()
-                cal.add(Calendar.DAY_OF_YEAR, -7)
-                val baslangicTarihi = cal.time
 
 
+                    val gradeAdapter = ArrayAdapter(
+                        this@MainActivity, android.R.layout.simple_spinner_item, gradeList
+                    )
+                    gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    gradeSpinner.adapter = gradeAdapter
+                    gradeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                        ) {
+                            secilenGrade = gradeList[p2]
+                            if (secilenGrade == "Bütün Sınıflar") {
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student")
+                                    .whereEqualTo("teacher", auth.uid.toString())
+                                    .addSnapshotListener { documents, _ ->
+                                        studentList.clear()
+                                        if (documents != null) {
+                                            for (document in documents) {
+                                                val studentGrade =
+                                                    document.get("grade").toString().toInt()
+                                                val studentName =
+                                                    document.get("nameAndSurname").toString()
+                                                val teacher = document.get("teacher").toString()
+                                                val id = document.get("id").toString()
+                                                val currentStudent =
+                                                    Student(studentName, teacher, id, studentGrade)
+                                                studentList.add(currentStudent)
 
-                db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .document(auth.uid.toString()).collection("Studies")
-                    .whereGreaterThan("timestamp", baslangicTarihi)
-                    .whereLessThan("timestamp", bitisTarihi)
-                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                    .addSnapshotListener { it1, _ ->
-                        studyList.clear()
-                        val documents = it1!!.documents
-                        for (document in documents) {
-                            val subjectTheme = document.get("konuAdi").toString()
-                            val subjectCount = document.get("toplamCalisma").toString()
-                            val studyDersAdi = document.get("dersAdi").toString()
-                            val studyTur = document.get("tür").toString()
-                            val soruSayisi = document.get("çözülenSoru").toString()
-                            val timestamp = document.get("timestamp") as Timestamp
-                            val currentStudy = Study(
-                                subjectTheme,
-                                subjectCount,
-                                auth.uid.toString(),
-                                studyDersAdi,
-                                studyTur,
-                                soruSayisi,
-                                timestamp,
-                                document.id
-                            )
+                                            }
+                                            binding.studentCountTextView.text =
+                                                "Öğrenci Sayısı: " + studentList.size
+                                        }
+                                        studentList.sortBy { a ->
+                                            a.studentName
+                                        }
+                                        setupStudentRecyclerView(studentList)
 
-                            studyList.add(currentStudy)
+                                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+
+                                    }
+                            } else {
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student")
+                                    .whereEqualTo("teacher", auth.uid.toString())
+                                    .whereEqualTo("grade", secilenGrade.toInt())
+                                    .addSnapshotListener { documents, _ ->
+
+                                        studentList.clear()
+                                        if (documents != null) {
+                                            for (document in documents) {
+                                                val studentGrade =
+                                                    document.get("grade").toString().toInt()
+                                                val studentName =
+                                                    document.get("nameAndSurname").toString()
+                                                val teacher = document.get("teacher").toString()
+                                                val id = document.get("id").toString()
+                                                val currentStudent =
+                                                    Student(studentName, teacher, id, studentGrade)
+                                                studentList.add(currentStudent)
+
+                                            }
+                                            binding.studentCountTextView.text =
+                                                "Öğrenci Sayısı: " + studentList.size
+                                        }
+                                        studentList.sortBy { a ->
+                                            a.studentName
+                                        }
+                                        setupStudentRecyclerView(studentList)
+
+                                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+
+                                    }
+                            }
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
 
                         }
 
-                        setupStudyRecyclerView(studyList)
-
-                        recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
-
                     }
 
 
-            } else if (it.get("personType").toString() == "Teacher") {
-
-                messageButton.visibility = View.VISIBLE
-                dersProgramiButton.visibility = View.GONE
-                studySearchEditText.visibility = View.GONE
-                hedeflerStudentButton.visibility = View.GONE
-                excelButton.visibility = View.VISIBLE
-                searchEditText.visibility = View.VISIBLE
-                topStudentsButton.visibility = View.VISIBLE
-                teacherSpinnerLayout.visibility = View.VISIBLE
-                kocOgretmenTextView.visibility = View.GONE
-                recyclerViewMyStudents.visibility = View.VISIBLE
-                searchBarTeacher.visibility = View.VISIBLE
-                noReportButton.visibility = View.VISIBLE
-                studentDenemeButton.visibility = View.GONE
-                previousRatingsButton.visibility = View.GONE
-                teacherDenemeButton.visibility = View.VISIBLE
-                allStudentsBtn.visibility = View.VISIBLE
-                addStudyButton.visibility = View.GONE
-                istatistikButton.visibility = View.VISIBLE
-                gorevButton.visibility = View.GONE
-                gradeSpinnerLayout.visibility = View.VISIBLE
-                contentTextView.text = "Öğrencilerim"
-                binding.developerButtonMain.visibility = View.VISIBLE
-
-                val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-                //Create Header Cell Style
-                val cellStyle = getHeaderStyle(workbook)
-
-                //Creating sheet header row
-                createSheetHeader(cellStyle, sheet)
-
-                excelButton.setOnClickListener {
-                    addData(
-                        sheet,
-                        secilenZaman,
-                        secilenGrade,
-                        currentKurumKodu.toString(),
-                        auth,
-                        db,
-                        this,
-                        workbook
+                    val tarihAdapter = ArrayAdapter(
+                        this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
                     )
 
-                    askForPermissions()
-                }
 
 
-                val gradeAdapter = ArrayAdapter(
-                    this@MainActivity, android.R.layout.simple_spinner_item, gradeList
-                )
-                gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                gradeSpinner.adapter = gradeAdapter
-                gradeSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        secilenGrade = gradeList[p2]
-                        if (secilenGrade == "Bütün Sınıflar") {
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
-                                .addSnapshotListener { documents, _ ->
-                                    studentList.clear()
-                                    if (documents != null) {
-                                        for (document in documents) {
-                                            val studentGrade =
-                                                document.get("grade").toString().toInt()
-                                            val studentName =
-                                                document.get("nameAndSurname").toString()
-                                            val teacher = document.get("teacher").toString()
-                                            val id = document.get("id").toString()
-                                            val currentStudent =
-                                                Student(studentName, teacher, id, studentGrade)
-                                            studentList.add(currentStudent)
+                    tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    teacherSpinner.adapter = tarihAdapter
+                    teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                        ) {
+                            secilenZaman = zamanAraliklari[p2]
+                            setupStudentRecyclerView(studentList)
 
-                                        }
-                                        binding.studentCountTextView.text =
-                                            "Öğrenci Sayısı: " + studentList.size
-                                    }
-                                    studentList.sortBy { a ->
-                                        a.studentName
-                                    }
-                                    setupStudentRecyclerView(studentList)
 
-                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-
-                                }
-                        } else {
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
-                                .whereEqualTo("grade", secilenGrade.toInt())
-                                .addSnapshotListener { documents, _ ->
-
-                                    studentList.clear()
-                                    if (documents != null) {
-                                        for (document in documents) {
-                                            val studentGrade =
-                                                document.get("grade").toString().toInt()
-                                            val studentName =
-                                                document.get("nameAndSurname").toString()
-                                            val teacher = document.get("teacher").toString()
-                                            val id = document.get("id").toString()
-                                            val currentStudent =
-                                                Student(studentName, teacher, id, studentGrade)
-                                            studentList.add(currentStudent)
-
-                                        }
-                                        binding.studentCountTextView.text =
-                                            "Öğrenci Sayısı: " + studentList.size
-                                    }
-                                    studentList.sortBy { a ->
-                                        a.studentName
-                                    }
-                                    setupStudentRecyclerView(studentList)
-
-                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-
-                                }
                         }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                        }
+
                     }
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-
-                    }
 
                 }
 
 
-                val tarihAdapter = ArrayAdapter(
-                    this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
-                )
 
-
-
-                tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                teacherSpinner.adapter = tarihAdapter
-                teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        secilenZaman = zamanAraliklari[p2]
-                        setupStudentRecyclerView(studentList)
-
-
-                    }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                    }
-
-                }
-
+                TransitionManager.beginDelayedTransition(sayacContainer)
+                sayacVisible = !sayacVisible
+                contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE
 
             }
 
-
-
-            TransitionManager.beginDelayedTransition(sayacContainer)
-            sayacVisible = !sayacVisible
-            contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE
-
+        } catch (e: Exception) {
+            println(e.localizedMessage)
         }
+
 
 
         previousRatingsButton.setOnClickListener {
@@ -559,7 +577,7 @@ class MainActivity : AppCompatActivity() {
 
         noReportButton.setOnClickListener {
             val myIntent = Intent(this, NoReportActivity::class.java)
-
+            myIntent.putExtra("kurumKodu", kurumKodu.toString())
             var cal = Calendar.getInstance()
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 

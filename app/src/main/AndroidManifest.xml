@@ -28,6 +28,9 @@
         android:theme="@style/Theme.CoachingApp"
         tools:targetApi="31">
         <activity
+            android:name=".NoReportDayCountActivity"
+            android:exported="false" />
+        <activity
             android:name=".NoReportActivity"
             android:exported="false"
             android:screenOrientation="portrait"
