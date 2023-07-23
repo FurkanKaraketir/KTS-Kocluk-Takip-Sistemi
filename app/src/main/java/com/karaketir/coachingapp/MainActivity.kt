@@ -578,6 +578,7 @@ class MainActivity : AppCompatActivity() {
         noReportButton.setOnClickListener {
             val myIntent = Intent(this, NoReportActivity::class.java)
             myIntent.putExtra("kurumKodu", kurumKodu.toString())
+            myIntent.putExtra("grade", secilenGrade)
             var cal = Calendar.getInstance()
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 

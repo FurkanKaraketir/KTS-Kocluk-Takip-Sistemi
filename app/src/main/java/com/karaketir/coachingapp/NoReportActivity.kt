@@ -2,6 +2,7 @@
 
 package com.karaketir.coachingapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -15,18 +16,20 @@ import com.karaketir.coachingapp.adapter.StudentsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityNoReportBinding
 import com.karaketir.coachingapp.models.Student
 import java.util.Calendar
-import java.util.UUID
 
 
 class NoReportActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoReportBinding
     private var secilenZaman = "Bugün"
+    private var secilenGrade = "Bütün Sınıflar"
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var kurumKodu = 763455
     private var studentList = ArrayList<String>()
 
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -39,23 +42,41 @@ class NoReportActivity : AppCompatActivity() {
         val recyclerViewMyStudents = binding.noReportRecycler
         val noReportDayCounterButton = binding.noReportDayCounterButton
 
-
         val raporGondermeyenList = intent.getSerializableExtra("list") as ArrayList<Student>
         secilenZaman = intent.getStringExtra("secilenZaman").toString()
+        secilenGrade = intent.getStringExtra("grade").toString()
+
+        val titleNoReport = binding.titleNoReport
+
         if (secilenZaman == "Bugün") {
             secilenZaman = "Dün"
         }
         kurumKodu = intent.getStringExtra("kurumKodu")!!.toInt()
+        titleNoReport.text = "Zaman Aralığı: $secilenZaman \nSeçilen Sınıf: $secilenGrade"
 
 
-        db.collection("School").document(kurumKodu.toString()).collection("Student")
-            .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { value, _ ->
-                if (value != null) {
-                    for (i in value) {
-                        studentList.add(i.get("id").toString())
+        if (secilenGrade == "Bütün Sınıflar") {
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { value, _ ->
+                    if (value != null) {
+                        studentList.clear()
+                        for (i in value) {
+                            studentList.add(i.get("id").toString())
+                        }
                     }
                 }
-            }
+        } else {
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .whereEqualTo("teacher", auth.uid.toString())
+                .whereEqualTo("grade", secilenGrade.toInt()).addSnapshotListener { value, _ ->
+                    if (value != null) {
+                        studentList.clear()
+                        for (i in value) {
+                            studentList.add(i.get("id").toString())
+                        }
+                    }
+                }
+        }
 
 
         val layoutManager = LinearLayoutManager(applicationContext)
@@ -71,6 +92,8 @@ class NoReportActivity : AppCompatActivity() {
             val newIntent = Intent(this, NoReportDayCountActivity::class.java)
             newIntent.putExtra("kurumKodu", kurumKodu.toString())
             newIntent.putExtra("studentList", studentList)
+            newIntent.putExtra("grade", secilenGrade)
+            newIntent.putExtra("secilenZaman", secilenZaman)
             this.startActivity(newIntent)
         }
 

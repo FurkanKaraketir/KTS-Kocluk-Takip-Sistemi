@@ -19,8 +19,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
         targetSdk 33
-        versionCode 87
-        versionName "v0.4.7"
+        versionCode 88
+        versionName "v0.4.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
     compileOnly 'org.apache.poi:poi-ooxml:3.17'
-    implementation('com.google.firebase:firebase-auth-ktx:22.0.0') {
+    implementation('com.google.firebase:firebase-auth-ktx:22.1.0') {
         exclude module: "play-services-safetynet"
     }
 
@@ -60,11 +60,11 @@ dependencies {
     implementation 'com.github.dhaval2404:imagepicker:2.1'
     implementation 'com.giphy.sdk:ui:2.3.0'
 
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.6.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.7.0'
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.3.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.7'
-    implementation 'com.google.firebase:firebase-perf-ktx:20.3.3'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.0'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.4.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.2.1'
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.0'
     implementation 'com.android.volley:volley:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

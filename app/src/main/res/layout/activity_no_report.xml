@@ -6,13 +6,23 @@
     android:orientation="vertical"
     tools:context=".NoReportActivity">
 
+    <TextView
+        android:id="@+id/title_no_report"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="50dp"
+        android:gravity="center"
+        android:text="@string/zaman_aral" />
+
     <Button
         android:id="@+id/no_report_day_counter_button"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
+        android:layout_margin="15dp"
         android:text="@string/rapor_at_lmayan_g_n_say_lar_n_g_ster" />
 
     <androidx.recyclerview.widget.RecyclerView

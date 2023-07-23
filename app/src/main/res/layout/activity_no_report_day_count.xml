@@ -6,32 +6,17 @@
     android:orientation="vertical"
     tools:context=".NoReportDayCountActivity">
 
-    <LinearLayout
-        android:id="@+id/teacherSpinnerLayout"
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/title_no_report"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="50dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:text="@string/zaman_aral" />
 
-        <TextView
-            style="@style/bodyMenuText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:shadowRadius="10"
-            android:text="@string/zaman_aral"
-            android:textSize="18sp" />
-
-        <Spinner
-            android:id="@+id/studyZamanAraligiSpinner"
-            style="@style/bodyMenuText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:shadowRadius="10"
-            android:spinnerMode="dialog"
-            android:tooltipText="Alan Seçimi Yapınız"
-            tools:ignore="UnusedAttribute" />
-    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/no_report_day_counter_recycler"
