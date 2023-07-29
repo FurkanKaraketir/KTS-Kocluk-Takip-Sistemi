@@ -84,6 +84,7 @@ open class StudentsRecyclerAdapter(
 
                             db.collection("School").document(kurumKodu.toString())
                                 .collection("Student").document(myItem.id).update("teacher", "")
+                            db.collection("User").document(myItem.id).update("teacher", "")
                         }
                         removeStudent.setNegativeButton("İPTAL") { _, _ ->
 

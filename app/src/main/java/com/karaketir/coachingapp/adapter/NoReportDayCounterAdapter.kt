@@ -1,8 +1,10 @@
 package com.karaketir.coachingapp.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -137,11 +139,11 @@ class NoReportDayCounterAdapter(
         with(holder) {
 
             val myItem = studentList[position]
-
-
+            var studentName = ""
 
             db.collection("User").document(myItem).get().addOnSuccessListener {
-                binding.name.text = it.get("nameAndSurname").toString()
+                studentName = it.get("nameAndSurname").toString()
+                binding.name.text = studentName
             }
 
 
@@ -160,6 +162,28 @@ class NoReportDayCounterAdapter(
                     }
                     binding.counter.text = size.toString()
                 }
+
+            binding.removeStudent.setOnClickListener {
+
+                val removeStudent = AlertDialog.Builder(holder.itemView.context)
+                removeStudent.setTitle("Öğrenci Çıkar")
+                removeStudent.setMessage("$studentName Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
+
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(myItem).update("teacher", "")
+                    db.collection("User").document(myItem).update("teacher", "")
+                    Toast.makeText(holder.itemView.context, "İşlem Başarılı", Toast.LENGTH_SHORT)
+                        .show()
+
+                }
+                removeStudent.setNegativeButton("İPTAL") { _, _ ->
+
+                }
+                removeStudent.show()
+
+
+            }
         }
 
 
