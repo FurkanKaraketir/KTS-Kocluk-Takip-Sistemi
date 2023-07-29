@@ -168,7 +168,7 @@ fun createExcel(
 ) {
 
     val time = Calendar.getInstance().time
-    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH-mm")
     val current = formatter.format(time)
 
     val contentUri = MediaStore.Files.getContentUri("external")
@@ -177,7 +177,7 @@ fun createExcel(
         val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
 
         val selectionArgs =
-            arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
+            arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/") //must include "/" in front and end
 
 
         val cursor: Cursor? =
@@ -189,7 +189,7 @@ fun createExcel(
             if (cursor.count == 0) {
                 Toast.makeText(
                     context.applicationContext,
-                    "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/\"",
+                    "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/\"",
                     Toast.LENGTH_LONG
                 ).show()
 
@@ -204,7 +204,7 @@ fun createExcel(
                     ) //file extension, will automatically add to file
                     values.put(
                         MediaStore.MediaColumns.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
+                        Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/"
                     ) //end "/" is not mandatory
                     uri = context.contentResolver.insert(
                         MediaStore.Files.getContentUri("external"), values
@@ -254,7 +254,7 @@ fun createExcel(
                         ) //file extension, will automatically add to file
                         values.put(
                             MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
+                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/"
                         ) //end "/" is not mandatory
                         uri = context.contentResolver.insert(
                             MediaStore.Files.getContentUri("external"), values
@@ -1020,5 +1020,5 @@ fun addData(
 
 }
 
-private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+fun Float.format(digits: Int) = "%.${digits}f".format(this)
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,13 +18,24 @@
         android:text="@string/zaman_aral" />
 
     <Button
-        android:id="@+id/no_report_day_counter_button"
-        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:id="@+id/no_report_excel_button"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="15dp"
-        android:text="@string/rapor_at_lmayan_g_n_say_lar_n_g_ster" />
+        android:text="@string/excel_tablosu_olu_tur"
+        app:icon="@drawable/ic_baseline_save_24" />
+
+    <Button
+        android:id="@+id/no_report_day_counter_button"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="15dp"
+        android:text="@string/rapor_at_lmayan_g_n_say_lar_n_g_ster"
+        app:icon="@drawable/baseline_av_timer_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/no_report_recycler"
