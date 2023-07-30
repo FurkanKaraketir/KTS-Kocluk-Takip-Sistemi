@@ -10,11 +10,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.DayCounterRowBinding
+import com.karaketir.coachingapp.models.Student
 import java.util.Calendar
 import java.util.Date
 
 class NoReportDayCounterAdapter(
-    private val studentList: ArrayList<String>,
+    private val studentList: ArrayList<Student>,
     private var secilenZaman: String,
     private val kurumKodu: Int
 ) : RecyclerView.Adapter<NoReportDayCounterAdapter.ViewHolder>() {
@@ -141,14 +142,14 @@ class NoReportDayCounterAdapter(
             val myItem = studentList[position]
             var studentName = ""
 
-            db.collection("User").document(myItem).get().addOnSuccessListener {
+            db.collection("User").document(myItem.id).get().addOnSuccessListener {
                 studentName = it.get("nameAndSurname").toString()
                 binding.name.text = studentName
             }
 
 
             db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(myItem).collection("NoDayReport")
+                .document(myItem.id).collection("NoDayReport")
                 .whereGreaterThan("timestamp", baslangicTarihi)
                 .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, error ->
                     if (error != null) {
@@ -171,8 +172,8 @@ class NoReportDayCounterAdapter(
                 removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
 
                     db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(myItem).update("teacher", "")
-                    db.collection("User").document(myItem).update("teacher", "")
+                        .document(myItem.id).update("teacher", "")
+                    db.collection("User").document(myItem.id).update("teacher", "")
                     Toast.makeText(holder.itemView.context, "İşlem Başarılı", Toast.LENGTH_SHORT)
                         .show()
 

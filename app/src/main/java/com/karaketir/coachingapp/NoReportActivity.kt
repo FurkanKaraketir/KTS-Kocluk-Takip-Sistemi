@@ -71,7 +71,7 @@ class NoReportActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var kurumKodu = 763455
-    private var studentList = ArrayList<String>()
+    private var studentList = ArrayList<Student>()
     private val workbook = XSSFWorkbook()
     private var raporGondermeyenList = ArrayList<Student>()
 
@@ -92,6 +92,7 @@ class NoReportActivity : AppCompatActivity() {
         val noReportDayCounterButton = binding.noReportDayCounterButton
         val noReportExcelButton = binding.noReportExcelButton
         raporGondermeyenList = intent.getSerializableExtra("list") as ArrayList<Student>
+        raporGondermeyenList.sortBy { it.studentName }
         secilenZaman = intent.getStringExtra("secilenZaman").toString()
         secilenGrade = intent.getStringExtra("grade").toString()
 
@@ -106,22 +107,35 @@ class NoReportActivity : AppCompatActivity() {
 
         if (secilenGrade == "Bütün Sınıflar") {
             db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { value, _ ->
+                .whereEqualTo("teacher", auth.uid.toString()).orderBy("nameAndSurname")
+                .addSnapshotListener { value, _ ->
                     if (value != null) {
                         studentList.clear()
                         for (i in value) {
-                            studentList.add(i.get("id").toString())
+                            val studentName = i.get("nameAndSurname").toString()
+                            val teacher = i.get("teacher").toString()
+                            val id = i.get("id").toString()
+                            val grade = i.get("grade").toString().toInt()
+                            val newStudent = Student(studentName, teacher, id, grade)
+                            studentList.add(newStudent)
                         }
                     }
                 }
         } else {
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .whereEqualTo("teacher", auth.uid.toString())
-                .whereEqualTo("grade", secilenGrade.toInt()).addSnapshotListener { value, _ ->
+                .whereEqualTo("grade", secilenGrade.toInt()).orderBy("nameAndSurname")
+                .addSnapshotListener { value, _ ->
                     if (value != null) {
                         studentList.clear()
                         for (i in value) {
-                            studentList.add(i.get("id").toString())
+
+                            val studentName = i.get("nameAndSurname").toString()
+                            val teacher = i.get("teacher").toString()
+                            val id = i.get("id").toString()
+                            val grade = i.get("grade").toString().toInt()
+                            val newStudent = Student(studentName, teacher, id, grade)
+                            studentList.add(newStudent)
                         }
                     }
                 }
