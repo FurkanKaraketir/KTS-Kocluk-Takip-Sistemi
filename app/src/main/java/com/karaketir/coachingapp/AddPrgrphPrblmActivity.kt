@@ -34,6 +34,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var soruDk = 0
     private var soruSayi = 0
+    private var kurumKodu = 763455
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +101,6 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
                     Toast.makeText(
                         this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT
                     ).show()
-                    var kurumKodu: Int
                     db.collection("User").document(auth.uid.toString()).get()
                         .addOnSuccessListener { it2 ->
                             kurumKodu = it2.get("kurumKodu").toString().toInt()
