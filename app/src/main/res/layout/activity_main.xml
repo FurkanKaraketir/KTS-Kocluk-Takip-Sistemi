@@ -19,6 +19,7 @@
                 android:id="@+id/welcomeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 app:cardCornerRadius="10dp">
 
                 <ImageView
@@ -27,6 +28,26 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@string/add_something"
                     android:scaleType="centerCrop" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/signOutButton"
+                        style="@style/Widget.Material3.Button.IconButton.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_gravity="end|top"
+                        android:layout_margin="25dp"
+                        android:contentDescription="@string/add_something"
+                        android:src="@drawable/ic_baseline_highlight_off_24"
+                        app:icon="@drawable/ic_baseline_highlight_off_24" />
+
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,14 +73,6 @@
                             android:layout_marginBottom="25dp"
                             android:text="@string/merhaba"
                             app:icon="@drawable/baseline_account_circle_24" />
-
-                        <TextView
-                            style="@style/TextAppearance.AppCompat.Title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text=""
-                            android:visibility="gone" />
 
 
                     </LinearLayout>
@@ -146,18 +159,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-
-
-                            <Button
-                                android:id="@+id/dersProgramiButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/ders_program"
-                                android:visibility="gone"
-                                app:icon="@drawable/baseline_table_chart_24" />
-
 
                             <Button
                                 android:id="@+id/noReportButton"
@@ -284,6 +285,15 @@
 
                             </Button>
 
+                            <Button
+                                android:id="@+id/dersProgramiButton"
+                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:text="@string/ders_program"
+                                android:visibility="gone"
+                                app:icon="@drawable/baseline_table_chart_24" />
 
                             <Button
                                 android:id="@+id/developerButtonMain"
@@ -422,27 +432,13 @@
         android:id="@+id/addStudyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
+        android:layout_centerHorizontal="true"
         android:layout_margin="30dp"
         android:contentDescription="@string/add_something"
         android:src="@drawable/ic_baseline_add_circle_outline_24"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:ignore="RelativeOverlap" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/signOutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="30dp"
-        android:contentDescription="@string/add_something"
-        android:src="@drawable/ic_baseline_highlight_off_24">
-
-    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/updateLayout"

@@ -13,14 +13,15 @@ android {
         viewBinding true
     }
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.karaketir.coachingapp"
         minSdk 22
-        targetSdk 33
-        versionCode 92
-        versionName "v0.5.2"
+        //noinspection EditedTargetSdkVersion
+        targetSdk 34
+        versionCode 93
+        versionName "v0.5.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,7 +51,7 @@ dependencies {
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
     compileOnly 'org.apache.poi:poi-ooxml:3.17'
-    implementation('com.google.firebase:firebase-auth-ktx:22.1.1') {
+    implementation('com.google.firebase:firebase-auth-ktx:22.1.2') {
         exclude module: "play-services-safetynet"
     }
 
@@ -60,16 +61,16 @@ dependencies {
     implementation 'com.github.dhaval2404:imagepicker:2.1'
     implementation 'com.giphy.sdk:ui:2.3.0'
 
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.7.0'
-    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.8.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'com.google.firebase:firebase-analytics-ktx:21.3.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.0'
-    implementation 'com.google.firebase:firebase-perf-ktx:20.4.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.3'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.4.1'
     implementation 'com.google.firebase:firebase-storage-ktx:20.2.1'
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 
-    implementation 'com.google.android.gms:play-services-ads:22.2.0'
+    implementation 'com.google.android.gms:play-services-ads:22.4.0'
     implementation 'com.github.iwgang:countdownview:2.1.6'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.github.bumptech.glide:glide:4.14.2'

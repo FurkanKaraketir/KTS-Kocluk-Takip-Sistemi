@@ -60,7 +60,7 @@
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="30dp"
-        android:text="@string/b_tt"
+        android:text="@string/kaydet"
         android:textSize="18sp" />
 
 </LinearLayout>
