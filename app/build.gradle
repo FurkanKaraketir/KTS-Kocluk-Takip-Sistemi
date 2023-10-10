@@ -20,8 +20,8 @@ android {
         minSdk 22
         //noinspection EditedTargetSdkVersion
         targetSdk 34
-        versionCode 93
-        versionName "v0.5.3"
+        versionCode 94
+        versionName "v0.5.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,7 +46,7 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:30.4.1')
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation "com.andkulikov:transitionseverywhere:1.8.1"
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'com.github.SUPERCILEX.poi-android:poi:3.17'
