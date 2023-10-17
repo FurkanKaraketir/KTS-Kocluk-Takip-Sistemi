@@ -38,6 +38,7 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     private lateinit var db: FirebaseFirestore
     private var dersler = ArrayList<String>()
     private var secilenDers = ""
+    private var kurumKodu = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityGoalEnterBinding.inflate(layoutInflater)
@@ -51,6 +52,7 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val goalSave = binding.goalSave
         val studentID = intent.getStringExtra("studentID").toString()
         val dersAdiSpinner = binding.hedefDersSpinner
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
 
         db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
@@ -84,41 +86,29 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                 if (cozulenSoru.text.toString().isNotEmpty()) {
                     cozulenSoru.error = null
 
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu").toString()
 
-                        val data = hashMapOf(
-                            "dersAdi" to secilenDers,
-                            "toplamCalisma" to toplamCalisma.text.toString().toInt(),
-                            "çözülenSoru" to cozulenSoru.text.toString().toInt()
-                        )
+                    val data = hashMapOf(
+                        "dersAdi" to secilenDers,
+                        "toplamCalisma" to toplamCalisma.text.toString().toInt(),
+                        "çözülenSoru" to cozulenSoru.text.toString().toInt()
+                    )
 
-                        db.collection("School").document(kurumKodu).collection("Student")
-                            .document(studentID).collection("HaftalikHedefler")
-                            .whereEqualTo("dersAdi", secilenDers).addSnapshotListener { value, _ ->
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(studentID).collection("HaftalikHedefler")
+                        .whereEqualTo("dersAdi", secilenDers).addSnapshotListener { value, _ ->
 
-                                if (value != null) {
-                                    if (!value.isEmpty) {
-                                        for (document in value) {
-                                            db.collection("School").document(kurumKodu)
-                                                .collection("Student").document(studentID)
-                                                .collection("HaftalikHedefler")
-                                                .document(document.id).set(data)
-                                                .addOnSuccessListener {
-                                                    finish()
-                                                }
-                                        }
-                                    } else {
-                                        db.collection("School").document(kurumKodu)
+                            if (value != null) {
+                                if (!value.isEmpty) {
+                                    for (document in value) {
+                                        db.collection("School").document(kurumKodu.toString())
                                             .collection("Student").document(studentID)
-                                            .collection("HaftalikHedefler")
-                                            .document(documentID.toString()).set(data)
-                                            .addOnSuccessListener {
+                                            .collection("HaftalikHedefler").document(document.id)
+                                            .set(data).addOnSuccessListener {
                                                 finish()
                                             }
                                     }
                                 } else {
-                                    db.collection("School").document(kurumKodu)
+                                    db.collection("School").document(kurumKodu.toString())
                                         .collection("Student").document(studentID)
                                         .collection("HaftalikHedefler")
                                         .document(documentID.toString()).set(data)
@@ -126,10 +116,17 @@ class GoalEnterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                                             finish()
                                         }
                                 }
-
+                            } else {
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Student").document(studentID)
+                                    .collection("HaftalikHedefler").document(documentID.toString())
+                                    .set(data).addOnSuccessListener {
+                                        finish()
+                                    }
                             }
 
-                    }
+                        }
+
 
                 } else {
                     cozulenSoru.error = "Bu Alan Boş Bırakılamaz"

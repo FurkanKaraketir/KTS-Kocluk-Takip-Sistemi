@@ -15,8 +15,9 @@ import com.karaketir.coachingapp.TestResultsShortActivity
 import com.karaketir.coachingapp.databinding.DenemelerTeacherRowBinding
 import com.karaketir.coachingapp.models.DenemeTeacher
 
-class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTeacher>) :
-    RecyclerView.Adapter<DenemelerTeacherRecyclerAdapter.DenemeHolder>() {
+class DenemelerTeacherRecyclerAdapter(
+    private var denemeList: ArrayList<DenemeTeacher>, private var kurumKodu: Int
+) : RecyclerView.Adapter<DenemelerTeacherRecyclerAdapter.DenemeHolder>() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -47,39 +48,32 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
                 binding.denemeAdiTeacherTextView.text = myItem.denemeAdi
                 binding.deleteDenemeTeacherButton.setOnClickListener {
 
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
+                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteAlertDialog.setTitle("Deneme Sil")
+                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
 
-                        val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
-                        deleteAlertDialog.setTitle("Deneme Sil")
-                        deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
-                        deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
-
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Teacher").document(auth.uid.toString())
-                                .collection("Denemeler").document(myItem.denemeID).delete()
-                                .addOnSuccessListener {
-                                    Toast.makeText(
-                                        holder.itemView.context,
-                                        "İşlem Başarılı!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                        }
-                        deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
-
-                        }
-                        deleteAlertDialog.show()
-
+                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
+                            .document(auth.uid.toString()).collection("Denemeler")
+                            .document(myItem.denemeID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }
+                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
 
                     }
+                    deleteAlertDialog.show()
+
 
                 }
                 binding.fullDenemeCard.setOnClickListener {
                     val intent =
                         Intent(holder.itemView.context, TestResultsShortActivity::class.java)
                     intent.putExtra("denemeAdi", myItem.denemeAdi)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     holder.itemView.context.startActivity(intent)
                 }
 
@@ -87,6 +81,7 @@ class DenemelerTeacherRecyclerAdapter(private var denemeList: ArrayList<DenemeTe
                     val intent =
                         Intent(holder.itemView.context, DenemeTeacherEditActivity::class.java)
                     intent.putExtra("denemeID", myItem.denemeID)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("denemeAdi", myItem.denemeAdi)
                     holder.itemView.context.startActivity(intent)
                 }

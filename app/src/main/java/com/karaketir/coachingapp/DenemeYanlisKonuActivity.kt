@@ -40,6 +40,7 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDenemeYanlisKonuBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private var kurumKodu = 0
     private lateinit var recyclerViewDenemeKonulariRecyclerAdapter: DenemeKonulariShowMoreRecyclerAdapter
     private lateinit var recyclerViewDenemeYanlisKonu: RecyclerView
 
@@ -54,6 +55,9 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener {
             finish()
         }
+
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+
 
         recyclerViewDenemeYanlisKonu = binding.recyclerViewDenemeYanlisKonu
         val konuList = ArrayList<String>()
@@ -109,7 +113,7 @@ class DenemeYanlisKonuActivity : AppCompatActivity() {
                                 }
                                 recyclerViewDenemeKonulariRecyclerAdapter =
                                     DenemeKonulariShowMoreRecyclerAdapter(
-                                        itemList, denemeID, dersAdi
+                                        itemList, denemeID, dersAdi, kurumKodu
                                     )
 
                                 recyclerViewDenemeYanlisKonu.adapter =

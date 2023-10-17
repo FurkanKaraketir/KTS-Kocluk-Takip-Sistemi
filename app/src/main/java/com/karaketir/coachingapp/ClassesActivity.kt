@@ -26,7 +26,7 @@ class ClassesActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityClassesBinding
-
+    private var kurumKodu = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityClassesBinding.inflate(layoutInflater)
@@ -47,16 +47,19 @@ class ClassesActivity : AppCompatActivity() {
         val denemeAsil = binding.denemeAsil
         val paragrafButton = binding.paragrafButton
         val problemButton = binding.problemButton
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
 
         paragrafButton.setOnClickListener {
             val intent = Intent(this, AddPrgrphPrblmActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             intent.putExtra("dersAdi", "Paragraf")
             this.startActivity(intent)
         }
 
         problemButton.setOnClickListener {
             val intent = Intent(this, AddPrgrphPrblmActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             intent.putExtra("dersAdi", "Problem")
             this.startActivity(intent)
         }
@@ -73,6 +76,7 @@ class ClassesActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Matematik")
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
@@ -80,6 +84,7 @@ class ClassesActivity : AppCompatActivity() {
 
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Matematik")
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
@@ -98,6 +103,7 @@ class ClassesActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Geometri")
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
@@ -105,6 +111,7 @@ class ClassesActivity : AppCompatActivity() {
 
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Geometri")
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
@@ -123,6 +130,7 @@ class ClassesActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Felsefe")
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
@@ -130,6 +138,7 @@ class ClassesActivity : AppCompatActivity() {
 
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("dersAdi", "Felsefe")
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
@@ -149,6 +158,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Din")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -156,6 +166,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Din")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -173,6 +184,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Fizik")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -180,6 +192,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Fizik")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -196,6 +209,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Türkçe-Edebiyat")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -203,6 +217,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Türkçe-Edebiyat")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -219,6 +234,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Coğrafya")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -226,6 +242,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Coğrafya")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -242,6 +259,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Biyoloji")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -249,6 +267,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Biyoloji")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -265,6 +284,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Kimya")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -272,6 +292,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Kimya")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -288,6 +309,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Tarih")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -295,6 +317,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Tarih")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -312,6 +335,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.TYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Diğer")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "TYT")
                     this.startActivity(intent)
                 }
@@ -319,6 +343,7 @@ class ClassesActivity : AppCompatActivity() {
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Diğer")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }
@@ -336,12 +361,14 @@ class ClassesActivity : AppCompatActivity() {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Denemeler")
                     intent.putExtra("studyType", "TYT")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     this.startActivity(intent)
                 }
 
                 if (item.itemId == R.id.AYT) {
                     val intent = Intent(this, EnterStudyActivity::class.java)
                     intent.putExtra("dersAdi", "Denemeler")
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("studyType", "AYT")
                     this.startActivity(intent)
                 }

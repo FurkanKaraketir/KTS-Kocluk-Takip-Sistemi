@@ -33,45 +33,37 @@ class StudentClassUpdateActivity : AppCompatActivity() {
         val gradeEdit = binding.gradeEditText
         val saveButton = binding.signUpButton
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-        }
-
-        db.collection("User").document(intent.getStringExtra("id").toString()).get()
-            .addOnSuccessListener {
-                name = it.get("nameAndSurname").toString()
-                grade = it.get("grade").toString().toInt()
-                nameEdit.setText(name)
-                gradeEdit.setText(grade.toString())
-
-                saveButton.setOnClickListener {
-
-                    name = nameEdit.text.toString()
-                    grade = gradeEdit.text.toString().toInt()
+        name = intent.getStringExtra("name").toString()
+        grade = intent.getStringExtra("grade").toString().toInt()
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
 
-                    val data = hashMapOf(
-                        "nameAndSurname" to name, "grade" to grade
-                    )
+        nameEdit.setText(name)
+        gradeEdit.setText(grade.toString())
 
-                    db.collection("User").document(intent.getStringExtra("id").toString())
-                        .update(data as Map<String, Any>).addOnSuccessListener {
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student")
-                                .document(intent.getStringExtra("id").toString()).update(
-                                    data as Map<String, Any>
-                                ).addOnSuccessListener {
-                                    Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT)
-                                        .show()
-                                    finish()
-                                }
+        saveButton.setOnClickListener {
+
+            name = nameEdit.text.toString()
+            grade = gradeEdit.text.toString().toInt()
+
+
+            val data = hashMapOf(
+                "nameAndSurname" to name, "grade" to grade
+            )
+
+            db.collection("User").document(intent.getStringExtra("id").toString())
+                .update(data as Map<String, Any>).addOnSuccessListener {
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(intent.getStringExtra("id").toString()).update(
+                            data as Map<String, Any>
+                        ).addOnSuccessListener {
+                            Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT).show()
+                            finish()
                         }
-
-
                 }
 
 
-            }
+        }
 
 
     }

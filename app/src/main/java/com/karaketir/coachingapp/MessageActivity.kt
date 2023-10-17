@@ -22,6 +22,7 @@ class MessageActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private var body = ""
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private var kurumKodu = 0
     private val targetList = arrayListOf("Koçluğum", "Okulum")
     private var setting = 0
 
@@ -38,13 +39,9 @@ class MessageActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         val bodyEdit = binding.messageSubjectEdit
         val sendButton = binding.sendMessageButton
 
-        var kurumKodu = 0
         val messageSpinner = binding.messageSpinner
 
-
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-        }
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
 
         val messageAdapter = ArrayAdapter(

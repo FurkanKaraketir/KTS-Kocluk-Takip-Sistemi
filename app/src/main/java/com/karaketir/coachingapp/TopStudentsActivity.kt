@@ -39,6 +39,7 @@ class TopStudentsActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
         val layoutManager = LinearLayoutManager(applicationContext)
 
@@ -49,13 +50,12 @@ class TopStudentsActivity : AppCompatActivity() {
         binding.studentPlacementRecyclerView.adapter = studentsRecyclerAdapter
 
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-            TransitionManager.beginDelayedTransition(binding.transitionsContainer)
-            binding.progressCircular.visibility = View.VISIBLE
-            siralamaHazirla()
 
-        }
+        TransitionManager.beginDelayedTransition(binding.transitionsContainer)
+        binding.progressCircular.visibility = View.VISIBLE
+        siralamaHazirla()
+
+
 
 
         handler.post(object : Runnable {
@@ -94,7 +94,6 @@ class TopStudentsActivity : AppCompatActivity() {
 
     private fun siralamaHazirla() {
 
-        println(kurumKodu)
         db.collection("School").document(kurumKodu.toString()).collection("Student").get()
             .addOnSuccessListener {
 
@@ -108,7 +107,6 @@ class TopStudentsActivity : AppCompatActivity() {
 
 
                 }
-                println(idList.size)
             }
 
 

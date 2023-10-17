@@ -38,6 +38,8 @@ class PreviousRatingsActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerAdapter: RatingsRecyclerAdapter
     private var ratingsList = ArrayList<Rating>()
+    private var kurumKodu = 0
+    private var personType = ""
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,8 @@ class PreviousRatingsActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        personType = intent.getStringExtra("personType").toString()
         val recyclerView = binding.previousRatingsRecyclerView
 
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
@@ -55,52 +59,44 @@ class PreviousRatingsActivity : AppCompatActivity() {
         recyclerView.adapter = recyclerAdapter
         val id = intent.getStringExtra("studentID").toString()
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            val personType = it.get("personType").toString()
-            if (personType=="Teacher"){
-                db.collection("User").document(id).get().addOnSuccessListener { snapshot ->
-                    val kurumKodu = snapshot.get("kurumKodu")?.toString()?.toInt()
 
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(id).collection("Degerlendirme")
-                        .orderBy("degerlendirmeDate", Query.Direction.DESCENDING)
-                        .addSnapshotListener { degerlendirmeler, _ ->
-                            if (degerlendirmeler != null) {
-                                ratingsList.clear()
-                                for (degerlendirme in degerlendirmeler) {
-                                    val yildizSayisi =
-                                        degerlendirme.get("yildizSayisi").toString().toInt()
-                                    val date = degerlendirme.get("degerlendirmeDate") as Timestamp
-                                    val currentRating = Rating(yildizSayisi, date)
-                                    ratingsList.add(currentRating)
-                                }
-                                recyclerAdapter.notifyDataSetChanged()
-                            }
+        if (personType == "Teacher") {
+
+
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .document(id).collection("Degerlendirme")
+                .orderBy("degerlendirmeDate", Query.Direction.DESCENDING)
+                .addSnapshotListener { degerlendirmeler, _ ->
+                    if (degerlendirmeler != null) {
+                        ratingsList.clear()
+                        for (degerlendirme in degerlendirmeler) {
+                            val yildizSayisi = degerlendirme.get("yildizSayisi").toString().toInt()
+                            val date = degerlendirme.get("degerlendirmeDate") as Timestamp
+                            val currentRating = Rating(yildizSayisi, date)
+                            ratingsList.add(currentRating)
                         }
-                }
-            }else{
-                db.collection("User").document(auth.uid.toString()).get()
-                    .addOnSuccessListener { snapshot ->
-                        val kurumKodu = snapshot.get("kurumKodu")?.toString()?.toInt()
-
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(auth.uid.toString()).collection("Degerlendirme")
-                            .orderBy("degerlendirmeDate", Query.Direction.DESCENDING)
-                            .addSnapshotListener { degerlendirmeler, _ ->
-                                if (degerlendirmeler != null) {
-                                    ratingsList.clear()
-                                    for (degerlendirme in degerlendirmeler) {
-                                        val yildizSayisi =
-                                            degerlendirme.get("yildizSayisi").toString().toInt()
-                                        val date = degerlendirme.get("degerlendirmeDate") as Timestamp
-                                        val currentRating = Rating(yildizSayisi, date)
-                                        ratingsList.add(currentRating)
-                                    }
-                                    recyclerAdapter.notifyDataSetChanged()
-                                }
-                            }
+                        recyclerAdapter.notifyDataSetChanged()
                     }
-            }
+                }
+
+        } else {
+
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .document(auth.uid.toString()).collection("Degerlendirme")
+                .orderBy("degerlendirmeDate", Query.Direction.DESCENDING)
+                .addSnapshotListener { degerlendirmeler, _ ->
+                    if (degerlendirmeler != null) {
+                        ratingsList.clear()
+                        for (degerlendirme in degerlendirmeler) {
+                            val yildizSayisi = degerlendirme.get("yildizSayisi").toString().toInt()
+                            val date = degerlendirme.get("degerlendirmeDate") as Timestamp
+                            val currentRating = Rating(yildizSayisi, date)
+                            ratingsList.add(currentRating)
+                        }
+                        recyclerAdapter.notifyDataSetChanged()
+                    }
+                }
+
         }
 
 

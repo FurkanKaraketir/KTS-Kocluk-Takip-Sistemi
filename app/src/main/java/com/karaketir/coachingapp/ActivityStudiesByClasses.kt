@@ -42,6 +42,7 @@ class ActivityStudiesByClasses : AppCompatActivity() {
     private lateinit var recyclerAdapter: StudiesRecyclerAdapter
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private var kurumKodu = 0
     private var studyList = ArrayList<Study>()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -53,6 +54,10 @@ class ActivityStudiesByClasses : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         val intent = intent
+
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+
+        println(kurumKodu)
 
         val studentID = intent.getStringExtra("studentID").toString()
         val secilenDersAdi = intent.getStringExtra("dersAdi").toString()
@@ -71,6 +76,7 @@ class ActivityStudiesByClasses : AppCompatActivity() {
             alertDialog.setPositiveButton("TYT") { _, _ ->
 
                 val newIntent = Intent(this, ClassAllStudiesGraphActivity::class.java)
+                newIntent.putExtra("kurumKodu", kurumKodu.toString())
                 newIntent.putExtra("dersAdi", secilenDersAdi)
                 newIntent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
                 newIntent.putExtra("studentID", studentID)
@@ -81,6 +87,7 @@ class ActivityStudiesByClasses : AppCompatActivity() {
             alertDialog.setNegativeButton("AYT") { _, _ ->
                 val newIntent = Intent(this, ClassAllStudiesGraphActivity::class.java)
                 newIntent.putExtra("dersAdi", secilenDersAdi)
+                newIntent.putExtra("kurumKodu", kurumKodu.toString())
                 newIntent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
                 newIntent.putExtra("studentID", studentID)
                 newIntent.putExtra("tür", "AYT")
@@ -97,64 +104,60 @@ class ActivityStudiesByClasses : AppCompatActivity() {
 
         recyclerView.layoutManager = layoutManager
 
-        recyclerAdapter = StudiesRecyclerAdapter(studyList, secilenZamanAraligi)
+        recyclerAdapter =
+            StudiesRecyclerAdapter(studyList, secilenZamanAraligi, kurumKodu, "Teacher")
 
         recyclerView.adapter = recyclerAdapter
-        var kurumKodu: Int
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("Studies").whereEqualTo("dersAdi", secilenDersAdi)
-                .whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener { value, error ->
 
-                    if (error != null) {
-                        println(error.localizedMessage)
-                    }
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("Studies").whereEqualTo("dersAdi", secilenDersAdi)
+            .whereGreaterThan("timestamp", baslangicTarihi).whereLessThan("timestamp", bitisTarihi)
+            .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, error ->
 
-                    if (value != null) {
-                        studyList.clear()
-                        if (!value.isEmpty) {
-                            for (document in value) {
-                                val studyName = document.get("konuAdi").toString()
-                                val sure = document.get("toplamCalisma").toString()
-                                val studyDersAdi = document.get("dersAdi").toString()
-                                val studyTur = document.get("tür").toString()
-                                val soruSayisi = document.get("çözülenSoru").toString()
-                                val timestamp = document.get("timestamp") as Timestamp
+                if (error != null) {
+                    println(error.localizedMessage)
+                }
 
-                                val currentStudy = Study(
-                                    studyName,
-                                    sure,
-                                    studentID,
-                                    studyDersAdi,
-                                    studyTur,
-                                    soruSayisi,
-                                    timestamp,
-                                    document.id
-                                )
-                                studyList.add(currentStudy)
-                            }
+                if (value != null) {
+                    studyList.clear()
+                    if (!value.isEmpty) {
+                        for (document in value) {
+                            val studyName = document.get("konuAdi").toString()
+                            val sure = document.get("toplamCalisma").toString()
+                            val studyDersAdi = document.get("dersAdi").toString()
+                            val studyTur = document.get("tür").toString()
+                            val soruSayisi = document.get("çözülenSoru").toString()
+                            val timestamp = document.get("timestamp") as Timestamp
 
-                            recyclerAdapter.notifyDataSetChanged()
-
-                        } else {
-                            studyList.clear()
-                            recyclerAdapter.notifyDataSetChanged()
-
+                            val currentStudy = Study(
+                                studyName,
+                                sure,
+                                studentID,
+                                studyDersAdi,
+                                studyTur,
+                                soruSayisi,
+                                timestamp,
+                                document.id
+                            )
+                            studyList.add(currentStudy)
                         }
 
+                        recyclerAdapter.notifyDataSetChanged()
 
                     } else {
                         studyList.clear()
                         recyclerAdapter.notifyDataSetChanged()
+
                     }
 
+
+                } else {
+                    studyList.clear()
+                    recyclerAdapter.notifyDataSetChanged()
                 }
 
-        }
+            }
+
 
     }
 }

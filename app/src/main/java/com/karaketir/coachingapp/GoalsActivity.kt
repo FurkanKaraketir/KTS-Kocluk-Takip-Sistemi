@@ -37,6 +37,8 @@ class GoalsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerAdapter: GoalsRecyclerAdapter
+    private var kurumKodu = 0
+    private var personType = ""
 
     private var goalList = ArrayList<Goal>()
 
@@ -56,52 +58,49 @@ class GoalsActivity : AppCompatActivity() {
         val studentID = intent.getStringExtra("studentID").toString()
         val layoutManager = LinearLayoutManager(this)
 
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        personType = intent.getStringExtra("personType").toString()
+
 
         recyclerView.layoutManager = layoutManager
-        recyclerAdapter = GoalsRecyclerAdapter(goalList)
+        recyclerAdapter = GoalsRecyclerAdapter(goalList, kurumKodu, personType)
         recyclerView.adapter = recyclerAdapter
 
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            val kurumKodu = it.get("kurumKodu").toString()
 
-            if (it.get("personType") == "Student") {
-                addGoalButton.visibility = View.GONE
-            } else {
-                addGoalButton.visibility = View.VISIBLE
-            }
+        if (personType == "Student") {
+            addGoalButton.visibility = View.GONE
+        } else {
+            addGoalButton.visibility = View.VISIBLE
+        }
 
-            db.collection("School").document(kurumKodu).collection("Student").document(studentID)
-                .collection("HaftalikHedefler").addSnapshotListener { value, _ ->
-                    if (value != null) {
-                        goalList.clear()
-                        for (document in value) {
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("HaftalikHedefler").addSnapshotListener { value, _ ->
+                if (value != null) {
+                    goalList.clear()
+                    for (document in value) {
 
-                            val dersAdi = document.get("dersAdi").toString()
-                            val toplamCalismaHedef =
-                                document.get("toplamCalisma").toString().toInt()
-                            val cozulenSoruHedef = document.get("çözülenSoru").toString().toInt()
+                        val dersAdi = document.get("dersAdi").toString()
+                        val toplamCalismaHedef = document.get("toplamCalisma").toString().toInt()
+                        val cozulenSoruHedef = document.get("çözülenSoru").toString().toInt()
 
-                            val currentGoal = Goal(
-                                dersAdi,
-                                toplamCalismaHedef,
-                                cozulenSoruHedef,
-                                document.id,
-                                studentID
-                            )
-                            goalList.add(currentGoal)
+                        val currentGoal = Goal(
+                            dersAdi, toplamCalismaHedef, cozulenSoruHedef, document.id, studentID
+                        )
+                        goalList.add(currentGoal)
 
-                        }
-                        recyclerAdapter.notifyDataSetChanged()
                     }
-
+                    recyclerAdapter.notifyDataSetChanged()
                 }
 
-        }
+            }
+
+
 
         addGoalButton.setOnClickListener {
             val gonder = Intent(this, GoalEnterActivity::class.java)
             gonder.putExtra("studentID", studentID)
+            gonder.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(gonder)
         }
 

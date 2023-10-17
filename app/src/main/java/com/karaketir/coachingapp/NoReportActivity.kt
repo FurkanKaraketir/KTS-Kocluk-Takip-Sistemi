@@ -147,7 +147,7 @@ class NoReportActivity : AppCompatActivity() {
         recyclerViewMyStudents.layoutManager = layoutManager
 
         recyclerViewMyStudentsRecyclerAdapter =
-            StudentsRecyclerAdapter(raporGondermeyenList, secilenZaman)
+            StudentsRecyclerAdapter(raporGondermeyenList, secilenZaman, kurumKodu)
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 

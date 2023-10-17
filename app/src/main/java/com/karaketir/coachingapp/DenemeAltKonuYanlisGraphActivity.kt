@@ -35,6 +35,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
     private var dersAdi = ""
     private var value = ""
     private var denemeTur = ""
+    private var kurumKodu = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +51,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
         dersAdi = intent.getStringExtra("dersAdi").toString()
         value = intent.getStringExtra("value").toString()
         konuAdi = intent.getStringExtra("konuAdi").toString()
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
 
         var cal = Calendar.getInstance()
@@ -65,6 +67,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Dün" -> {
                 bitisTarihi = cal.time
 
@@ -72,6 +75,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
@@ -80,6 +84,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Geçen Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
@@ -87,6 +92,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, -7)
                 baslangicTarihi = cal.time
             }
+
             "Bu Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -102,6 +108,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.MONTH, 1)
                 bitisTarihi = cal.time
             }
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -118,6 +125,7 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
@@ -128,63 +136,53 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
             }
         }
 
-        var kurumKodu: Int
         val denemeList = ArrayList<String>()
 
         val konuHashMap = hashMapOf<String, Int>()
         konuHashMap.clear()
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(denemeOwnerID).collection("Denemeler")
-                .whereEqualTo("denemeTür", denemeTur)
-                .whereGreaterThan("denemeTarihi", baslangicTarihi)
-                .whereLessThan("denemeTarihi", bitisTarihi)
-                .orderBy("denemeTarihi", Query.Direction.DESCENDING)
-                .addSnapshotListener { value, _ ->
-                    denemeList.clear()
-                    if (value != null) {
-                        for (deneme in value) {
-                            denemeList.add(deneme.id)
-                        }
 
 
-                        for (id in denemeList) {
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(denemeOwnerID)
-                                .collection("Denemeler").document(id).collection(dersAdi)
-                                .document(konuAdi).collection("AltKonu")
-                                .addSnapshotListener { konular, _ ->
-                                    if (konular != null) {
-                                        for (konu in konular) {
-
-                                            if (konu.get("konuAdi")
-                                                    .toString() in konuHashMap.keys
-                                            ) {
-
-                                                val currentValue =
-                                                    konuHashMap[konu.get("konuAdi").toString()]
-                                                if (currentValue != null) {
-                                                    konuHashMap[konu.get("konuAdi").toString()] =
-                                                        currentValue + konu.get("yanlisSayisi")
-                                                            .toString().toInt()
-                                                }
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(denemeOwnerID).collection("Denemeler").whereEqualTo("denemeTür", denemeTur)
+            .whereGreaterThan("denemeTarihi", baslangicTarihi)
+            .whereLessThan("denemeTarihi", bitisTarihi)
+            .orderBy("denemeTarihi", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
+                denemeList.clear()
+                if (value != null) {
+                    for (deneme in value) {
+                        denemeList.add(deneme.id)
+                    }
 
 
-                                            } else {
+                    for (id in denemeList) {
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(denemeOwnerID).collection("Denemeler").document(id)
+                            .collection(dersAdi).document(konuAdi).collection("AltKonu")
+                            .addSnapshotListener { konular, _ ->
+                                if (konular != null) {
+                                    for (konu in konular) {
+
+                                        if (konu.get("konuAdi").toString() in konuHashMap.keys) {
+
+                                            val currentValue =
+                                                konuHashMap[konu.get("konuAdi").toString()]
+                                            if (currentValue != null) {
                                                 konuHashMap[konu.get("konuAdi").toString()] =
-                                                    konu.get("yanlisSayisi").toString().toInt()
+                                                    currentValue + konu.get("yanlisSayisi")
+                                                        .toString().toInt()
                                             }
 
 
+                                        } else {
+                                            konuHashMap[konu.get("konuAdi").toString()] =
+                                                konu.get("yanlisSayisi").toString().toInt()
                                         }
 
+
                                     }
+
                                 }
-
-
-                        }
+                            }
 
 
                     }
@@ -193,7 +191,10 @@ class DenemeAltKonuYanlisGraphActivity : AppCompatActivity() {
                 }
 
 
-        }
+            }
+
+
+
 
         Toast.makeText(this, "Grafiği Görmek İçin Sağ Üsteki Butona Basın", Toast.LENGTH_LONG)
             .show()

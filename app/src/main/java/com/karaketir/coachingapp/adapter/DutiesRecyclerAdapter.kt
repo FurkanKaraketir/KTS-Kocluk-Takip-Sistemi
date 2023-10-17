@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.karaketir.coachingapp.adapter
 
 import android.annotation.SuppressLint
@@ -20,8 +18,9 @@ import com.karaketir.coachingapp.models.Duty
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
-    RecyclerView.Adapter<DutiesRecyclerAdapter.DutyHolder>() {
+open class DutiesRecyclerAdapter(
+    private val dutyList: List<Duty>, private val kurumKodu: Int, private val personType: String
+) : RecyclerView.Adapter<DutiesRecyclerAdapter.DutyHolder>() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -51,79 +50,69 @@ open class DutiesRecyclerAdapter(private val dutyList: List<Duty>) :
 
                 auth = Firebase.auth
                 db = Firebase.firestore
-                var kurumKodu: Int
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    kurumKodu = it.get("kurumKodu").toString().toInt()
-                    binding.dutyKonuAdiTextView.text = myItem.konuAdi
-                    binding.dutyTurText.text = myItem.tur
-                    binding.dutyDersText.text = myItem.dersAdi
 
-                    if (myItem.toplamCalisma.toInt() < 0) {
-                        binding.dutyToplamCalisma.text = "0 dk"
+                binding.dutyKonuAdiTextView.text = myItem.konuAdi
+                binding.dutyTurText.text = myItem.tur
+                binding.dutyDersText.text = myItem.dersAdi
+
+                if (myItem.toplamCalisma.toInt() < 0) {
+                    binding.dutyToplamCalisma.text = "0 dk"
+                } else {
+                    binding.dutyToplamCalisma.text = myItem.toplamCalisma + "dk"
+                }
+
+                if (myItem.cozulenSoru.toInt() < 0) {
+                    binding.dutyCozulenSoru.text = "0 Soru"
+                } else {
+                    binding.dutyCozulenSoru.text = myItem.cozulenSoru + " Soru"
+                }
+
+                val date = myItem.bitisZamani.toDate()
+                val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
+
+                binding.bitisZamaniText.text = "Görev Bitiş Tarihi \n$dateFormated"
+
+
+                if (myItem.dutyTamamlandi) {
+                    binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
+                } else {
+                    if (Calendar.getInstance().time.after(date)) {
+                        binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
                     } else {
-                        binding.dutyToplamCalisma.text = myItem.toplamCalisma + "dk"
+                        binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
+                    }
+                }
+
+
+
+                if (personType == "Student") {
+                    binding.deleteDutyButton.visibility = View.GONE
+                } else {
+                    binding.deleteDutyButton.visibility = View.VISIBLE
+                }
+
+                binding.deleteDutyButton.setOnClickListener {
+                    val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteDutyDialog.setTitle("Görev Sil")
+                    deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
+
+                    deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
+
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(myItem.studyOwnerID).collection("Duties")
+                            .document(myItem.dutyID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+
+                    }
+                    deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
+
                     }
 
-                    if (myItem.cozulenSoru.toInt() < 0) {
-                        binding.dutyCozulenSoru.text = "0 Soru"
-                    } else {
-                        binding.dutyCozulenSoru.text = myItem.cozulenSoru + " Soru"
-                    }
-
-                    val date = myItem.bitisZamani.toDate()
-                    val dateFormated = SimpleDateFormat("dd/MM/yyyy").format(date)
-
-                    binding.bitisZamaniText.text = "Görev Bitiş Tarihi \n$dateFormated"
-
-
-                    if (myItem.dutyTamamlandi) {
-                        binding.completeIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
-                    } else {
-                        if (Calendar.getInstance().time.after(date)) {
-                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                        } else {
-                            binding.completeIcon.setImageResource(R.drawable.ic_baseline_timelapse_24)
-                        }
-                    }
-
-
-
-                    if (it.get("personType").toString() == "Student") {
-                        binding.deleteDutyButton.visibility = View.GONE
-                    } else {
-                        binding.deleteDutyButton.visibility = View.VISIBLE
-                    }
-
-                    binding.deleteDutyButton.setOnClickListener {
-                        val deleteDutyDialog = AlertDialog.Builder(holder.itemView.context)
-                        deleteDutyDialog.setTitle("Görev Sil")
-                        deleteDutyDialog.setMessage("Bu Görevi Silmek İstediğinizden Emin misiniz?")
-
-                        deleteDutyDialog.setPositiveButton("Sil") { _, _ ->
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener {
-
-                                    db.collection("School").document(kurumKodu.toString())
-                                        .collection("Student").document(myItem.studyOwnerID)
-                                        .collection("Duties").document(myItem.dutyID).delete()
-                                        .addOnSuccessListener {
-                                            Toast.makeText(
-                                                holder.itemView.context,
-                                                "İşlem Başarılı!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-
-                                }
-                        }
-                        deleteDutyDialog.setNegativeButton("İptal") { _, _ ->
-
-                        }
-
-                        deleteDutyDialog.show()
-                    }
-
-
+                    deleteDutyDialog.show()
                 }
 
 

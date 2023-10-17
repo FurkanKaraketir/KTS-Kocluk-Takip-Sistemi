@@ -19,7 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 open class StudentsRecyclerAdapter(
-    private val studentList: ArrayList<Student>, private val secilenZaman: String
+    private val studentList: ArrayList<Student>,
+    private val secilenZaman: String,
+    private val kurumKodu: Int
 ) : RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -65,6 +67,9 @@ open class StudentsRecyclerAdapter(
 
                     val newIntent =
                         Intent(holder.itemView.context, StudentClassUpdateActivity::class.java)
+                    newIntent.putExtra("kurumKodu", kurumKodu.toString())
+                    newIntent.putExtra("name", myItem.studentName)
+                    newIntent.putExtra("grade", myItem.grade.toString())
                     newIntent.putExtra("id", myItem.id)
                     holder.itemView.context.startActivity(newIntent)
 
@@ -74,23 +79,21 @@ open class StudentsRecyclerAdapter(
 
                 studentDeleteButton.setOnClickListener {
 
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu").toString().toInt()
-                        studentNameTextView.text = myItem.studentName
-                        val removeStudent = AlertDialog.Builder(holder.itemView.context)
-                        removeStudent.setTitle("Öğrenci Çıkar")
-                        removeStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
-                        removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
 
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(myItem.id).update("teacher", "")
-                            db.collection("User").document(myItem.id).update("teacher", "")
-                        }
-                        removeStudent.setNegativeButton("İPTAL") { _, _ ->
+                    studentNameTextView.text = myItem.studentName
+                    val removeStudent = AlertDialog.Builder(holder.itemView.context)
+                    removeStudent.setTitle("Öğrenci Çıkar")
+                    removeStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                    removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
 
-                        }
-                        removeStudent.show()
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(myItem.id).update("teacher", "")
+                        db.collection("User").document(myItem.id).update("teacher", "")
                     }
+                    removeStudent.setNegativeButton("İPTAL") { _, _ ->
+
+                    }
+                    removeStudent.show()
 
 
                 }
@@ -99,6 +102,7 @@ open class StudentsRecyclerAdapter(
                     val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
                     intent.putExtra("secilenZaman", secilenZaman)
                     intent.putExtra("studentID", myItem.id)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     println(myItem.id)
                     holder.itemView.context.startActivity(intent)
                 }
@@ -200,97 +204,93 @@ open class StudentsRecyclerAdapter(
                     }
                 }
 
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu").toString().toInt()
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(myItem.id).collection("Studies")
-                        .whereGreaterThan("timestamp", baslangicTarihi)
-                        .whereLessThan("timestamp", bitisTarihi)
-                        .addSnapshotListener { value, error ->
-                            if (error != null) {
-                                println(error.localizedMessage)
-                            }
 
-                            if (value != null) {
-
-                                if (value.isEmpty) {
-                                    todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                                } else {
-                                    todayStudyImageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
-                                }
-
-                            } else {
-                                todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
-                            }
-
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(myItem.id).collection("Studies")
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, error ->
+                        if (error != null) {
+                            println(error.localizedMessage)
                         }
 
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(myItem.id).collection("Degerlendirme")
-                        .orderBy("degerlendirmeDate", Query.Direction.DESCENDING).limit(1)
-                        .addSnapshotListener { value, error ->
+                        if (value != null) {
 
-                            if (error != null) {
-                                println(error.localizedMessage)
+                            if (value.isEmpty) {
+                                todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                            } else {
+                                todayStudyImageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                             }
 
-                            if (value != null) {
-                                if (value.isEmpty) {
-                                    fiveStarButton.visibility = View.GONE
-                                } else {
-                                    fiveStarButton.visibility = View.VISIBLE
-                                    for (i in value) {
-                                        val tarih =
-                                            i.get("degerlendirmeDate") as com.google.firebase.Timestamp
-                                        val dateFormated =
-                                            SimpleDateFormat("dd/MM/yyyy").format(tarih.toDate())
-                                        degerlendirmeDate.text = dateFormated
-                                        when (i.get("yildizSayisi").toString().toInt()) {
-                                            5 -> {
-                                                starTwo.visibility = View.VISIBLE
-                                                starThree.visibility = View.VISIBLE
-                                                starFour.visibility = View.VISIBLE
-                                                starFive.visibility = View.VISIBLE
-                                            }
+                        } else {
+                            todayStudyImageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                        }
 
-                                            4 -> {
-                                                starTwo.visibility = View.VISIBLE
-                                                starThree.visibility = View.VISIBLE
-                                                starFour.visibility = View.VISIBLE
-                                                starFive.visibility = View.GONE
-                                            }
+                    }
 
-                                            3 -> {
-                                                starTwo.visibility = View.VISIBLE
-                                                starThree.visibility = View.VISIBLE
-                                                starFour.visibility = View.GONE
-                                                starFive.visibility = View.GONE
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(myItem.id).collection("Degerlendirme")
+                    .orderBy("degerlendirmeDate", Query.Direction.DESCENDING).limit(1)
+                    .addSnapshotListener { value, error ->
 
-                                            }
+                        if (error != null) {
+                            println(error.localizedMessage)
+                        }
 
-                                            2 -> {
-                                                starTwo.visibility = View.VISIBLE
-                                                starThree.visibility = View.GONE
-                                                starFour.visibility = View.GONE
-                                                starFive.visibility = View.GONE
-                                            }
+                        if (value != null) {
+                            if (value.isEmpty) {
+                                fiveStarButton.visibility = View.GONE
+                            } else {
+                                fiveStarButton.visibility = View.VISIBLE
+                                for (i in value) {
+                                    val tarih =
+                                        i.get("degerlendirmeDate") as com.google.firebase.Timestamp
+                                    val dateFormated =
+                                        SimpleDateFormat("dd/MM/yyyy").format(tarih.toDate())
+                                    degerlendirmeDate.text = dateFormated
+                                    when (i.get("yildizSayisi").toString().toInt()) {
+                                        5 -> {
+                                            starTwo.visibility = View.VISIBLE
+                                            starThree.visibility = View.VISIBLE
+                                            starFour.visibility = View.VISIBLE
+                                            starFive.visibility = View.VISIBLE
+                                        }
 
-                                            1 -> {
-                                                starTwo.visibility = View.GONE
-                                                starThree.visibility = View.GONE
-                                                starFour.visibility = View.GONE
-                                                starFive.visibility = View.GONE
-                                            }
+                                        4 -> {
+                                            starTwo.visibility = View.VISIBLE
+                                            starThree.visibility = View.VISIBLE
+                                            starFour.visibility = View.VISIBLE
+                                            starFive.visibility = View.GONE
+                                        }
+
+                                        3 -> {
+                                            starTwo.visibility = View.VISIBLE
+                                            starThree.visibility = View.VISIBLE
+                                            starFour.visibility = View.GONE
+                                            starFive.visibility = View.GONE
+
+                                        }
+
+                                        2 -> {
+                                            starTwo.visibility = View.VISIBLE
+                                            starThree.visibility = View.GONE
+                                            starFour.visibility = View.GONE
+                                            starFive.visibility = View.GONE
+                                        }
+
+                                        1 -> {
+                                            starTwo.visibility = View.GONE
+                                            starThree.visibility = View.GONE
+                                            starFour.visibility = View.GONE
+                                            starFive.visibility = View.GONE
                                         }
                                     }
                                 }
-
-                            } else {
-                                fiveStarButton.visibility = View.GONE
                             }
-                        }
 
-                }
+                        } else {
+                            fiveStarButton.visibility = View.GONE
+                        }
+                    }
 
 
             }

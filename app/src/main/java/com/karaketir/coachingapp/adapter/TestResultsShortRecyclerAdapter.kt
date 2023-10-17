@@ -11,7 +11,7 @@ import com.karaketir.coachingapp.databinding.TestResultsRowBinding
 import com.karaketir.coachingapp.models.DenemeResultShort
 
 class TestResultsShortRecyclerAdapter(
-    private var studentList: ArrayList<DenemeResultShort>
+    private var studentList: ArrayList<DenemeResultShort>, private var kurumKodu: Int
 ) : RecyclerView.Adapter<TestResultsShortRecyclerAdapter.ResultHolder>() {
 
     class ResultHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,6 +42,7 @@ class TestResultsShortRecyclerAdapter(
                         Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
                     intent.putExtra("denemeID", myItem.denemeID)
                     intent.putExtra("denemeTür", myItem.denemeTur)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("denemeStudentID", myItem.denemeOwnerID)
                     intent.putExtra("secilenZamanAraligi", "Tüm Zamanlar")
                     holder.itemView.context.startActivity(intent)

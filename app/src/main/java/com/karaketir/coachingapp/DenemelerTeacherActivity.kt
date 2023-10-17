@@ -44,7 +44,7 @@ class DenemelerTeacherActivity : AppCompatActivity() {
     private val turler = arrayOf("Tüm Denemeler", "TYT", "AYT")
     private var secilenGrade = ""
     private var secilenTur = ""
-
+    private var kurumKodu = 0
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,13 +59,14 @@ class DenemelerTeacherActivity : AppCompatActivity() {
 
         val recyclerView = binding.recyclerViewDenemeler
         val addDenemeButton = binding.addDeneme
-        val recyclerViewAdapter = DenemelerTeacherRecyclerAdapter(denemelerList)
+        val recyclerViewAdapter = DenemelerTeacherRecyclerAdapter(denemelerList, kurumKodu)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = recyclerViewAdapter
         val gradeSpinner = binding.denemeTeacherGradeSpinner
         val turSpinner = binding.denemeTeacherTurSpinner
         addDenemeButton.setOnClickListener {
             val intent = Intent(this, AddDenemeTeacherActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
@@ -96,123 +97,106 @@ class DenemelerTeacherActivity : AppCompatActivity() {
 
                         if (secilenGrade == "Bütün Sınıflar" && secilenTur == "Tüm Denemeler") {
                             denemelerList.clear()
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener {
-                                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                                    auth.currentUser?.let { it1 ->
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Teacher").document(
-                                                it1.uid
-                                            ).collection("Denemeler")
-                                            .orderBy("bitisTarihi", Query.Direction.DESCENDING)
-                                            .addSnapshotListener { value, _ ->
-                                                if (value != null) {
-                                                    denemelerList.clear()
-                                                    for (deneme in value) {
-                                                        val currentDeneme = DenemeTeacher(
-                                                            deneme.get("denemeAdi").toString(),
-                                                            deneme.id
-                                                        )
-                                                        denemelerList.add(currentDeneme)
-                                                    }
-                                                    recyclerViewAdapter.notifyDataSetChanged()
-                                                }
+                            auth.currentUser?.let { it1 ->
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Teacher").document(
+                                        it1.uid
+                                    ).collection("Denemeler")
+                                    .orderBy("bitisTarihi", Query.Direction.DESCENDING)
+                                    .addSnapshotListener { value, _ ->
+                                        if (value != null) {
+                                            denemelerList.clear()
+                                            for (deneme in value) {
+                                                val currentDeneme = DenemeTeacher(
+                                                    deneme.get("denemeAdi").toString(), deneme.id
+                                                )
+                                                denemelerList.add(currentDeneme)
                                             }
+                                            recyclerViewAdapter.notifyDataSetChanged()
+                                        }
                                     }
+                            }
 
-                                }
+
                         }
                         if (secilenGrade == "Bütün Sınıflar" && secilenTur != "Tüm Denemeler") {
                             denemelerList.clear()
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener {
-                                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                                    auth.currentUser?.let { it1 ->
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Teacher").document(
-                                                it1.uid
-                                            ).collection("Denemeler")
-                                            .whereEqualTo("tür", secilenTur)
-                                            .orderBy("bitisTarihi", Query.Direction.DESCENDING)
-                                            .addSnapshotListener { value, _ ->
-                                                if (value != null) {
-                                                    denemelerList.clear()
-                                                    for (deneme in value) {
-                                                        val currentDeneme = DenemeTeacher(
-                                                            deneme.get("denemeAdi").toString(),
-                                                            deneme.id
-                                                        )
-                                                        denemelerList.add(currentDeneme)
-                                                    }
-                                                    recyclerViewAdapter.notifyDataSetChanged()
-                                                }
+                            auth.currentUser?.let { it1 ->
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Teacher").document(
+                                        it1.uid
+                                    ).collection("Denemeler").whereEqualTo("tür", secilenTur)
+                                    .orderBy("bitisTarihi", Query.Direction.DESCENDING)
+                                    .addSnapshotListener { value, _ ->
+                                        if (value != null) {
+                                            denemelerList.clear()
+                                            for (deneme in value) {
+                                                val currentDeneme = DenemeTeacher(
+                                                    deneme.get("denemeAdi").toString(), deneme.id
+                                                )
+                                                denemelerList.add(currentDeneme)
                                             }
+                                            recyclerViewAdapter.notifyDataSetChanged()
+                                        }
                                     }
+                            }
 
-                                }
+
                         }
                         if (secilenGrade != "Bütün Sınıflar" && secilenTur == "Tüm Denemeler") {
                             denemelerList.clear()
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener {
-                                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                                    auth.currentUser?.let { it1 ->
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Teacher").document(
-                                                it1.uid
-                                            ).collection("Denemeler")
-                                            .whereEqualTo("grade", secilenGrade.toInt())
-                                            .orderBy("bitisTarihi", Query.Direction.DESCENDING)
-                                            .addSnapshotListener { value, _ ->
-                                                if (value != null) {
-                                                    denemelerList.clear()
-                                                    for (deneme in value) {
-                                                        val currentDeneme = DenemeTeacher(
-                                                            deneme.get("denemeAdi").toString(),
-                                                            deneme.id
-                                                        )
-                                                        denemelerList.add(currentDeneme)
-                                                    }
-                                                    recyclerViewAdapter.notifyDataSetChanged()
-                                                }
+                            auth.currentUser?.let { it1 ->
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Teacher").document(
+                                        it1.uid
+                                    ).collection("Denemeler")
+                                    .whereEqualTo("grade", secilenGrade.toInt())
+                                    .orderBy("bitisTarihi", Query.Direction.DESCENDING)
+                                    .addSnapshotListener { value, _ ->
+                                        if (value != null) {
+                                            denemelerList.clear()
+                                            for (deneme in value) {
+                                                val currentDeneme = DenemeTeacher(
+                                                    deneme.get("denemeAdi").toString(), deneme.id
+                                                )
+                                                denemelerList.add(currentDeneme)
                                             }
+                                            recyclerViewAdapter.notifyDataSetChanged()
+                                        }
                                     }
+                            }
 
-                                }
+
                         }
                         if (secilenGrade != "Bütün Sınıflar" && secilenTur != "Tüm Denemeler") {
                             denemelerList.clear()
-                            db.collection("User").document(auth.uid.toString()).get()
-                                .addOnSuccessListener {
-                                    val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                                    auth.currentUser?.let { it1 ->
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Teacher").document(
-                                                it1.uid
-                                            ).collection("Denemeler")
-                                            .whereEqualTo("grade", secilenGrade.toInt())
-                                            .whereEqualTo("tür", secilenTur)
-                                            .orderBy("bitisTarihi", Query.Direction.DESCENDING)
-                                            .addSnapshotListener { value, _ ->
-                                                if (value != null) {
-                                                    denemelerList.clear()
-                                                    for (deneme in value) {
-                                                        val currentDeneme = DenemeTeacher(
-                                                            deneme.get("denemeAdi").toString(),
-                                                            deneme.id
-                                                        )
-                                                        denemelerList.add(currentDeneme)
-                                                    }
-                                                    recyclerViewAdapter.notifyDataSetChanged()
-                                                }
+                            auth.currentUser?.let { it1 ->
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection("Teacher").document(
+                                        it1.uid
+                                    ).collection("Denemeler")
+                                    .whereEqualTo("grade", secilenGrade.toInt())
+                                    .whereEqualTo("tür", secilenTur)
+                                    .orderBy("bitisTarihi", Query.Direction.DESCENDING)
+                                    .addSnapshotListener { value, _ ->
+                                        if (value != null) {
+                                            denemelerList.clear()
+                                            for (deneme in value) {
+                                                val currentDeneme = DenemeTeacher(
+                                                    deneme.get("denemeAdi").toString(), deneme.id
+                                                )
+                                                denemelerList.add(currentDeneme)
                                             }
+                                            recyclerViewAdapter.notifyDataSetChanged()
+                                        }
                                     }
+                            }
 
-                                }
+
                         }
 
                     }

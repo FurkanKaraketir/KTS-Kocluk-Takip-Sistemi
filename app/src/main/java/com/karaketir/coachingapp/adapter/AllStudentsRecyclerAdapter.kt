@@ -12,8 +12,9 @@ import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
 
-open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student>) :
-    RecyclerView.Adapter<AllStudentsRecyclerAdapter.StudentHolder>() {
+open class AllStudentsRecyclerAdapter(
+    private val studentList: ArrayList<Student>, private val kurumKodu: Int
+) : RecyclerView.Adapter<AllStudentsRecyclerAdapter.StudentHolder>() {
     private lateinit var db: FirebaseFirestore
     lateinit var auth: FirebaseAuth
 
@@ -40,7 +41,6 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
 
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
-                var kurumKodu: Int
                 studentDeleteButton.visibility = View.GONE
                 studentAddButton.visibility = View.VISIBLE
 
@@ -60,26 +60,19 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                     alertDialog.setTitle("Hesabı Sil")
                     alertDialog.setMessage("Hesabı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
                     alertDialog.setPositiveButton("Sil") { _, _ ->
-                        db.collection("User").document(myItem.id).get().addOnSuccessListener {
-                            kurumKodu = it.get("kurumKodu").toString().toInt()
-                            val personType = it.get("personType").toString()
 
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection(personType).document(myItem.id).delete()
-                                .addOnSuccessListener {
-                                    db.collection("User").document(myItem.id).delete()
-                                        .addOnSuccessListener {
-                                            Toast.makeText(
-                                                holder.itemView.context,
-                                                "İşlem Başarılı!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(myItem.id).delete().addOnSuccessListener {
+                                db.collection("User").document(myItem.id).delete()
+                                    .addOnSuccessListener {
+                                        Toast.makeText(
+                                            holder.itemView.context,
+                                            "İşlem Başarılı!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
 
-                                        }
-                                }
-
-
-                        }
+                                    }
+                            }
 
 
                     }
@@ -89,30 +82,28 @@ open class AllStudentsRecyclerAdapter(private val studentList: ArrayList<Student
                     alertDialog.show()
                 }
 
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    kurumKodu = it.get("kurumKodu").toString().toInt()
-                    studentNameTextView.text = myItem.studentName
 
-                    studentAddButton.setOnClickListener {
+                studentNameTextView.text = myItem.studentName
 
-                        val addStudent = AlertDialog.Builder(holder.itemView.context)
-                        addStudent.setTitle("Öğrenci Ekle")
-                        addStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
-                        addStudent.setPositiveButton("EKLE") { _, _ ->
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(myItem.id)
-                                .update("teacher", auth.uid.toString())
-                            db.collection("User").document(myItem.id)
-                                .update("teacher", auth.uid.toString())
-                        }
-                        addStudent.setNegativeButton("İPTAL") { _, _ ->
+                studentAddButton.setOnClickListener {
 
-                        }
-                        addStudent.show()
-
+                    val addStudent = AlertDialog.Builder(holder.itemView.context)
+                    addStudent.setTitle("Öğrenci Ekle")
+                    addStudent.setMessage("${myItem.studentName} Öğrencisini Koçluğunuza Eklemek İstediğinizden Emin misiniz?")
+                    addStudent.setPositiveButton("EKLE") { _, _ ->
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(myItem.id).update("teacher", auth.uid.toString())
+                        db.collection("User").document(myItem.id)
+                            .update("teacher", auth.uid.toString())
+                    }
+                    addStudent.setNegativeButton("İPTAL") { _, _ ->
 
                     }
+                    addStudent.show()
+
+
                 }
+
                 studentGradeTextView.text = myItem.grade.toString()
 
 

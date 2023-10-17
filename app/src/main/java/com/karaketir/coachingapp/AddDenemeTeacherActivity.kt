@@ -38,6 +38,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private var kurumKodu = 0
 
     private var turler = arrayOf("TYT", "AYT")
     private var secilenTur = ""
@@ -60,6 +61,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
         val denemeTuruSpinner = binding.denemeTurSpinner
         val denemeSave = binding.saveDeneme
         val tarihSecButton = binding.denemeTarihSecButton
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
         tarihSecButton.setOnClickListener {
 
@@ -98,17 +100,14 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
                         "tür" to secilenTur
                     )
 
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu").toString().toInt()
 
-                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
-                            .document(auth.uid.toString()).collection("Denemeler")
-                            .document(documentID).set(data).addOnSuccessListener {
-                                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-                                finish()
-                            }
 
-                    }
+                    db.collection("School").document(kurumKodu.toString()).collection("Teacher")
+                        .document(auth.uid.toString()).collection("Denemeler").document(documentID)
+                        .set(data).addOnSuccessListener {
+                            Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
 
 
                 } else {
@@ -133,6 +132,7 @@ class AddDenemeTeacherActivity : AppCompatActivity(), AdapterView.OnItemSelected
             0 -> {
                 secilenTur = "TYT"
             }
+
             1 -> {
                 secilenTur = "AYT"
             }

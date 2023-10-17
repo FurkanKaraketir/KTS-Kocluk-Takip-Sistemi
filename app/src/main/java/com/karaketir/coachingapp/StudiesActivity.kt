@@ -89,9 +89,10 @@ class StudiesActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         recyclerViewStudies = binding.recyclerViewStudies
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-        }
+
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+
+
         layoutManager = GridLayoutManager(applicationContext, 2)
         val intent = intent
         studentID = intent.getStringExtra("studentID").toString()
@@ -125,7 +126,9 @@ class StudiesActivity : AppCompatActivity() {
 
         previousRatingsButton.setOnClickListener {
             val newIntent = Intent(this, PreviousRatingsActivity::class.java)
+            newIntent.putExtra("personType", "Teacher")
             newIntent.putExtra("studentID", studentID)
+            newIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(newIntent)
         }
 
@@ -253,51 +256,46 @@ class StudiesActivity : AppCompatActivity() {
                     for (i in classList) {
                         var iCalisma = 0
                         var iCozulen = 0
-                        db.collection("User").document(auth.uid.toString()).get()
-                            .addOnSuccessListener {
-                                kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
-                                db.collection("School").document(kurumKodu.toString())
-                                    .collection("Student").document(studentID).collection("Studies")
-                                    .whereEqualTo("dersAdi", i)
-                                    .whereGreaterThan("timestamp", baslangicTarihi)
-                                    .whereLessThan("timestamp", bitisTarihi)
-                                    .addSnapshotListener { value, error ->
-                                        if (error != null) {
-                                            println(error.localizedMessage)
-                                        }
 
-                                        if (value != null) {
-                                            for (study in value) {
-                                                iCalisma += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                iCozulen += study.get("çözülenSoru").toString()
-                                                    .toInt()
-                                            }
-                                        }
-                                        toplamSoru += iCozulen
-                                        toplamSure += iCalisma
-                                        val currentClass = com.karaketir.coachingapp.models.Class(
-                                            i,
-                                            studentID,
-                                            baslangicTarihi,
-                                            bitisTarihi,
-                                            secilenZamanAraligi,
-                                            iCozulen,
-                                            iCalisma
-                                        )
-                                        val toplamSureSaat = toplamSure.toFloat() / 60
-                                        toplamSureText.text = toplamSure.toString() + "dk " + "(${
-                                            toplamSureSaat.format(2)
-                                        } Saat)"
-                                        toplamSoruText.text = "$toplamSoru Soru"
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(studentID).collection("Studies").whereEqualTo("dersAdi", i)
+                            .whereGreaterThan("timestamp", baslangicTarihi)
+                            .whereLessThan("timestamp", bitisTarihi)
+                            .addSnapshotListener { value2, error ->
+                                if (error != null) {
+                                    println(error.localizedMessage)
+                                }
 
-                                        studyList.add(currentClass)
-
-                                        recyclerViewStudiesAdapter.notifyDataSetChanged()
-
+                                if (value2 != null) {
+                                    for (study in value2) {
+                                        iCalisma += study.get("toplamCalisma").toString().toInt()
+                                        iCozulen += study.get("çözülenSoru").toString().toInt()
                                     }
+                                }
+                                toplamSoru += iCozulen
+                                toplamSure += iCalisma
+                                val currentClass = com.karaketir.coachingapp.models.Class(
+                                    i,
+                                    studentID,
+                                    baslangicTarihi,
+                                    bitisTarihi,
+                                    secilenZamanAraligi,
+                                    iCozulen,
+                                    iCalisma
+                                )
+                                val toplamSureSaat = toplamSure.toFloat() / 60
+                                toplamSureText.text = toplamSure.toString() + "dk " + "(${
+                                    toplamSureSaat.format(2)
+                                } Saat)"
+                                toplamSoruText.text = "$toplamSoru Soru"
+
+                                studyList.add(currentClass)
+
+                                recyclerViewStudiesAdapter.notifyDataSetChanged()
 
                             }
+
+
                     }
 
 
@@ -329,6 +327,9 @@ class StudiesActivity : AppCompatActivity() {
         hedefTeacherButton.setOnClickListener {
             val intent2 = Intent(this, GoalsActivity::class.java)
             intent2.putExtra("studentID", studentID)
+            intent2.putExtra("personType", "Teacher")
+            intent2.putExtra("kurumKodu", kurumKodu.toString())
+
             this.startActivity(intent2)
         }
 
@@ -338,18 +339,26 @@ class StudiesActivity : AppCompatActivity() {
         denemelerButton.setOnClickListener {
             val intent2 = Intent(this, DenemelerActivity::class.java)
             intent2.putExtra("studentID", studentID)
+            intent2.putExtra("teacher", auth.uid.toString())
+            intent2.putExtra("grade", "0")
+            intent2.putExtra("personType", "Teacher")
+            intent2.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent2)
         }
 
         gorevlerButton.setOnClickListener {
             val intent2 = Intent(this, DutiesActivity::class.java)
             intent2.putExtra("studentID", studentID)
+            intent2.putExtra("personType", "Teacher")
+            intent2.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent2)
         }
 
         dersProgramiTeacherButton.setOnClickListener {
             val newIntent = Intent(this, ProgramActivity::class.java)
             newIntent.putExtra("studentID", studentID)
+            newIntent.putExtra("personType", "Teacher")
+            newIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(newIntent)
         }
     }
@@ -361,7 +370,7 @@ class StudiesActivity : AppCompatActivity() {
 
         recyclerViewStudies.layoutManager = layoutManager
 
-        recyclerViewStudiesAdapter = ClassesAdapter(list)
+        recyclerViewStudiesAdapter = ClassesAdapter(list, kurumKodu)
 
         recyclerViewStudies.adapter = recyclerViewStudiesAdapter
         recyclerViewStudiesAdapter.notifyDataSetChanged()

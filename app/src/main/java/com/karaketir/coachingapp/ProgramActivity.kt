@@ -51,6 +51,8 @@ class ProgramActivity : AppCompatActivity() {
         val layoutManager6 = LinearLayoutManager(this)
 
         var studentID = intent.getStringExtra("studentID").toString()
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        personType = intent.getStringExtra("personType").toString()
 
 
         val recyclerPazartesi = binding.recyclerPazartesi
@@ -107,189 +109,180 @@ class ProgramActivity : AppCompatActivity() {
 
 
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-            personType = it.get("personType").toString()
 
-            if (personType == "Student") {
-                addLessonButton.visibility = View.GONE
-                studentID = auth.uid.toString()
-            } else {
-                addLessonButton.visibility = View.VISIBLE
+        if (personType == "Student") {
+            addLessonButton.visibility = View.GONE
+            studentID = auth.uid.toString()
+        } else {
+            addLessonButton.visibility = View.VISIBLE
+        }
+
+
+
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Pazartesi")
+            .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    pazartesiList.clear()
+                    for (i in value) {
+
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+
+                        pazartesiList.add(newDers)
+                        recyclerPazartesiAdapter.notifyDataSetChanged()
+                    }
+                }
+
+
+            }
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Salı").collection("Dersler")
+            .orderBy("id", Query.Direction.ASCENDING).addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    saliList.clear()
+                    for (i in value) {
+
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+
+                        saliList.add(newDers)
+                        recyclerSaliAdapter.notifyDataSetChanged()
+
+
+                    }
+                }
+
+
+            }
+
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Çarşamba")
+            .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    carsambaList.clear()
+                    for (i in value) {
+
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+
+                        carsambaList.add(newDers)
+                        recyclerCarsambaAdapter.notifyDataSetChanged()
+
+                    }
+                }
+
+
+            }
+
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Perşembe")
+            .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    persembeList.clear()
+                    for (i in value) {
+
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+
+                        persembeList.add(newDers)
+                        recyclerPersembeAdapter.notifyDataSetChanged()
+
+                    }
+                }
+
+
             }
 
 
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Cuma").collection("Dersler")
+            .orderBy("id", Query.Direction.ASCENDING).addSnapshotListener { value, _ ->
 
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Pazartesi")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
+                if (value != null) {
+                    cumaList.clear()
+                    for (i in value) {
 
-                    if (value != null) {
-                        pazartesiList.clear()
-                        for (i in value) {
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
 
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+                        cumaList.add(newDers)
+                        recyclerCumaAdapter.notifyDataSetChanged()
 
-                            pazartesiList.add(newDers)
-                            recyclerPazartesiAdapter.notifyDataSetChanged()
-                        }
                     }
-
-
-                }
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Salı")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
-
-                    if (value != null) {
-                        saliList.clear()
-                        for (i in value) {
-
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
-
-                            saliList.add(newDers)
-                            recyclerSaliAdapter.notifyDataSetChanged()
-
-
-                        }
-                    }
-
-
-                }
-
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Çarşamba")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
-
-                    if (value != null) {
-                        carsambaList.clear()
-                        for (i in value) {
-
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
-
-                            carsambaList.add(newDers)
-                            recyclerCarsambaAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-
-
-                }
-
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Perşembe")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
-
-                    if (value != null) {
-                        persembeList.clear()
-                        for (i in value) {
-
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
-
-                            persembeList.add(newDers)
-                            recyclerPersembeAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-
-
                 }
 
 
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Cuma")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
+            }
 
-                    if (value != null) {
-                        cumaList.clear()
-                        for (i in value) {
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Cumartesi")
+            .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, _ ->
 
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+                if (value != null) {
+                    cumartesiList.clear()
+                    for (i in value) {
 
-                            cumaList.add(newDers)
-                            recyclerCumaAdapter.notifyDataSetChanged()
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
 
-                        }
+                        cumartesiList.add(newDers)
+                        recyclerCumartesiAdapter.notifyDataSetChanged()
+
                     }
-
-
-                }
-
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Cumartesi")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
-
-                    if (value != null) {
-                        cumartesiList.clear()
-                        for (i in value) {
-
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
-
-                            cumartesiList.add(newDers)
-                            recyclerCumartesiAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-
-
-                }
-
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studentID).collection("DersProgrami").document("Pazar")
-                .collection("Dersler").orderBy("id", Query.Direction.ASCENDING)
-                .addSnapshotListener { value, _ ->
-
-                    if (value != null) {
-                        pazarList.clear()
-                        for (i in value) {
-
-                            val newDersAdi = i.get("dersAdi").toString()
-                            val newDersTuru = i.get("dersTuru").toString()
-                            val newDersSure = i.get("dersSure").toString().toInt()
-                            val newDersNumara = i.get("id").toString()
-                            val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
-
-                            pazarList.add(newDers)
-                            recyclerPazarAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-
-
                 }
 
 
-        }
+            }
+
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("DersProgrami").document("Pazar").collection("Dersler")
+            .orderBy("id", Query.Direction.ASCENDING).addSnapshotListener { value, _ ->
+
+                if (value != null) {
+                    pazarList.clear()
+                    for (i in value) {
+
+                        val newDersAdi = i.get("dersAdi").toString()
+                        val newDersTuru = i.get("dersTuru").toString()
+                        val newDersSure = i.get("dersSure").toString().toInt()
+                        val newDersNumara = i.get("id").toString()
+                        val newDers = Ders(newDersAdi, newDersTuru, newDersSure, newDersNumara)
+
+                        pazarList.add(newDers)
+                        recyclerPazarAdapter.notifyDataSetChanged()
+
+                    }
+                }
+
+
+            }
 
 
     }

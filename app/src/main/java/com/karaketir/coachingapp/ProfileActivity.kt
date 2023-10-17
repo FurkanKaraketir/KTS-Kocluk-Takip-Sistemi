@@ -64,7 +64,11 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
     private lateinit var binding: ActivityProfileBinding
     private lateinit var storage: FirebaseStorage
     private lateinit var secilenGorsel: ImageView
+    private var kurumKodu = 0
     private lateinit var spaceRef: StorageReference
+    private var name = ""
+    private var personType = ""
+    private var grade = 0
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +78,10 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
 
         auth = Firebase.auth
         db = Firebase.firestore
+
+        name = intent.getStringExtra("name").toString()
+        grade = intent.getStringExtra("grade").toString().toInt()
+        personType = intent.getStringExtra("personType").toString()
 
         secilenGorsel = binding.secilenGorsel
 
@@ -88,6 +96,7 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
             secilenGorsel.visibility = View.GONE
         }
 
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
         val developerButton = binding.developerButtonProfile
 
@@ -99,8 +108,8 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
 
         storage = Firebase.storage
         db.collection("VersionCode").document("giphyKey").get().addOnSuccessListener {
-                Giphy.configure(this, it.get("key").toString())
-            }
+            Giphy.configure(this, it.get("key").toString())
+        }
         val settings = GPHSettings(GridType.waterfall, GPHTheme.Dark)
         settings.mediaTypeConfig = arrayOf(GPHContentType.gif)
 
@@ -119,18 +128,17 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
         val addPhoto = binding.addPhoto
         val gradeChangeEditText = binding.changeGradeEditText
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            nameText.text = "İsim: " + it.get("nameAndSurname").toString()
-            if (it.get("personType").toString() == "Student") {
-                gradeText.visibility = View.VISIBLE
-                gradeChangeEditText.visibility = View.VISIBLE
-                gradeText.text = "Sınıf: " + it.get("grade").toString()
-            } else {
-                gradeText.visibility = View.GONE
-                gradeChangeEditText.visibility = View.GONE
-            }
-
+        nameText.text = "İsim: $name"
+        if (personType == "Student") {
+            gradeText.visibility = View.VISIBLE
+            gradeChangeEditText.visibility = View.VISIBLE
+            gradeText.text = "Sınıf: $grade"
+        } else {
+            gradeText.visibility = View.GONE
+            gradeChangeEditText.visibility = View.GONE
         }
+
+
 
         saveButton.setOnClickListener {
 
@@ -138,33 +146,30 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
             alertDialog.setTitle("Kaydet")
             alertDialog.setMessage("Değişiklikleri Kaydetmek İstediğinize Emin misiniz?")
             alertDialog.setPositiveButton("Kaydet") { _, _ ->
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu").toString()
-                    val personType = it.get("personType").toString()
-                    if (nameChangeEditText.text.toString().isNotEmpty()) {
+
+                if (nameChangeEditText.text.toString().isNotEmpty()) {
 
 
-                        db.collection("User").document(auth.uid.toString())
-                            .update("nameAndSurname", nameChangeEditText.text.toString())
+                    db.collection("User").document(auth.uid.toString())
+                        .update("nameAndSurname", nameChangeEditText.text.toString())
 
-                        db.collection("School").document(kurumKodu).collection(personType)
-                            .document(auth.uid.toString())
-                            .update("nameAndSurname", nameChangeEditText.text.toString())
+                    db.collection("School").document(kurumKodu.toString()).collection(personType)
+                        .document(auth.uid.toString())
+                        .update("nameAndSurname", nameChangeEditText.text.toString())
 
-
-                    }
-                    if (gradeChangeEditText.text.toString().isNotEmpty()) {
-                        db.collection("User").document(auth.uid.toString())
-                            .update("grade", gradeChangeEditText.text.toString().toInt())
-
-                        db.collection("School").document(kurumKodu).collection(personType)
-                            .document(auth.uid.toString())
-                            .update("grade", gradeChangeEditText.text.toString().toInt())
-                    }
-                    Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-                    finish()
 
                 }
+                if (gradeChangeEditText.text.toString().isNotEmpty()) {
+                    db.collection("User").document(auth.uid.toString())
+                        .update("grade", gradeChangeEditText.text.toString().toInt())
+
+                    db.collection("School").document(kurumKodu.toString()).collection(personType)
+                        .document(auth.uid.toString())
+                        .update("grade", gradeChangeEditText.text.toString().toInt())
+                }
+                Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
+                finish()
+
 
             }
             alertDialog.setNegativeButton("İptal") { _, _ ->
@@ -179,24 +184,18 @@ class ProfileActivity : AppCompatActivity(), GiphyDialogFragment.GifSelectionLis
             alertDialog.setTitle("Hesabı Sil")
             alertDialog.setMessage("Hesabınızı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
             alertDialog.setPositiveButton("Sil") { _, _ ->
-                db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                    val kurumKodu = it.get("kurumKodu").toString()
-                    val personType = it.get("personType").toString()
 
-                    db.collection("School").document(kurumKodu).collection(personType)
-                        .document(auth.uid.toString()).delete().addOnSuccessListener {
-                            db.collection("User").document(auth.uid.toString()).delete()
-                                .addOnSuccessListener {
-                                    Firebase.auth.currentUser!!.delete().addOnSuccessListener {
-                                        Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT)
-                                            .show()
-                                        finish()
-                                    }
+                db.collection("School").document(kurumKodu.toString()).collection(personType)
+                    .document(auth.uid.toString()).delete().addOnSuccessListener {
+                        db.collection("User").document(auth.uid.toString()).delete()
+                            .addOnSuccessListener {
+                                Firebase.auth.currentUser!!.delete().addOnSuccessListener {
+                                    Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT)
+                                        .show()
+                                    finish()
                                 }
-                        }
-
-
-                }
+                            }
+                    }
 
 
             }

@@ -44,6 +44,7 @@ class EnterDutyActivity : AppCompatActivity() {
     private var dersAdlari = ArrayList<String>()
     private var konuAdlari = ArrayList<String>()
     private var secilenDers = ""
+    private var kurumKodu = 0
     private var secilenTur = ""
     private var secilenKonu = ""
     private var turler = arrayOf("TYT", "AYT")
@@ -58,6 +59,7 @@ class EnterDutyActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
 
         db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
             .addSnapshotListener { dersAdlariDocument, _ ->
@@ -225,107 +227,101 @@ class EnterDutyActivity : AppCompatActivity() {
 
                     )
 
-                    var kurumKodu: Int
                     var sended = false
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        kurumKodu = it.get("kurumKodu").toString().toInt()
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(studentID!!).collection("Duties")
-                            .whereEqualTo("dersAdi", secilenDers).whereEqualTo("tür", secilenTur)
-                            .whereEqualTo("konuAdi", secilenKonu).addSnapshotListener { value, _ ->
-                                if (!stopper) {
-                                    if (value != null) {
 
-                                        if (!value.isEmpty) {
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(studentID!!).collection("Duties")
+                        .whereEqualTo("dersAdi", secilenDers).whereEqualTo("tür", secilenTur)
+                        .whereEqualTo("konuAdi", secilenKonu).addSnapshotListener { value, _ ->
+                            if (!stopper) {
+                                if (value != null) {
 
-                                            if (!stopper) {
-                                                for (document in value) {
+                                    if (!value.isEmpty) {
 
-                                                    val dutyUpdate = hashMapOf(
+                                        if (!stopper) {
+                                            for (document in value) {
 
-                                                        "eklenmeTarihi" to Timestamp.now(),
-                                                        "toplamCalisma" to gorevToplamCalisma.text.toString()
-                                                            .toInt(),
-                                                        "çözülenSoru" to gorevCozulenSoru.text.toString()
-                                                            .toInt(),
-                                                        "bitisZamani" to c.time,
-                                                        "tamamlandi" to false
+                                                val dutyUpdate = hashMapOf(
 
-                                                    )
+                                                    "eklenmeTarihi" to Timestamp.now(),
+                                                    "toplamCalisma" to gorevToplamCalisma.text.toString()
+                                                        .toInt(),
+                                                    "çözülenSoru" to gorevCozulenSoru.text.toString()
+                                                        .toInt(),
+                                                    "bitisZamani" to c.time,
+                                                    "tamamlandi" to false
 
-                                                    if (!stopper) {
-                                                        stopper = true
+                                                )
 
-                                                        db.collection("School")
-                                                            .document(kurumKodu.toString())
-                                                            .collection("Student")
-                                                            .document(studentID)
-                                                            .collection("Duties")
-                                                            .document(document.id)
-                                                            .update(dutyUpdate as Map<String, Any>)
-                                                            .addOnSuccessListener {
+                                                if (!stopper) {
+                                                    stopper = true
 
-                                                                if (!sended) {
-                                                                    val notificationsSender =
-                                                                        FcmNotificationsSenderService(
-                                                                            "/topics/$studentID",
-                                                                            "Yeni Görev",
-                                                                            "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
-                                                                            this
-                                                                        )
-                                                                    notificationsSender.sendNotifications()
+                                                    db.collection("School")
+                                                        .document(kurumKodu.toString())
+                                                        .collection("Student").document(studentID)
+                                                        .collection("Duties").document(document.id)
+                                                        .update(dutyUpdate as Map<String, Any>)
+                                                        .addOnSuccessListener {
 
-                                                                    Toast.makeText(
-                                                                        this,
-                                                                        "İşlem Başarılı",
-                                                                        Toast.LENGTH_SHORT
-                                                                    ).show()
-                                                                    sended = true
-                                                                }
+                                                            if (!sended) {
+                                                                val notificationsSender =
+                                                                    FcmNotificationsSenderService(
+                                                                        "/topics/$studentID",
+                                                                        "Yeni Görev",
+                                                                        "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                                        this
+                                                                    )
+                                                                notificationsSender.sendNotifications()
 
-                                                                finish()
+                                                                Toast.makeText(
+                                                                    this,
+                                                                    "İşlem Başarılı",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                                sended = true
                                                             }
 
-                                                    }
-                                                }
-                                            }
-
-
-                                        } else {
-                                            if (!stopper) {
-                                                db.collection("School")
-                                                    .document(kurumKodu.toString())
-                                                    .collection("Student").document(studentID)
-                                                    .collection("Duties").document(documentID)
-                                                    .set(duty).addOnSuccessListener {
-                                                        if (!sended) {
-                                                            val notificationsSender =
-                                                                FcmNotificationsSenderService(
-                                                                    "/topics/$studentID",
-                                                                    "Yeni Görev",
-                                                                    "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
-                                                                    this
-                                                                )
-                                                            stopper = true
-                                                            notificationsSender.sendNotifications()
-
-                                                            Toast.makeText(
-                                                                this,
-                                                                "İşlem Başarılı",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                            sended = true
+                                                            finish()
                                                         }
 
-                                                        finish()
-                                                    }
+                                                }
                                             }
                                         }
 
+
+                                    } else {
+                                        if (!stopper) {
+                                            db.collection("School").document(kurumKodu.toString())
+                                                .collection("Student").document(studentID)
+                                                .collection("Duties").document(documentID).set(duty)
+                                                .addOnSuccessListener {
+                                                    if (!sended) {
+                                                        val notificationsSender =
+                                                            FcmNotificationsSenderService(
+                                                                "/topics/$studentID",
+                                                                "Yeni Görev",
+                                                                "Yeni Göreviniz Var \n$secilenTur $secilenDers $secilenKonu",
+                                                                this
+                                                            )
+                                                        stopper = true
+                                                        notificationsSender.sendNotifications()
+
+                                                        Toast.makeText(
+                                                            this,
+                                                            "İşlem Başarılı",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        sended = true
+                                                    }
+
+                                                    finish()
+                                                }
+                                        }
                                     }
+
                                 }
                             }
-                    }
+                        }
 
 
                 } else {

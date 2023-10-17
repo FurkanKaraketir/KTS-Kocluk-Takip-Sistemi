@@ -39,12 +39,12 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
     }
 
 
-
     private lateinit var binding: ActivityClassAllStudiesGraphBinding
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
+    private var kurumKodu = 0
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private var zamanAraligi = ""
@@ -59,6 +59,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         db = Firebase.firestore
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
         zamanAraligi = intent.getStringExtra("secilenZamanAraligi").toString()
         val studentID = intent.getStringExtra("studentID").toString()
         dersAdi = intent.getStringExtra("dersAdi").toString()
@@ -78,6 +79,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Dün" -> {
                 bitisTarihi = cal.time
 
@@ -85,6 +87,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Bu Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 baslangicTarihi = cal.time
@@ -93,6 +96,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 bitisTarihi = cal.time
             }
+
             "Geçen Hafta" -> {
                 cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                 bitisTarihi = cal.time
@@ -100,6 +104,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.DAY_OF_YEAR, -7)
                 baslangicTarihi = cal.time
             }
+
             "Bu Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -115,6 +120,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 cal.add(Calendar.MONTH, 1)
                 bitisTarihi = cal.time
             }
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -131,6 +137,7 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                 baslangicTarihi = cal.time
@@ -156,41 +163,38 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
 
 
                     }
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu").toString().toInt()
 
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(studentID).collection("Studies")
-                            .whereEqualTo("dersAdi", dersAdi).whereEqualTo("tür", secilenTur)
-                            .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
-                            .addSnapshotListener { value, error ->
 
-                                if (error != null) {
-                                    println(error.localizedMessage)
-                                }
+                    db.collection("School").document(kurumKodu.toString()).collection("Student")
+                        .document(studentID).collection("Studies").whereEqualTo("dersAdi", dersAdi)
+                        .whereEqualTo("tür", secilenTur)
+                        .whereGreaterThan("timestamp", baslangicTarihi)
+                        .whereLessThan("timestamp", bitisTarihi)
+                        .addSnapshotListener { value, error ->
 
-                                if (value != null) {
+                            if (error != null) {
+                                println(error.localizedMessage)
+                            }
 
-                                    for (i in value) {
-                                        val konuAdi = i.get("konuAdi").toString()
-                                        val currentValue = konuHash[konuAdi]
+                            if (value != null) {
 
-                                        if (i.get("toplamCalisma") != null && currentValue != null) {
-                                            konuHash[konuAdi] = i.get("toplamCalisma").toString()
-                                                .toInt() + currentValue
-                                        }
+                                for (i in value) {
+                                    val konuAdi = i.get("konuAdi").toString()
+                                    val currentValue = konuHash[konuAdi]
 
+                                    if (i.get("toplamCalisma") != null && currentValue != null) {
+                                        konuHash[konuAdi] =
+                                            i.get("toplamCalisma").toString().toInt() + currentValue
                                     }
 
-
                                 }
-                                drawGraph(konuHash)
 
 
                             }
+                            drawGraph(konuHash)
 
-                    }
+
+                        }
 
 
                 }

@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val workbook = XSSFWorkbook()
     private var studyList = ArrayList<Study>()
-    private var currentKurumKodu = 0
     private var secilenGrade = "Bütün Sınıflar"
     private var secilenZaman = "Bugün"
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
@@ -79,6 +78,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var filteredStudyList: ArrayList<Study>
 
     private var studentList = ArrayList<Student>()
+    private var grade = 0
+    private var teacher = ""
+    private var personType = ""
+    private var name = ""
 
 
     public override fun onStart() {
@@ -161,6 +164,8 @@ class MainActivity : AppCompatActivity() {
 
         dersProgramiButton.setOnClickListener {
             val newIntent = Intent(this, ProgramActivity::class.java)
+            newIntent.putExtra("personType", personType)
+            newIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(newIntent)
         }
 
@@ -182,14 +187,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        var grade = 0
         okulLogo.setOnClickListener {
             openLink("https://www.instagram.com/rteprojeihl/", this)
         }
 
         nameAndSurnameTextView.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+            val newIntent = Intent(this, ProfileActivity::class.java)
+            newIntent.putExtra("personType", personType)
+            newIntent.putExtra("name", name)
+            newIntent.putExtra("grade", grade.toString())
+            newIntent.putExtra("kurumKodu", kurumKodu.toString())
+            startActivity(newIntent)
         }
 
         recyclerViewPreviousStudies = binding.previousStudies
@@ -197,7 +205,9 @@ class MainActivity : AppCompatActivity() {
 
         hedeflerStudentButton.setOnClickListener {
             val intent2 = Intent(this, GoalsActivity::class.java)
+            intent2.putExtra("personType", personType)
             intent2.putExtra("studentID", auth.currentUser?.uid.toString())
+            intent2.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent2)
         }
 
@@ -259,15 +269,16 @@ class MainActivity : AppCompatActivity() {
 
         try {
             db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                nameAndSurnameTextView.text = "Merhaba: " + it.get("nameAndSurname").toString()
-                try {
-                    kurumKodu = it.get("kurumKodu")?.toString()?.toInt()!!
+                name = it.get("nameAndSurname").toString()
+                nameAndSurnameTextView.text = "Merhaba: $name"
+
+                kurumKodu = try {
+                    it.get("kurumKodu")?.toString()?.toInt()!!
                 } catch (eP: Exception) {
-                    println(eP.localizedMessage)
+                    763455
                 }
 
-                currentKurumKodu = kurumKodu
-                FirebaseMessaging.getInstance().subscribeToTopic(currentKurumKodu.toString())
+                FirebaseMessaging.getInstance().subscribeToTopic(kurumKodu.toString())
 
 
                 TransitionManager.beginDelayedTransition(transitionsContainer)
@@ -277,8 +288,11 @@ class MainActivity : AppCompatActivity() {
 
                 if (it.get("personType").toString() == "Student") {
 
+                    personType = "Student"
+
                     var cal = Calendar.getInstance()
                     grade = it.get("grade").toString().toInt()
+                    teacher = it.get("teacher").toString()
                     dersProgramiButton.visibility = View.VISIBLE
                     addStudyButton.visibility = View.VISIBLE
                     kocOgretmenTextView.visibility = View.VISIBLE
@@ -369,7 +383,8 @@ class MainActivity : AppCompatActivity() {
 
 
                 } else if (it.get("personType").toString() == "Teacher") {
-
+                    teacher = ""
+                    personType = "Teacher"
                     messageButton.visibility = View.VISIBLE
                     dersProgramiButton.visibility = View.GONE
                     studySearchEditText.visibility = View.GONE
@@ -406,7 +421,7 @@ class MainActivity : AppCompatActivity() {
                             sheet,
                             secilenZaman,
                             secilenGrade,
-                            currentKurumKodu.toString(),
+                            kurumKodu.toString(),
                             auth,
                             db,
                             this,
@@ -541,37 +556,48 @@ class MainActivity : AppCompatActivity() {
 
         previousRatingsButton.setOnClickListener {
             val intent = Intent(this, PreviousRatingsActivity::class.java)
+            intent.putExtra("personType", personType)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
         studentDenemeButton.setOnClickListener {
             val intent = Intent(this, DenemelerActivity::class.java)
             intent.putExtra("studentID", auth.uid.toString())
+            intent.putExtra("personType", personType)
+            intent.putExtra("grade", grade.toString())
+            intent.putExtra("teacher", teacher)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
         teacherDenemeButton.setOnClickListener {
             val intent = Intent(this, DenemelerTeacherActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
 
         istatistikButton.setOnClickListener {
             val intent = Intent(this, StatsActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
         allStudentsBtn.setOnClickListener {
             val intent = Intent(this, AllStudentsActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
         addStudyButton.setOnClickListener {
             val intent = Intent(this, ClassesActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
         topStudentsButton.setOnClickListener {
             val intent = Intent(this, TopStudentsActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(intent)
         }
 
@@ -723,7 +749,7 @@ class MainActivity : AppCompatActivity() {
             signOutAlertDialog.setPositiveButton("Çıkış") { _, _ ->
 
                 FirebaseMessaging.getInstance().unsubscribeFromTopic(auth.uid.toString())
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(currentKurumKodu.toString())
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(kurumKodu.toString())
                 FirebaseMessaging.getInstance().unsubscribeFromTopic(kocID)
 
                 signOut()
@@ -737,6 +763,8 @@ class MainActivity : AppCompatActivity() {
 
         gorevButton.setOnClickListener {
             val intent = Intent(this, DutiesActivity::class.java)
+            intent.putExtra("kurumKodu", kurumKodu.toString())
+            intent.putExtra("personType", personType)
             intent.putExtra("studentID", auth.uid)
             this.startActivity(intent)
         }
@@ -752,6 +780,7 @@ class MainActivity : AppCompatActivity() {
 
         messageButton.setOnClickListener {
             val newIntent = Intent(this, MessageActivity::class.java)
+            newIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(newIntent)
         }
 
@@ -763,7 +792,8 @@ class MainActivity : AppCompatActivity() {
 
         recyclerViewMyStudents.layoutManager = layoutManager
 
-        recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(list, secilenZaman)
+        recyclerViewMyStudentsRecyclerAdapter =
+            StudentsRecyclerAdapter(list, secilenZaman, kurumKodu)
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 
@@ -773,7 +803,8 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = GridLayoutManager(applicationContext, 2)
 
         recyclerViewPreviousStudies.layoutManager = layoutManager
-        recyclerViewPreviousStudiesAdapter = StudiesRecyclerAdapter(list, "Bu Hafta")
+        recyclerViewPreviousStudiesAdapter =
+            StudiesRecyclerAdapter(list, "Bu Hafta", kurumKodu, personType)
         recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
 
     }

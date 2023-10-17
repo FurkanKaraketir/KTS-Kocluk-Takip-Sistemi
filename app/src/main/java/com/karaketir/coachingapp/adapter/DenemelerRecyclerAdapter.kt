@@ -20,7 +20,9 @@ import com.karaketir.coachingapp.models.Deneme
 import java.text.SimpleDateFormat
 
 class DenemelerRecyclerAdapter(
-    private val denemeList: List<Deneme>, private val secilenZamanAraligi: String
+    private val denemeList: List<Deneme>,
+    private val secilenZamanAraligi: String,
+    private val kurumKodu: Int
 ) : RecyclerView.Adapter<DenemelerRecyclerAdapter.DenemeHolder>() {
 
     private lateinit var db: FirebaseFirestore
@@ -59,39 +61,34 @@ class DenemelerRecyclerAdapter(
                     val intent =
                         Intent(holder.itemView.context, OneDenemeViewerActivity::class.java)
                     intent.putExtra("denemeID", myItem.denemeID)
+                    intent.putExtra("kurumKodu", kurumKodu.toString())
                     intent.putExtra("secilenZamanAraligi", secilenZamanAraligi)
                     intent.putExtra("denemeStudentID", myItem.denemeStudentID)
                     intent.putExtra("denemeTür", myItem.denemeTur)
                     holder.itemView.context.startActivity(intent)
                 }
                 binding.denemeDeleteStudentButton.setOnClickListener {
-                    db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-                        val kurumKodu = it.get("kurumKodu")?.toString()?.toInt()
 
-                        val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
-                        deleteAlertDialog.setTitle("Deneme Sil")
-                        deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
-                        deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
+                    val deleteAlertDialog = AlertDialog.Builder(holder.itemView.context)
+                    deleteAlertDialog.setTitle("Deneme Sil")
+                    deleteAlertDialog.setMessage("Bu Denemeyi Silmek İstediğinize Emin misiniz?")
+                    deleteAlertDialog.setPositiveButton("Sil") { _, _ ->
 
-                            db.collection("School").document(kurumKodu.toString())
-                                .collection("Student").document(myItem.denemeStudentID)
-                                .collection("Denemeler").document(myItem.denemeID).delete()
-                                .addOnSuccessListener {
-                                    Toast.makeText(
-                                        holder.itemView.context,
-                                        "İşlem Başarılı!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                        }
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(myItem.denemeStudentID).collection("Denemeler")
+                            .document(myItem.denemeID).delete().addOnSuccessListener {
+                                Toast.makeText(
+                                    holder.itemView.context, "İşlem Başarılı!", Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    }
 
-                        deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
-
-                        }
-                        deleteAlertDialog.show()
-
+                    deleteAlertDialog.setNegativeButton("İptal") { _, _ ->
 
                     }
+                    deleteAlertDialog.show()
+
+
                 }
             }
 

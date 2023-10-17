@@ -47,6 +47,9 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var dutyAddButton: FloatingActionButton
 
     private lateinit var binding: ActivityDutiesBinding
+    private var kurumKodu = 0
+    private var studentID = ""
+    private var personType = ""
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +59,11 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         auth = Firebase.auth
         db = Firebase.firestore
+        studentID = intent.getStringExtra("studentID").toString()
+
+        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        personType = intent.getStringExtra("personType").toString()
+
         val dutiesRecyclerView = binding.dutiesRecyclerView
         val gorevTuruSpinner = binding.gorevSpinner
         dutyAddButton = binding.addDutyButton
@@ -66,12 +74,10 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         gorevTuruSpinner.adapter = dutyAdapter
         gorevTuruSpinner.onItemSelectedListener = this
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            if (it.get("personType").toString() == "Teacher") {
-                dutyAddButton.visibility = View.VISIBLE
-            } else {
-                dutyAddButton.visibility = View.GONE
-            }
+        if (personType == "Teacher") {
+            dutyAddButton.visibility = View.VISIBLE
+        } else {
+            dutyAddButton.visibility = View.GONE
         }
 
 
@@ -79,7 +85,7 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         dutiesRecyclerView.layoutManager = layoutManager
 
-        dutiesRecyclerAdapter = DutiesRecyclerAdapter(dutyList)
+        dutiesRecyclerAdapter = DutiesRecyclerAdapter(dutyList, kurumKodu, personType = "fdf")
 
         dutiesRecyclerView.adapter = dutiesRecyclerAdapter
 
@@ -90,138 +96,133 @@ class DutiesActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
 
-        val studentID = intent.getStringExtra("studentID")
-
-        var kurumKodu: Int
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
-            kurumKodu = it.get("kurumKodu").toString().toInt()
-
-            when (p2) {
-                0 -> {
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentID!!).collection("Duties")
-                        .whereEqualTo("tamamlandi", false)
-                        .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
-                        .addSnapshotListener { value, e ->
-                            if (e != null) {
-                                println(e.localizedMessage)
-                            }
-                            if (value != null) {
-                                dutyList.clear()
-                                for (document in value) {
-                                    val konuAdi = document.get("konuAdi").toString()
-                                    val tur = document.get("tür").toString()
-                                    val dersAdi = document.get("dersAdi").toString()
-                                    val toplamCalisma = document.get("toplamCalisma").toString()
-                                    val cozulenSoru = document.get("çözülenSoru").toString()
-                                    val bitisZamani = document.get("bitisZamani") as Timestamp
-                                    val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                    val currentDuty = Duty(
-                                        konuAdi,
-                                        toplamCalisma,
-                                        studentID,
-                                        dersAdi,
-                                        tur,
-                                        cozulenSoru,
-                                        bitisZamani,
-                                        document.id,
-                                        dutyTamamlandi
-                                    )
-                                    dutyList.add(currentDuty)
-                                }
-                                dutiesRecyclerAdapter.notifyDataSetChanged()
-
-
-                            }
+        when (p2) {
+            0 -> {
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Duties").whereEqualTo("tamamlandi", false)
+                    .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
+                    .addSnapshotListener { value, e ->
+                        if (e != null) {
+                            println(e.localizedMessage)
                         }
-                }
-                1 -> {
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentID!!).collection("Duties").whereEqualTo("tamamlandi", true)
-                        .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
-                        .addSnapshotListener { value, e ->
-                            if (e != null) {
-                                println(e.localizedMessage)
+                        if (value != null) {
+                            dutyList.clear()
+                            for (document in value) {
+                                val konuAdi = document.get("konuAdi").toString()
+                                val tur = document.get("tür").toString()
+                                val dersAdi = document.get("dersAdi").toString()
+                                val toplamCalisma = document.get("toplamCalisma").toString()
+                                val cozulenSoru = document.get("çözülenSoru").toString()
+                                val bitisZamani = document.get("bitisZamani") as Timestamp
+                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
+
+                                val currentDuty = Duty(
+                                    konuAdi,
+                                    toplamCalisma,
+                                    studentID,
+                                    dersAdi,
+                                    tur,
+                                    cozulenSoru,
+                                    bitisZamani,
+                                    document.id,
+                                    dutyTamamlandi
+                                )
+                                dutyList.add(currentDuty)
                             }
-                            if (value != null) {
-                                dutyList.clear()
-                                for (document in value) {
-                                    val konuAdi = document.get("konuAdi").toString()
-                                    val tur = document.get("tür").toString()
-                                    val dersAdi = document.get("dersAdi").toString()
-                                    val toplamCalisma = document.get("toplamCalisma").toString()
-                                    val cozulenSoru = document.get("çözülenSoru").toString()
-                                    val bitisZamani = document.get("bitisZamani") as Timestamp
-                                    val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                    val currentDuty = Duty(
-                                        konuAdi,
-                                        toplamCalisma,
-                                        studentID,
-                                        dersAdi,
-                                        tur,
-                                        cozulenSoru,
-                                        bitisZamani,
-                                        document.id,
-                                        dutyTamamlandi
-                                    )
-                                    dutyList.add(currentDuty)
-                                }
-                                dutiesRecyclerAdapter.notifyDataSetChanged()
+                            dutiesRecyclerAdapter.notifyDataSetChanged()
 
 
-                            }
                         }
-                }
-                2 -> {
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentID!!).collection("Duties")
-                        .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
-                        .addSnapshotListener { value, e ->
-                            if (e != null) {
-                                println(e.localizedMessage)
-                            }
-                            if (value != null) {
-                                dutyList.clear()
-                                for (document in value) {
-                                    val konuAdi = document.get("konuAdi").toString()
-                                    val tur = document.get("tür").toString()
-                                    val dersAdi = document.get("dersAdi").toString()
-                                    val toplamCalisma = document.get("toplamCalisma").toString()
-                                    val cozulenSoru = document.get("çözülenSoru").toString()
-                                    val bitisZamani = document.get("bitisZamani") as Timestamp
-                                    val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                    val currentDuty = Duty(
-                                        konuAdi,
-                                        toplamCalisma,
-                                        studentID,
-                                        dersAdi,
-                                        tur,
-                                        cozulenSoru,
-                                        bitisZamani,
-                                        document.id,
-                                        dutyTamamlandi
-                                    )
-                                    dutyList.add(currentDuty)
-                                }
-                                dutiesRecyclerAdapter.notifyDataSetChanged()
-
-
-                            }
-                        }
-                }
-
+                    }
             }
 
+            1 -> {
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Duties").whereEqualTo("tamamlandi", true)
+                    .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
+                    .addSnapshotListener { value, e ->
+                        if (e != null) {
+                            println(e.localizedMessage)
+                        }
+                        if (value != null) {
+                            dutyList.clear()
+                            for (document in value) {
+                                val konuAdi = document.get("konuAdi").toString()
+                                val tur = document.get("tür").toString()
+                                val dersAdi = document.get("dersAdi").toString()
+                                val toplamCalisma = document.get("toplamCalisma").toString()
+                                val cozulenSoru = document.get("çözülenSoru").toString()
+                                val bitisZamani = document.get("bitisZamani") as Timestamp
+                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
+
+                                val currentDuty = Duty(
+                                    konuAdi,
+                                    toplamCalisma,
+                                    studentID,
+                                    dersAdi,
+                                    tur,
+                                    cozulenSoru,
+                                    bitisZamani,
+                                    document.id,
+                                    dutyTamamlandi
+                                )
+                                dutyList.add(currentDuty)
+                            }
+                            dutiesRecyclerAdapter.notifyDataSetChanged()
+
+
+                        }
+                    }
+            }
+
+            2 -> {
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Duties")
+                    .orderBy("eklenmeTarihi", Query.Direction.DESCENDING)
+                    .addSnapshotListener { value, e ->
+                        if (e != null) {
+                            println(e.localizedMessage)
+                        }
+                        if (value != null) {
+                            dutyList.clear()
+                            for (document in value) {
+                                val konuAdi = document.get("konuAdi").toString()
+                                val tur = document.get("tür").toString()
+                                val dersAdi = document.get("dersAdi").toString()
+                                val toplamCalisma = document.get("toplamCalisma").toString()
+                                val cozulenSoru = document.get("çözülenSoru").toString()
+                                val bitisZamani = document.get("bitisZamani") as Timestamp
+                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
+
+                                val currentDuty = Duty(
+                                    konuAdi,
+                                    toplamCalisma,
+                                    studentID,
+                                    dersAdi,
+                                    tur,
+                                    cozulenSoru,
+                                    bitisZamani,
+                                    document.id,
+                                    dutyTamamlandi
+                                )
+                                dutyList.add(currentDuty)
+                            }
+                            dutiesRecyclerAdapter.notifyDataSetChanged()
+
+
+                        }
+                    }
+            }
 
         }
+
+
         dutyAddButton = binding.addDutyButton
 
         dutyAddButton.setOnClickListener {
             val sendIntent = Intent(this, EnterDutyActivity::class.java)
             sendIntent.putExtra("studentID", studentID)
+            sendIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(sendIntent)
         }
 
