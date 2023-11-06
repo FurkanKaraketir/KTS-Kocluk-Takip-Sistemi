@@ -12,6 +12,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.graphics.Color
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -82,6 +84,8 @@ class MainActivity : AppCompatActivity() {
     private var teacher = ""
     private var personType = ""
     private var name = ""
+    private lateinit var textYKSsayac: TextView
+    private var textColor: Int = 0
 
 
     public override fun onStart() {
@@ -142,6 +146,9 @@ class MainActivity : AppCompatActivity() {
         val messageButton = binding.sendMessageButton
         val dersProgramiButton = binding.dersProgramiButton
         val noReportButton = binding.noReportButton
+        textYKSsayac = binding.YKSsayac
+        textColor = textYKSsayac.currentTextColor
+
 
         var kocID = ""
 
@@ -841,8 +848,18 @@ class MainActivity : AppCompatActivity() {
                     val minutes = diff / (1000 * 60) % 60
                     val seconds = (diff / 1000) % 60
 
-                    binding.YKSsayac.text =
+
+                    textYKSsayac.text =
                         "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+
+                    //when days are less than 100, make text red every 2 seconds
+                    if (days < 100) {
+                        if ((seconds.toFloat() % 2) == 0f) {
+                            textYKSsayac.setTextColor(Color.RED)
+                        } else {
+                            textYKSsayac.setTextColor(textColor)
+                        }
+                    }
 
 
                 }
@@ -867,7 +884,7 @@ class MainActivity : AppCompatActivity() {
                     val minutes = diff / (1000 * 60) % 60
                     val seconds = (diff / 1000) % 60
 
-                    binding.YKSsayac.text =
+                    textYKSsayac.text =
                         "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
 
 
@@ -892,7 +909,7 @@ class MainActivity : AppCompatActivity() {
                     val minutes = diff / (1000 * 60) % 60
                     val seconds = (diff / 1000) % 60
 
-                    binding.YKSsayac.text =
+                    textYKSsayac.text =
                         "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
 
 
@@ -917,7 +934,7 @@ class MainActivity : AppCompatActivity() {
                     val minutes = diff / (1000 * 60) % 60
                     val seconds = (diff / 1000) % 60
 
-                    binding.YKSsayac.text =
+                    textYKSsayac.text =
                         "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
 
 
