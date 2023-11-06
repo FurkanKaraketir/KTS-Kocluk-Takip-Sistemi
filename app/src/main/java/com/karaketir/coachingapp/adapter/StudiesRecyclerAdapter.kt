@@ -49,7 +49,7 @@ open class StudiesRecyclerAdapter(
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
                 val date = myItem.timestamp.toDate()
-                val sdf = SimpleDateFormat("EEEE")
+                val sdf = SimpleDateFormat("d MMMM EEEE")
                 val dayOfTheWeek = sdf.format(date)
 
                 binding.studyGridRowDayTextView.text = dayOfTheWeek
