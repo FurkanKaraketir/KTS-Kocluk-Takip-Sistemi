@@ -14,6 +14,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.graphics.Color
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private var kurumKodu = 763455
+    private lateinit var imageHalit: ImageView
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerViewPreviousStudies: RecyclerView
     private lateinit var recyclerViewMyStudents: RecyclerView
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     private var studentList = ArrayList<Student>()
     private var grade = 0
+    private var counter = 0
     private var teacher = ""
     private var personType = ""
     private var name = ""
@@ -141,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         val okulLogo = binding.logoLayout
         val updateLayout = binding.updateLayout
         val updateButton = binding.updateButton
-        val imageHalit = binding.imageHalit
+        imageHalit = binding.imageHalit
         val excelButton = binding.excelButton
         val messageButton = binding.sendMessageButton
         val dersProgramiButton = binding.dersProgramiButton
@@ -849,9 +852,6 @@ class MainActivity : AppCompatActivity() {
                     val seconds = (diff / 1000) % 60
 
 
-                    textYKSsayac.text =
-                        "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
-
                     //when days are less than 100, make text red every 2 seconds
                     if (days < 100) {
                         if ((seconds.toFloat() % 2) == 0f) {
@@ -859,6 +859,29 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             textYKSsayac.setTextColor(textColor)
                         }
+                    }
+
+                    if (personType != "Student") {
+                        if (currentDate[Calendar.MONTH] == 10 && currentDate[Calendar.DAY_OF_MONTH] == 24) {
+                            textYKSsayac.text = "Öğretmenler Gününüz Kutlu Olsun"
+                            textYKSsayac.setShadowLayer(0f, 0f, 0f, Color.WHITE)
+                            textYKSsayac.setTextColor(Color.WHITE)
+
+                            if (counter < 5) {
+                                imageHalit.glide(
+                                    "https://cdn1.ntv.com.tr/gorsel/z1Y3nXAqKU-gnqq7dDkyrw.jpg?width=1000&mode=both&scale=both&v=1700140976776",
+                                    placeHolderYap(applicationContext)
+                                )
+                                counter += 1
+                            }
+                        } else {
+                            textYKSsayac.text =
+                                "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
+                        }
+
+                    } else {
+                        textYKSsayac.text =
+                            "YKS'ye Son:\n $days Gün $hours Saat $minutes Dk $seconds Sn"
                     }
 
 
