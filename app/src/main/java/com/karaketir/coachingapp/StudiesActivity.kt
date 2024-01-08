@@ -16,6 +16,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -76,6 +77,21 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
+
+    private val zamanAraliklari = arrayOf(
+        "Bugün",
+        "Dün",
+        "Bu Hafta",
+        "Geçen Hafta",
+        "Bu Ay",
+        "Geçen Ay",
+        "Son 2 Ay",
+        "Son 3 Ay",
+        "Son 4 Ay",
+        "Son 5 Ay",
+        "Son 6 Ay",
+        "Tüm Zamanlar"
+    )
     private var studentID = ""
     var name = ""
     private var kurumKodu = 0
@@ -149,9 +165,28 @@ class StudiesActivity : AppCompatActivity() {
         zamanAraligiTextView.text = secilenZamanAraligi
 
         excelCreateButton.setOnClickListener {
-            addData(sheet)
 
-            askForPermissions()
+            //Create popup menu with "zamanAraliklari" list
+            val popupMenu = PopupMenu(this, excelCreateButton)
+            for (i in zamanAraliklari) {
+                popupMenu.menu.add(i)
+            }
+
+            //Set popup menu item click listener
+            popupMenu.setOnMenuItemClickListener { item ->
+                //Get the selected item text
+                secilenZamanAraligi = item.title.toString()
+                zamanAraligiTextView.text = secilenZamanAraligi
+                addData(sheet)
+
+                askForPermissions()
+
+                true
+            }
+            popupMenu.show()
+
+
+
         }
 
         when (secilenZamanAraligi) {
@@ -692,6 +727,76 @@ class StudiesActivity : AppCompatActivity() {
                 cal.add(Calendar.MONTH, -1)
                 baslangicTarihi = cal.time
 
+            }
+
+            "Son 2 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -2)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 3 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -3)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 4 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -4)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 5 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -5)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 6 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -6)
+                baslangicTarihi = cal.time
             }
 
             "Tüm Zamanlar" -> {

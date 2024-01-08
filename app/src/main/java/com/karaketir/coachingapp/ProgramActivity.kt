@@ -111,7 +111,7 @@ class ProgramActivity : AppCompatActivity() {
 
 
         if (personType == "Student") {
-            addLessonButton.visibility = View.GONE
+            addLessonButton.visibility = View.VISIBLE
             studentID = auth.uid.toString()
         } else {
             addLessonButton.visibility = View.VISIBLE

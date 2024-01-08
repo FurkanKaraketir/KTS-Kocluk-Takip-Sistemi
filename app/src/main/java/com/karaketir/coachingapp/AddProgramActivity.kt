@@ -60,7 +60,7 @@ class AddProgramActivity : AppCompatActivity() {
         arrayListOf("Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar")
 
     private var valuesID = arrayOf(
-        "1", "2", "3", "4"
+        "1", "2", "3", "4", "5", "6", "7", "8", "9"
     )
     private var kurumKodu = 0
 

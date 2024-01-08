@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.graphics.Color
 import android.widget.ImageView
+import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -78,6 +79,20 @@ class MainActivity : AppCompatActivity() {
     private var raporGondermeyenList = ArrayList<Student>()
     private val zamanAraliklari =
         arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+    private val zamanAraliklariNew = arrayOf(
+        "Bugün",
+        "Dün",
+        "Bu Hafta",
+        "Geçen Hafta",
+        "Bu Ay",
+        "Geçen Ay",
+        "Son 2 Ay",
+        "Son 3 Ay",
+        "Son 4 Ay",
+        "Son 5 Ay",
+        "Son 6 Ay",
+        "Tüm Zamanlar"
+    )
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
 
@@ -427,18 +442,37 @@ class MainActivity : AppCompatActivity() {
                     createSheetHeader(cellStyle, sheet)
 
                     excelButton.setOnClickListener {
-                        addData(
-                            sheet,
-                            secilenZaman,
-                            secilenGrade,
-                            kurumKodu.toString(),
-                            auth,
-                            db,
-                            this,
-                            workbook
-                        )
 
-                        askForPermissions()
+                        //Create popup menu with "zamanAraliklariNew" list
+                        val popupMenu = PopupMenu(this, excelButton)
+                        for (i in zamanAraliklariNew) {
+                            popupMenu.menu.add(i)
+                        }
+
+                        //Set popup menu item click listener
+                        popupMenu.setOnMenuItemClickListener { item ->
+                            //Get the selected item text
+                            secilenZaman = item.title.toString()
+
+
+                            addData(
+                                sheet,
+                                secilenZaman,
+                                secilenGrade,
+                                kurumKodu.toString(),
+                                auth,
+                                db,
+                                this,
+                                workbook
+                            )
+
+                            askForPermissions()
+
+                            true
+                        }
+                        popupMenu.show()
+
+
                     }
 
 
