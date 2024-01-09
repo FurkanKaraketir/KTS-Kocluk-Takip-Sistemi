@@ -144,4 +144,5 @@
     <string name="ka_nc_ders">Kaçıncı Ders?</string>
     <string name="rapor_g_ndermeyenler">Rapor Göndermeyenler</string>
     <string name="rapor_at_lmayan_g_n_say_lar_n_g_ster">Rapor Atılmayan Gün Sayılarını Göster</string>
+    <string name="verileri_getir">Verileri Getir</string>
 </resources>

@@ -11,6 +11,8 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import android.webkit.CookieManager
+import android.webkit.WebStorage
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -31,6 +33,23 @@ import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+
+
+fun clearCache(context: Context) {
+    // Clear WebView cache
+    android.webkit.WebView(context).clearCache(true)
+
+    // Clear HTML5 Web Storage (localStorage, sessionStorage)
+    WebStorage.getInstance().deleteAllData()
+
+    // Clear Cookies
+    val cookieManager = CookieManager.getInstance()
+    cookieManager.removeAllCookies(null)
+
+    // Clear application cache
+    context.deleteDatabase("webview.db")
+    context.deleteDatabase("webviewCache.db")
+}
 
 fun ImageView.glide(url: String?, placeholder: CircularProgressDrawable) {
     val options = RequestOptions().placeholder(placeholder).error(R.drawable.blank)

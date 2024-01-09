@@ -128,6 +128,77 @@ class StudentGraphActivity : AppCompatActivity() {
                 bitisTarihi = cal.time
             }
 
+            "Son 2 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -2)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 3 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -3)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 4 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -4)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 5 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -5)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 6 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -6)
+                baslangicTarihi = cal.time
+            }
+
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !

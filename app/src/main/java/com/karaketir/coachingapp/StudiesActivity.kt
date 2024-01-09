@@ -78,20 +78,6 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStudiesBinding
     private var secilenZamanAraligi = ""
 
-    private val zamanAraliklari = arrayOf(
-        "Bugün",
-        "Dün",
-        "Bu Hafta",
-        "Geçen Hafta",
-        "Bu Ay",
-        "Geçen Ay",
-        "Son 2 Ay",
-        "Son 3 Ay",
-        "Son 4 Ay",
-        "Son 5 Ay",
-        "Son 6 Ay",
-        "Tüm Zamanlar"
-    )
     private var studentID = ""
     var name = ""
     private var kurumKodu = 0
@@ -166,26 +152,10 @@ class StudiesActivity : AppCompatActivity() {
 
         excelCreateButton.setOnClickListener {
 
-            //Create popup menu with "zamanAraliklari" list
-            val popupMenu = PopupMenu(this, excelCreateButton)
-            for (i in zamanAraliklari) {
-                popupMenu.menu.add(i)
-            }
-
-            //Set popup menu item click listener
-            popupMenu.setOnMenuItemClickListener { item ->
-                //Get the selected item text
-                secilenZamanAraligi = item.title.toString()
-                zamanAraligiTextView.text = secilenZamanAraligi
+                Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
                 addData(sheet)
 
                 askForPermissions()
-
-                true
-            }
-            popupMenu.show()
-
-
 
         }
 
@@ -193,7 +163,7 @@ class StudiesActivity : AppCompatActivity() {
 
             "Bugün" -> {
                 baslangicTarihi = cal.time
-                binding.starScroll.visibility = View.VISIBLE
+
 
                 cal.add(Calendar.DAY_OF_YEAR, 1)
                 bitisTarihi = cal.time
@@ -264,6 +234,77 @@ class StudiesActivity : AppCompatActivity() {
                 baslangicTarihi = cal.time
 
             }
+
+            "Son 2 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -2)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 3 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -3)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 4 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -4)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 5 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -5)
+                baslangicTarihi = cal.time
+            }
+
+            "Son 6 Ay" -> {
+                cal = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                cal.clear(Calendar.MINUTE)
+                cal.clear(Calendar.SECOND)
+                cal.clear(Calendar.MILLISECOND)
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.MONTH, -6)
+                baslangicTarihi = cal.time
+            }
+
 
             "Tüm Zamanlar" -> {
                 cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)

@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.graphics.Color
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -77,9 +78,7 @@ class MainActivity : AppCompatActivity() {
     private var secilenZaman = "Bugün"
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
     private var raporGondermeyenList = ArrayList<Student>()
-    private val zamanAraliklari =
-        arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
-    private val zamanAraliklariNew = arrayOf(
+    private val zamanAraliklari = arrayOf(
         "Bugün",
         "Dün",
         "Bu Hafta",
@@ -93,6 +92,7 @@ class MainActivity : AppCompatActivity() {
         "Son 6 Ay",
         "Tüm Zamanlar"
     )
+
     private lateinit var filteredList: ArrayList<Student>
     private lateinit var filteredStudyList: ArrayList<Study>
 
@@ -164,6 +164,7 @@ class MainActivity : AppCompatActivity() {
         val messageButton = binding.sendMessageButton
         val dersProgramiButton = binding.dersProgramiButton
         val noReportButton = binding.noReportButton
+        val getDataButton = binding.getDataButton
         textYKSsayac = binding.YKSsayac
         textColor = textYKSsayac.currentTextColor
 
@@ -410,6 +411,7 @@ class MainActivity : AppCompatActivity() {
                 } else if (it.get("personType").toString() == "Teacher") {
                     teacher = ""
                     personType = "Teacher"
+                    getDataButton.visibility = View.VISIBLE
                     messageButton.visibility = View.VISIBLE
                     dersProgramiButton.visibility = View.GONE
                     studySearchEditText.visibility = View.GONE
@@ -443,38 +445,43 @@ class MainActivity : AppCompatActivity() {
 
                     excelButton.setOnClickListener {
 
-                        //Create popup menu with "zamanAraliklariNew" list
-                        val popupMenu = PopupMenu(this, excelButton)
-                        for (i in zamanAraliklariNew) {
-                            popupMenu.menu.add(i)
-                        }
+                        clearCache(applicationContext)
+                        Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
 
-                        //Set popup menu item click listener
-                        popupMenu.setOnMenuItemClickListener { item ->
-                            //Get the selected item text
-                            secilenZaman = item.title.toString()
+                        addData(
+                            sheet,
+                            secilenZaman,
+                            secilenGrade,
+                            kurumKodu.toString(),
+                            auth,
+                            db,
+                            this,
+                            workbook
+                        )
 
-
-                            addData(
-                                sheet,
-                                secilenZaman,
-                                secilenGrade,
-                                kurumKodu.toString(),
-                                auth,
-                                db,
-                                this,
-                                workbook
-                            )
-
-                            askForPermissions()
-
-                            true
-                        }
-                        popupMenu.show()
+                        askForPermissions()
 
 
                     }
 
+
+                    val tarihAdapter = ArrayAdapter(
+                        this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
+                    )
+
+                    tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    teacherSpinner.adapter = tarihAdapter
+                    teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                        ) {
+                            secilenZaman = zamanAraliklari[p2]
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                        }
+
+                    }
 
                     val gradeAdapter = ArrayAdapter(
                         this@MainActivity, android.R.layout.simple_spinner_item, gradeList
@@ -486,69 +493,7 @@ class MainActivity : AppCompatActivity() {
                             p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                         ) {
                             secilenGrade = gradeList[p2]
-                            if (secilenGrade == "Bütün Sınıflar") {
-                                db.collection("School").document(kurumKodu.toString())
-                                    .collection("Student")
-                                    .whereEqualTo("teacher", auth.uid.toString())
-                                    .addSnapshotListener { documents, _ ->
-                                        studentList.clear()
-                                        if (documents != null) {
-                                            for (document in documents) {
-                                                val studentGrade =
-                                                    document.get("grade").toString().toInt()
-                                                val studentName =
-                                                    document.get("nameAndSurname").toString()
-                                                val teacher = document.get("teacher").toString()
-                                                val id = document.get("id").toString()
-                                                val currentStudent =
-                                                    Student(studentName, teacher, id, studentGrade)
-                                                studentList.add(currentStudent)
 
-                                            }
-                                            binding.studentCountTextView.text =
-                                                "Öğrenci Sayısı: " + studentList.size
-                                        }
-                                        studentList.sortBy { a ->
-                                            a.studentName
-                                        }
-                                        setupStudentRecyclerView(studentList)
-
-                                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-
-                                    }
-                            } else {
-                                db.collection("School").document(kurumKodu.toString())
-                                    .collection("Student")
-                                    .whereEqualTo("teacher", auth.uid.toString())
-                                    .whereEqualTo("grade", secilenGrade.toInt())
-                                    .addSnapshotListener { documents, _ ->
-
-                                        studentList.clear()
-                                        if (documents != null) {
-                                            for (document in documents) {
-                                                val studentGrade =
-                                                    document.get("grade").toString().toInt()
-                                                val studentName =
-                                                    document.get("nameAndSurname").toString()
-                                                val teacher = document.get("teacher").toString()
-                                                val id = document.get("id").toString()
-                                                val currentStudent =
-                                                    Student(studentName, teacher, id, studentGrade)
-                                                studentList.add(currentStudent)
-
-                                            }
-                                            binding.studentCountTextView.text =
-                                                "Öğrenci Sayısı: " + studentList.size
-                                        }
-                                        studentList.sortBy { a ->
-                                            a.studentName
-                                        }
-                                        setupStudentRecyclerView(studentList)
-
-                                        recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-
-                                    }
-                            }
                         }
 
                         override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -556,31 +501,69 @@ class MainActivity : AppCompatActivity() {
                         }
 
                     }
+                    getDataButton.setOnClickListener {
+                        if (secilenGrade == "Bütün Sınıflar") {
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
+                                .addSnapshotListener { documents, _ ->
+                                    studentList.clear()
+                                    if (documents != null) {
+                                        for (document in documents) {
+                                            val studentGrade =
+                                                document.get("grade").toString().toInt()
+                                            val studentName =
+                                                document.get("nameAndSurname").toString()
+                                            val teacher = document.get("teacher").toString()
+                                            val id = document.get("id").toString()
+                                            val currentStudent =
+                                                Student(studentName, teacher, id, studentGrade)
+                                            studentList.add(currentStudent)
 
+                                        }
+                                        binding.studentCountTextView.text =
+                                            "Öğrenci Sayısı: " + studentList.size
+                                    }
+                                    studentList.sortBy { a ->
+                                        a.studentName
+                                    }
+                                    setupStudentRecyclerView(studentList)
 
-                    val tarihAdapter = ArrayAdapter(
-                        this@MainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
-                    )
+                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
+                                }
+                        } else {
+                            db.collection("School").document(kurumKodu.toString())
+                                .collection("Student").whereEqualTo("teacher", auth.uid.toString())
+                                .whereEqualTo("grade", secilenGrade.toInt())
+                                .addSnapshotListener { documents, _ ->
 
+                                    studentList.clear()
+                                    if (documents != null) {
+                                        for (document in documents) {
+                                            val studentGrade =
+                                                document.get("grade").toString().toInt()
+                                            val studentName =
+                                                document.get("nameAndSurname").toString()
+                                            val teacher = document.get("teacher").toString()
+                                            val id = document.get("id").toString()
+                                            val currentStudent =
+                                                Student(studentName, teacher, id, studentGrade)
+                                            studentList.add(currentStudent)
 
-                    tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    teacherSpinner.adapter = tarihAdapter
-                    teacherSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-                        override fun onItemSelected(
-                            p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-                        ) {
-                            secilenZaman = zamanAraliklari[p2]
-                            setupStudentRecyclerView(studentList)
+                                        }
+                                        binding.studentCountTextView.text =
+                                            "Öğrenci Sayısı: " + studentList.size
+                                    }
+                                    studentList.sortBy { a ->
+                                        a.studentName
+                                    }
+                                    setupStudentRecyclerView(studentList)
 
+                                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
+                                }
                         }
-
-                        override fun onNothingSelected(p0: AdapterView<*>?) {
-                        }
-
                     }
-
 
                 }
 
@@ -734,6 +717,77 @@ class MainActivity : AppCompatActivity() {
                     baslangicTarihi = cal.time
 
                 }
+
+                "Son 2 Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.MONTH, -2)
+                    baslangicTarihi = cal.time
+                }
+
+                "Son 3 Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.MONTH, -3)
+                    baslangicTarihi = cal.time
+                }
+
+                "Son 4 Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.MONTH, -4)
+                    baslangicTarihi = cal.time
+                }
+
+                "Son 5 Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.MONTH, -5)
+                    baslangicTarihi = cal.time
+                }
+
+                "Son 6 Ay" -> {
+                    cal = Calendar.getInstance()
+                    cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                    cal.clear(Calendar.MINUTE)
+                    cal.clear(Calendar.SECOND)
+                    cal.clear(Calendar.MILLISECOND)
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.MONTH, -6)
+                    baslangicTarihi = cal.time
+                }
+
 
                 "Tüm Zamanlar" -> {
                     cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)

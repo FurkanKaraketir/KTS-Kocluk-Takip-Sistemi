@@ -54,8 +54,16 @@ class DenemelerActivity : AppCompatActivity() {
     private var kurumKodu = 763455
     private var secilenZamanAraligi = ""
     private lateinit var studentID: String
-    private val zamanAraliklari =
-        arrayOf("Bugün", "Dün", "Bu Hafta", "Geçen Hafta", "Bu Ay", "Geçen Ay", "Tüm Zamanlar")
+    private val zamanAraliklari = arrayOf(
+        "Tüm Zamanlar",
+        "Bu Ay",
+        "Geçen Ay",
+        "Son 2 Ay",
+        "Son 3 Ay",
+        "Son 4 Ay",
+        "Son 5 Ay",
+        "Son 6 Ay"
+    )
     private val turler = arrayOf("Tüm Denemeler", "TYT", "AYT")
     private lateinit var layoutManager: GridLayoutManager
     private var grade = 0
@@ -116,8 +124,8 @@ class DenemelerActivity : AppCompatActivity() {
                 cal.clear(Calendar.SECOND)
                 cal.clear(Calendar.MILLISECOND)
 
-                when (position) {
-                    0 -> {
+                when (secilenZamanAraligi) {
+                    "Bugün" -> {
                         baslangicTarihi = cal.time
 
 
@@ -125,14 +133,15 @@ class DenemelerActivity : AppCompatActivity() {
                         bitisTarihi = cal.time
                     }
 
-                    1 -> {
+                    "Dün" -> {
                         bitisTarihi = cal.time
 
                         cal.add(Calendar.DAY_OF_YEAR, -1)
                         baslangicTarihi = cal.time
+
                     }
 
-                    2 -> {
+                    "Bu Hafta" -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         baslangicTarihi = cal.time
 
@@ -142,7 +151,7 @@ class DenemelerActivity : AppCompatActivity() {
 
                     }
 
-                    3 -> {
+                    "Geçen Hafta" -> {
                         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
                         bitisTarihi = cal.time
 
@@ -153,7 +162,7 @@ class DenemelerActivity : AppCompatActivity() {
 
                     }
 
-                    4 -> {
+                    "Bu Ay" -> {
 
                         cal = Calendar.getInstance()
                         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -172,7 +181,7 @@ class DenemelerActivity : AppCompatActivity() {
 
                     }
 
-                    5 -> {
+                    "Geçen Ay" -> {
                         cal = Calendar.getInstance()
                         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -189,7 +198,78 @@ class DenemelerActivity : AppCompatActivity() {
 
                     }
 
-                    6 -> {
+                    "Son 2 Ay" -> {
+                        cal = Calendar.getInstance()
+                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                        cal.clear(Calendar.MINUTE)
+                        cal.clear(Calendar.SECOND)
+                        cal.clear(Calendar.MILLISECOND)
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.MONTH, -2)
+                        baslangicTarihi = cal.time
+                    }
+
+                    "Son 3 Ay" -> {
+                        cal = Calendar.getInstance()
+                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                        cal.clear(Calendar.MINUTE)
+                        cal.clear(Calendar.SECOND)
+                        cal.clear(Calendar.MILLISECOND)
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.MONTH, -3)
+                        baslangicTarihi = cal.time
+                    }
+
+                    "Son 4 Ay" -> {
+                        cal = Calendar.getInstance()
+                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                        cal.clear(Calendar.MINUTE)
+                        cal.clear(Calendar.SECOND)
+                        cal.clear(Calendar.MILLISECOND)
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.MONTH, -4)
+                        baslangicTarihi = cal.time
+                    }
+
+                    "Son 5 Ay" -> {
+                        cal = Calendar.getInstance()
+                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                        cal.clear(Calendar.MINUTE)
+                        cal.clear(Calendar.SECOND)
+                        cal.clear(Calendar.MILLISECOND)
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.MONTH, -5)
+                        baslangicTarihi = cal.time
+                    }
+
+                    "Son 6 Ay" -> {
+                        cal = Calendar.getInstance()
+                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+
+                        cal.clear(Calendar.MINUTE)
+                        cal.clear(Calendar.SECOND)
+                        cal.clear(Calendar.MILLISECOND)
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.MONTH, -6)
+                        baslangicTarihi = cal.time
+                    }
+
+
+                    "Tüm Zamanlar" -> {
                         cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
                         baslangicTarihi = cal.time
 
