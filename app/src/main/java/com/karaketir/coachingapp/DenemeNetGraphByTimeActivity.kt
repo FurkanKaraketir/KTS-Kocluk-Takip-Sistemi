@@ -140,6 +140,16 @@ class DenemeNetGraphByTimeActivity : AppCompatActivity() {
                 cal.add(Calendar.MONTH, -2)
                 baslangicTarihi = cal.time
             }
+            "Son 30 Gün" -> {
+                cal = Calendar.getInstance()
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                baslangicTarihi = cal.time
+
+            }
 
             "Son 3 Ay" -> {
                 cal = Calendar.getInstance()

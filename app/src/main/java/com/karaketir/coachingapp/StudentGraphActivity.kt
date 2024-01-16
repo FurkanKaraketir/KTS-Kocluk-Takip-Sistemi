@@ -199,6 +199,17 @@ class StudentGraphActivity : AppCompatActivity() {
             }
 
 
+            "Son 30 Gün" -> {
+                cal = Calendar.getInstance()
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                baslangicTarihi = cal.time
+
+            }
+
             "Geçen Ay" -> {
                 cal = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !

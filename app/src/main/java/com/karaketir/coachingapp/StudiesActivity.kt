@@ -152,16 +152,17 @@ class StudiesActivity : AppCompatActivity() {
 
         excelCreateButton.setOnClickListener {
 
-                Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
-                addData(sheet)
+            Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
+            addData(sheet)
 
-                askForPermissions()
+            askForPermissions()
 
         }
 
         when (secilenZamanAraligi) {
 
             "Bugün" -> {
+                binding.starScroll.visibility = View.VISIBLE
                 baslangicTarihi = cal.time
 
 
@@ -185,6 +186,17 @@ class StudiesActivity : AppCompatActivity() {
 
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
                 bitisTarihi = cal.time
+
+            }
+
+            "Son 30 Gün" -> {
+                cal = Calendar.getInstance()
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                baslangicTarihi = cal.time
 
             }
 

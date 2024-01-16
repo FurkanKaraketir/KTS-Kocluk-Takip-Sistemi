@@ -87,6 +87,16 @@ class NoReportDayCounterAdapter(
 
 
             }
+            "Son 30 Gün" -> {
+                cal = Calendar.getInstance()
+
+                bitisTarihi = cal.time
+
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                baslangicTarihi = cal.time
+
+            }
 
             "Bu Ay" -> {
 

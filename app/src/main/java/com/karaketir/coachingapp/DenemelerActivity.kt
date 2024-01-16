@@ -57,6 +57,7 @@ class DenemelerActivity : AppCompatActivity() {
     private val zamanAraliklari = arrayOf(
         "Tüm Zamanlar",
         "Bu Ay",
+        "Son 30 Gün",
         "Geçen Ay",
         "Son 2 Ay",
         "Son 3 Ay",
@@ -194,6 +195,16 @@ class DenemelerActivity : AppCompatActivity() {
 
 
                         cal.add(Calendar.MONTH, -1)
+                        baslangicTarihi = cal.time
+
+                    }
+                    "Son 30 Gün" -> {
+                        cal = Calendar.getInstance()
+
+                        bitisTarihi = cal.time
+
+                        cal.add(Calendar.DAY_OF_YEAR, -30)
+
                         baslangicTarihi = cal.time
 
                     }

@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         "Bu Hafta",
         "Geçen Hafta",
         "Bu Ay",
+        "Son 30 Gün",
         "Geçen Ay",
         "Son 2 Ay",
         "Son 3 Ay",
@@ -698,6 +699,17 @@ class MainActivity : AppCompatActivity() {
                     cal.add(Calendar.MONTH, 1)
                     bitisTarihi = cal.time
 
+
+                }
+
+                "Son 30 Gün" -> {
+                    cal = Calendar.getInstance()
+
+                    bitisTarihi = cal.time
+
+                    cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                    baslangicTarihi = cal.time
 
                 }
 
