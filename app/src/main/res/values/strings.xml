@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">KTS - Koçluk Takip Sistemi</string>
-    <string name="log_in">GİRİŞ YAP</string>
+    <string name="log_in">Giriş Yap</string>
     <string name="email">Email</string>
     <string name="password">Şifre</string>
-    <string name="i_want_to_sign_up"><u>Henüz hesabınız yok mu?</u></string>
+    <string name="i_want_to_sign_up">Hesabın yok mu?</string>
     <string name="student">ÖĞRENCİ</string>
     <string name="teacher">ÖĞRETMEN</string>
-    <string name="sign_up">KAYIT OL</string>
+    <string name="sign_up">Kaydol</string>
     <string name="sim_ve_soyisim">İsim ve Soyisim</string>
     <string name="s_n_f">Sınıf</string>
     <string name="alan_se_imi_yap_n_z">Alan Seçiniz:</string>
@@ -145,4 +145,13 @@
     <string name="rapor_g_ndermeyenler">Rapor Göndermeyenler</string>
     <string name="rapor_at_lmayan_g_n_say_lar_n_g_ster">Rapor Atılmayan Gün Sayılarını Göster</string>
     <string name="verileri_getir">Verileri Getir</string>
+    <string name="kay_tl_bir_hesab_n_varsa_bu_sayfadan_giri_yapabilirsin">Kayıtlı bir hesabın varsa bu sayfadan giriş yapabilirsin.</string>
+    <string name="google_ile_giri_yap">Google ile Giriş Yap</string>
+    <string name="ya_da">ya da</string>
+    <string name="kay_tl_bir_hesab_n_yoksa_bu_sayfadan_kay_t_olabilirsin">Kayıtlı bir hesabın yoksa bu sayfadan kayıt olabilirsin.</string>
+    <string name="google_ile_kaydol">Google ile Kaydol</string>
+    <string name="kullan_m_ko_ullar_n_gizlilik_politikas_n_ve_erez_politikas_n_kabul_ediyorum">Kullanım Koşullarını, Gizlilik Politikasını ve Çerez Politikasını kabul ediyorum</string>
+    <string name="hesap_olu_tur">Hesap Oluştur</string>
+    <string name="retmen_misin">Öğretmen misin?</string>
+    <string name="hesab_n_var_m">Hesabın var mı?</string>
 </resources>

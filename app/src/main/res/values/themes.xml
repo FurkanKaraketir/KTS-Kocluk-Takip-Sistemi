@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.CoachingApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#2357DD</item>
+        <item name="colorPrimary">#7023DD</item>
         <item name="colorPrimaryVariant">#32C5FF</item>
         <item name="colorAccent">#F73757</item>
 

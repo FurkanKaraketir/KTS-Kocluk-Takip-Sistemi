@@ -1,21 +1,24 @@
+@file:Suppress("DEPRECATION")
+
 package com.karaketir.coachingapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityRegisterBinding
-import com.karaketir.coachingapp.services.openLink
 
-class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class RegisterActivity : AppCompatActivity() {
 
     init {
         System.setProperty(
@@ -32,18 +35,15 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         )
     }
 
+    private val googleCode = 9001 // You can choose any unique code
 
-    private val alanlar = arrayOf("Dil", "Eşit Ağırlık", "Sözel", "Sayısal")
-    private val dersler = ArrayList<String>()
 
     private lateinit var documentID: String
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var binding: ActivityRegisterBinding
-    private var nameAndSurname = ""
-    private var grade = 0
-    private var selection = 0
-    private var branch = ""
+    private lateinit var googleSignInClient: GoogleSignInClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,44 +53,30 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         auth = Firebase.auth
         db = Firebase.firestore
 
-        val studentSpinner = binding.studentSpinner
-        val teacherSpinner = binding.teacherSpinner
-        val registerLayout = binding.registerLayout
-        val studentButton = binding.studentButton
-        val teacherButton = binding.teacherButton
-        val studentSpinnerLayout = binding.studentSpinnerLayout
-        val teacherSpinnerLayout = binding.teacherSpinnerLayout
-        val textInputClass = binding.TextInputClass
         val signUpButton = binding.signUpButton
-        val gradeText = binding.classEditText
         val emailEditText = binding.emailRegisterEditText
         val passwordEditText = binding.passwordRegisterEditText
         val nameAndSurnameEditText = binding.nameAndSurnameEditText
-        val kurumKoduEditText = binding.kurumKoduEditText
-        val kullanici = binding.kullanimBtn
-        val gizlilik = binding.gizBtn
-        val cerez = binding.cerezBtn
-        kullanici.setOnClickListener {
-            openLink(
-                "https://docs.google.com/document/d/1mzyFHaD6UUrB85BkXRO9r3fS8_jo_sUxoDPbn0Qi2kk/edit?usp=sharing",
-                this
-            )
-        }
-        gizlilik.setOnClickListener {
-            openLink(
-                "https://docs.google.com/document/d/1cDKP_HRTnQhVJS3u1uYQeLqU4x3_4HCNQreBE5JCIag/edit?usp=sharing",
-                this
-            )
-        }
-        cerez.setOnClickListener {
-            openLink(
-                "https://docs.google.com/document/d/1jFbZ8IW4AEb8ZMBy57YLQAJAwl5uQ34W4q_yMhqc8aU/edit?usp=sharing",
-                this
-            )
+        val checkBox = binding.acceptCheckBox
+        val googleButton = binding.signInGoogleButton
+        val logInButton = binding.logInButton
+
+
+        logInButton.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("383545978416-3hq2l4h64j1blghcj2e4brjtq5sblh7p.apps.googleusercontent.com")
+            .requestEmail().requestProfile().build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleButton.setOnClickListener {
+            signUpWithGoogle()
+
+        }
         signUpButton.setOnClickListener {
-            Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
             if (emailEditText.text.toString().isNotEmpty()) {
                 emailEditText.error = null
 
@@ -98,157 +84,65 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
                     if (passwordEditText.text.toString().length >= 6) {
                         passwordEditText.error = null
-                        if (gradeText.text.toString().isNotEmpty() || selection == 2) {
-                            gradeText.error = null
-                            if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
-                                nameAndSurnameEditText.error = null
 
-                                if (kurumKoduEditText.text.toString().isNotEmpty()) {
-                                    kurumKoduEditText.error = null
+                        if (nameAndSurnameEditText.text.toString().isNotEmpty()) {
+                            nameAndSurnameEditText.error = null
 
-
-                                    nameAndSurname = nameAndSurnameEditText.text.toString()
-
-                                    grade = try {
-                                        gradeText.text.toString().toInt()
-                                    } catch (e: Exception) {
-                                        0
-                                    }
-
-                                    signUp(
-                                        emailEditText.text.toString(),
-                                        passwordEditText.text.toString(),
-                                        kurumKoduEditText.text.toString().toInt()
-                                    )
+                            if (checkBox.isChecked) {
+                                checkBox.error = null
 
 
-                                } else {
-                                    kurumKoduEditText.error = "Bu Alan Boş Bırakılamaz"
-                                }
+                                val nameAndSurname = nameAndSurnameEditText.text.toString()
+
+
+                                signUp(
+                                    emailEditText.text.toString(),
+                                    passwordEditText.text.toString(),
+                                    nameAndSurname
+                                )
 
 
                             } else {
-                                nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
-
+                                checkBox.error = "Lütfen Kullanıcı Sözleşmesini Kabul Ediniz"
                             }
 
 
                         } else {
-                            gradeText.error = "Bu Alan Boş Bırakılamaz"
+                            nameAndSurnameEditText.error = "Bu Alan Boş Bırakılamaz"
+
                         }
-                    } else {
-                        passwordEditText.error = "Şifre En Az 6 Karakter Uzunluğunda Olmalı"
+
+
                     }
-
-
                 } else {
-                    passwordEditText.error = "Bu Alan Boş Bırakılamaz"
+                    passwordEditText.error = "Şifre En Az 6 Karakter Uzunluğunda Olmalı"
                 }
+
+
             } else {
                 emailEditText.error = "Bu Alan Boş Bırakılamaz"
             }
         }
 
 
-        val studentAdapter = ArrayAdapter(
-            this@RegisterActivity, android.R.layout.simple_spinner_item, alanlar
-        )
-
-
-        db.collection("Lessons").addSnapshotListener { value, _ ->
-            if (value != null) {
-                for (document in value) {
-                    dersler.add(document.get("dersAdi").toString())
-                }
-                val teacherAdapter = ArrayAdapter(
-                    this@RegisterActivity, android.R.layout.simple_spinner_item, dersler
-                )
-                teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                teacherSpinner.adapter = teacherAdapter
-                teacherSpinner.onItemSelectedListener = this
-            }
-        }
-
-        studentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        studentSpinner.adapter = studentAdapter
-        studentSpinner.onItemSelectedListener = this
-
-
-        studentButton.setOnClickListener {
-            selection = 1
-            registerLayout.visibility = View.VISIBLE
-            teacherSpinnerLayout.visibility = View.GONE
-            textInputClass.visibility = View.VISIBLE
-            studentSpinnerLayout.visibility = View.VISIBLE
-        }
-
-        teacherButton.setOnClickListener {
-            registerLayout.visibility = View.VISIBLE
-            textInputClass.visibility = View.GONE
-            selection = 2
-            teacherSpinnerLayout.visibility = View.VISIBLE
-            studentSpinnerLayout.visibility = View.GONE
-        }
-
-
     }
 
-    private fun signUp(email: String, password: String, kurumKodu: Int) {
+    private fun signUpWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, googleCode)
+    }
+
+    private fun signUp(email: String, password: String, nameAndSurname: String) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 documentID = auth.uid!!
 
-                if (selection == 1) {
-                    val user = hashMapOf(
-                        "email" to email,
-                        "grade" to grade,
-                        "id" to documentID,
-                        "nameAndSurname" to nameAndSurname,
-                        "personType" to "Student",
-                        "subjectType" to branch,
-                        "kurumKodu" to kurumKodu,
-                        "teacher" to "",
-                    )
-
-                    db.collection("User").document(documentID).set(user).addOnSuccessListener {
-
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(documentID).set(user).addOnSuccessListener {
-                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                this.startActivity(intent)
-                                finish()
-                            }
-
-
-                    }.addOnFailureListener { e ->
-                        Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                    }
-                } else if (selection == 2) {
-                    val user = hashMapOf(
-                        "email" to email,
-                        "id" to documentID,
-                        "nameAndSurname" to nameAndSurname,
-                        "personType" to "Teacher",
-                        "subjectType" to branch,
-                        "kurumKodu" to kurumKodu,
-                    )
-
-                    db.collection("User").document(documentID).set(user).addOnSuccessListener {
-
-                        db.collection("School").document(kurumKodu.toString()).collection("Teacher")
-                            .document(documentID).set(user).addOnSuccessListener {
-                                Toast.makeText(this, "Başarılı", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                this.startActivity(intent)
-                                finish()
-                            }
-
-
-                    }.addOnFailureListener { e ->
-                        Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                    }
-                }
+                val newIntent = Intent(this, AddUserDataActivity::class.java)
+                newIntent.putExtra("documentID", documentID)
+                newIntent.putExtra("nameAndSurname", nameAndSurname)
+                newIntent.putExtra("email", email)
+                this.startActivity(newIntent)
+                finish()
 
 
             } else {
@@ -260,39 +154,50 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         }
     }
 
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        if (selection == 1) {
-            when (position) {
-                0 -> {
-                    branch = "Dil"
+        if (requestCode == googleCode) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
 
-                }
-                1 -> {
-                    branch = "Eşit Ağırlık"
-
-                }
-                2 -> {
-                    branch = "Sözel"
-
-                }
-                3 -> {
-                    branch = "Sayısal"
-
-                }
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                // Google Sign In failed, handle failure
+                Toast.makeText(
+                    baseContext, "Bir hata oluştu.", Toast.LENGTH_SHORT
+                ).show()
             }
         }
-        if (selection == 2) {
-
-            branch = dersler[position]
-        }
-
-
     }
 
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                // Sign in success, navigate to the next activity or perform additional actions
+                val user = auth.currentUser
+                // You can get user information from 'user' variable if needed
+                // For example, user.displayName, user.email, etc.
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-
+                // Proceed to the next activity or perform any other actions
+                val newIntent = Intent(this, AddUserDataActivity::class.java)
+                newIntent.putExtra("email", user?.email)
+                newIntent.putExtra("nameAndSurname", user?.displayName)
+                newIntent.putExtra("documentID", user?.uid)
+                // Add other data if needed
+                this.startActivity(newIntent)
+                finish()
+            } else {
+                // If sign in fails, display a message to the user.
+                Toast.makeText(
+                    baseContext, "Bir hata oluştu.", Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
 }

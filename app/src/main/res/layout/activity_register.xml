@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,251 +7,155 @@
     tools:context=".RegisterActivity">
 
 
-    <TextView
-        android:id="@+id/signUp"
-        style="@style/MaterialAlertDialog.Material3.Title.Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp"
-        android:text="@string/sign_up"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-
     <LinearLayout
-
-        android:id="@+id/optionsSTLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/signUp"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <Button
+        <ImageView
+            android:id="@+id/appLogo"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="70dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher" />
 
-            android:id="@+id/studentButton"
-            style="@style/Widget.Material3.Button.ElevatedButton"
+        <TextView
+            android:id="@+id/signUp"
+            style="@style/MaterialAlertDialog.Material3.Title.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="@string/student"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="25dp"
+            android:text="@string/sign_up"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/kay_tl_bir_"
+            android:layout_width="320dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/kay_tl_bir_hesab_n_yoksa_bu_sayfadan_kay_t_olabilirsin" />
+
+        <Button
+            android:id="@+id/signInGoogleButton"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="320dp"
+            android:layout_height="56dp"
+            android:layout_margin="10dp"
+            android:text="@string/google_ile_kaydol"
+            app:icon="@drawable/google">
+
+        </Button>
+
+        <TextView
+            android:id="@+id/or"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/ya_da" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputNameAndSurname"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:hint="@string/sim_ve_soyisim">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameAndSurnameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:maxLength="40" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputRegisterEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:hint="@string/email">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailRegisterEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TextInputRegisterPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:hint="@string/password"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordRegisterEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <CheckBox
+            android:id="@+id/acceptCheckBox"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:text="@string/kullan_m_ko_ullar_n_gizlilik_politikas_n_ve_erez_politikas_n_kabul_ediyorum" />
+
+        <Button
+            android:id="@+id/signUpButton"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="320dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/sign_up"
             android:textSize="18sp" />
 
 
-        <Button
-            android:id="@+id/teacherButton"
-            style="@style/Widget.Material3.Button.ElevatedButton"
+        <RelativeLayout
+            android:id="@+id/layout21"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="@string/teacher"
-            android:textSize="18sp" />
+            android:layout_height="50dp"
+            android:layout_margin="30dp">
 
+            <TextView
+
+                android:id="@+id/i_want_sign_up_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/hesab_n_var_m"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <Button
+                android:id="@+id/logInButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/i_want_sign_up_TextView"
+                android:text="@string/log_in">
+
+            </Button>
+        </RelativeLayout>
 
     </LinearLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/optionsSTLayout">
 
-        <LinearLayout
-            android:id="@+id/registerLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/TextInputNameAndSurname"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:hint="@string/sim_ve_soyisim">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/nameAndSurnameEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:maxLength="40" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/TextInputKurumKodu"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:hint="@string/kurum_kodu">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/kurumKoduEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="6" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:id="@+id/teacherSpinnerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ders_se_imi_yap_n_z"
-                    android:textSize="18sp" />
-
-                <Spinner
-                    android:id="@+id/teacherSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız"
-                    tools:ignore="UnusedAttribute" />
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/TextInputClass"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:hint="@string/s_n_f"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/classEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <LinearLayout
-                android:id="@+id/studentSpinnerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/alan_se_imi_yap_n_z"
-                    android:textSize="18sp" />
-
-                <Spinner
-                    android:id="@+id/studentSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:spinnerMode="dialog"
-                    android:tooltipText="Alan Seçimi Yapınız"
-                    tools:ignore="UnusedAttribute" />
-            </LinearLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/TextInputRegisterEmail"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:hint="@string/email">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/emailRegisterEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/TextInputRegisterPassword"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:hint="@string/password"
-                app:passwordToggleEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/passwordRegisterEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kay_t_olan_ki_i" />
-
-                <TextView
-                    android:id="@+id/kullanimBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kullan_m_ko_ullar_n"
-                    android:textStyle="italic" />
-
-                <TextView
-                    android:id="@+id/gizBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/gizlilik_politikas_n"
-                    android:textStyle="italic" />
-
-                <TextView
-                    android:id="@+id/cerezBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/erez_politikas_n"
-                    android:textStyle="italic" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kabul_etmi_olur" />
-            </LinearLayout>
-
-
-            <Button
-                android:id="@+id/signUpButton"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="320dp"
-                android:layout_height="60dp"
-                android:layout_margin="15dp"
-                android:text="@string/sign_up"
-                android:textSize="18sp">
-
-            </Button>
-
-
-        </LinearLayout>
-
-    </ScrollView>
-
-
-</RelativeLayout>
+</ScrollView>
