@@ -12,7 +12,7 @@
     <string name="alan_se_imi_yap_n_z">Alan Seçiniz:</string>
     <string name="ders_se_imi_yap_n_z">Ders Seçiniz:</string>
     <string name="k_yap">ÇIKIŞ YAP</string>
-    <string name="merhaba">Merhaba:</string>
+    <string name="merhaba">Merhaba, </string>
     <string name="add_something">Add Something</string>
     <string name="mant_k">Mantık</string>
     <string name="k_meler">Kümeler</string>
@@ -154,4 +154,10 @@
     <string name="hesap_olu_tur">Hesap Oluştur</string>
     <string name="retmen_misin">Öğretmen misin?</string>
     <string name="hesab_n_var_m">Hesabın var mı?</string>
+    <string name="ana_sayfa">Ana Sayfa</string>
+    <string name="statistikler">İstatistikler</string>
+    <string name="ayarlar">Ayarlar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="renci_say_s">Öğrenci Sayısı:</string>
 </resources>

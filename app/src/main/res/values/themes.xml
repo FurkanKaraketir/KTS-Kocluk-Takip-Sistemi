@@ -12,7 +12,7 @@
         <item name="colorSecondaryVariant">#6D58FC</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">#2A3063</item>
         <item name="android:color">#000000</item>
         <!-- Customize your theme here. -->
     </style>

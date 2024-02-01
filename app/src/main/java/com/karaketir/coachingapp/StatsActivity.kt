@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.karaketir.coachingapp
 
 import android.Manifest
@@ -37,6 +39,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -63,7 +66,6 @@ class StatsActivity : AppCompatActivity() {
     private lateinit var bitisTarihi: Date
     private lateinit var layoutManager: GridLayoutManager
     private var secilenZamanAraligi = ""
-    private val handler = Handler(Looper.getMainLooper())
     private var kurumKodu = 0
     private val workbook = XSSFWorkbook()
     private var secilenGrade = ""
@@ -460,6 +462,7 @@ class StatsActivity : AppCompatActivity() {
 
 
                             }
+
                             "Son 30 Gün" -> {
                                 cal = Calendar.getInstance()
 
@@ -470,6 +473,7 @@ class StatsActivity : AppCompatActivity() {
                                 baslangicTarihi = cal.time
 
                             }
+
                             "Bu Ay" -> {
 
                                 cal = Calendar.getInstance()
@@ -841,10 +845,12 @@ class StatsActivity : AppCompatActivity() {
 
         }
 
-        handler.post(object : Runnable {
+        val weakHandler = Handler(WeakReferenceHandlerCallback(this))
+
+        weakHandler.post(object : Runnable {
             override fun run() {
                 // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
-                handler.postDelayed(this, 2000)
+                weakHandler.postDelayed(this, 2000)
                 showSum()
             }
         })
@@ -895,4 +901,14 @@ class StatsActivity : AppCompatActivity() {
         }
     }
 
+    // Define a WeakReferenceHandlerCallback class
+    class WeakReferenceHandlerCallback(activity: StatsActivity) : Handler.Callback {
+        private val weakReference = WeakReference(activity)
+
+        override fun handleMessage(msg: Message): Boolean {
+            weakReference.get()
+
+            return true
+        }
+    }
 }

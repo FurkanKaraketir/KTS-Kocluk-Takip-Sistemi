@@ -13,16 +13,15 @@ import android.provider.MediaStore
 import android.view.View
 import android.webkit.CookieManager
 import android.webkit.WebStorage
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.karaketir.coachingapp.R
-import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.IndexedColors
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.IndexedColorMap
 import org.apache.poi.xssf.usermodel.XSSFColor
@@ -32,7 +31,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 
 
 fun clearCache(context: Context) {
@@ -51,11 +50,6 @@ fun clearCache(context: Context) {
     context.deleteDatabase("webviewCache.db")
 }
 
-fun ImageView.glide(url: String?, placeholder: CircularProgressDrawable) {
-    val options = RequestOptions().placeholder(placeholder).error(R.drawable.blank)
-
-    Glide.with(context.applicationContext).setDefaultRequestOptions(options).load(url).into(this)
-}
 
 fun TextView.setTextAnimation(
     text: String, duration: Long = 300, completion: (() -> Unit)? = null
@@ -96,14 +90,6 @@ fun openLink(link: String, context: Context) {
         Intent.ACTION_VIEW, Uri.parse(link)
     )
     context.startActivity(browserIntent)
-}
-
-fun placeHolderYap(context: Context): CircularProgressDrawable {
-    return CircularProgressDrawable(context).apply {
-        strokeWidth = 10f
-        centerRadius = 40f
-        start()
-    }
 }
 
 fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {

@@ -13,101 +13,97 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/studentNameTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:text=""
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="RelativeOverlap" />
-
         <LinearLayout
-            android:id="@+id/fiveStarButton"
+            android:id="@+id/studentNameLayout"
+            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/studentNameTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            tools:ignore="UseCompoundDrawables">
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@id/studentGradeTextView"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/starOne"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24" />
 
-            <ImageView
-                android:id="@+id/starTwo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starThree"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starFour"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starFive"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/degerlendirmeDate"
+            <LinearLayout
+                android:id="@+id/fiveStarButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:ignore="UseCompoundDrawables">
 
+                <ImageView
+                    android:id="@+id/starOne"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24" />
+
+                <ImageView
+                    android:id="@+id/starTwo"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/starThree"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/starFour"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/starFive"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/degerlendirmeDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/studentNameTextView"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:ignore="RelativeOverlap" />
         </LinearLayout>
 
 
         <TextView
             android:id="@+id/studentGradeTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerVertical="true"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
             android:gravity="center"
             android:text=""
             android:textSize="14sp"
             android:textStyle="bold" />
 
 
-        <ImageView
-            android:id="@+id/todayStudyImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:layout_toEndOf="@id/studentNameTextView"
-            android:contentDescription="@string/add_something" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -116,6 +112,13 @@
             android:layout_centerVertical="true"
             android:orientation="horizontal"
             tools:ignore="RelativeOverlap">
+            <ImageView
+                android:id="@+id/todayStudyImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="10dp"
+                android:contentDescription="@string/add_something" />
 
             <Button
                 android:id="@+id/studentDeleteButton"
