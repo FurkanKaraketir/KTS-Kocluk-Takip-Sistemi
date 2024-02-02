@@ -160,4 +160,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="renci_say_s">Öğrenci Sayısı:</string>
+    <string name="al_ma_ekle">Çalışma Ekle</string>
+    <string name="ortalama">Ortalama:</string>
 </resources>

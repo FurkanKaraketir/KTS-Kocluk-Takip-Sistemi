@@ -14,7 +14,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
+import com.karaketir.coachingapp.fragments.DenemelerFragment
 import com.karaketir.coachingapp.fragments.DenemelerTeacherFragment
+import com.karaketir.coachingapp.fragments.DutiesFragment
 import com.karaketir.coachingapp.fragments.MainFragment
 import com.karaketir.coachingapp.fragments.SettingsFragment
 import com.karaketir.coachingapp.fragments.StatsFragment
@@ -146,10 +148,12 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     R.id.navigation_denemeler -> {
-                        replaceFragmentStudent(StatsFragment())
+                        replaceFragmentStudent(DenemelerFragment())
 
                     }
-
+                    R.id.navigation_duties -> {
+                        replaceFragmentStudent(DutiesFragment())
+                    }
                     R.id.navigation_settings -> {
                         replaceFragmentStudent(SettingsFragment())
                     }

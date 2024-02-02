@@ -90,15 +90,18 @@
             android:layout_height="match_parent"
             android:layout_below="@id/denemelerTitleCard" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <Button
             android:id="@+id/addDeneme"
+            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="30dp"
+            android:layout_margin="10dp"
             android:contentDescription="@string/add_something"
-            android:src="@drawable/ic_baseline_add_circle_outline_24" />
+            android:text="@string/deneme_ekle"
+            app:icon="@drawable/ic_baseline_add_circle_outline_24"
+            tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
 

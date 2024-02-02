@@ -34,8 +34,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.AllStudentsActivity
 import com.karaketir.coachingapp.BuildConfig
 import com.karaketir.coachingapp.ClassesActivity
-import com.karaketir.coachingapp.DenemelerActivity
-import com.karaketir.coachingapp.DutiesActivity
 import com.karaketir.coachingapp.GoalsActivity
 import com.karaketir.coachingapp.LoginActivity
 import com.karaketir.coachingapp.MessageActivity
@@ -153,7 +151,6 @@ class MainFragment : Fragment() {
         if (isBindingAvailable()) {
             mBinding = binding
             val nameAndSurnameTextView = mBinding.nameAndSurnameTextView
-            val transitionsContainer = mBinding.transitionsContainer
             val sayacContainer = mBinding.sayacContainer
 
             var sayacVisible = false
@@ -163,12 +160,10 @@ class MainFragment : Fragment() {
             val addStudyButton = mBinding.addStudyButton
             addStudyButton.visibility = View.GONE
             val signOutButton = mBinding.signOutButton
-            val gorevButton = mBinding.gorevButton
             val previousRatingsButton = mBinding.previousRatingsButton
             val allStudentsBtn = mBinding.allStudentsBtn
             val searchEditText = mBinding.searchStudentMainActivityEditText
             val studySearchEditText = mBinding.searchStudyEditText
-            val studentDenemeButton = mBinding.studentDenemeButton
             val hedeflerStudentButton = mBinding.hedefStudentButton
             val gradeSpinner = mBinding.gradeSpinner
             val kocOgretmenTextView = mBinding.kocOgretmenTextView
@@ -289,14 +284,10 @@ class MainFragment : Fragment() {
 
             })
 
-
-            var visible = false
-
-
             try {
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     name = it.get("nameAndSurname").toString()
-                    nameAndSurnameTextView.text = "Merhaba, $name"
+                    nameAndSurnameTextView.text = name
 
                     kurumKodu = try {
                         it.get("kurumKodu")?.toString()?.toInt()!!
@@ -305,11 +296,6 @@ class MainFragment : Fragment() {
                     }
 
                     FirebaseMessaging.getInstance().subscribeToTopic(kurumKodu.toString())
-
-
-                    TransitionManager.beginDelayedTransition(transitionsContainer)
-                    visible = !visible
-                    nameAndSurnameTextView.visibility = if (visible) View.VISIBLE else View.GONE
 
 
                     if (it.get("personType").toString() == "Student") {
@@ -351,12 +337,10 @@ class MainFragment : Fragment() {
                         studySearchEditText.visibility = View.VISIBLE
                         searchEditText.visibility = View.GONE
                         previousRatingsButton.visibility = View.VISIBLE
-                        studentDenemeButton.visibility = View.VISIBLE
                         hedeflerStudentButton.visibility = View.VISIBLE
                         recyclerViewPreviousStudies.visibility = View.VISIBLE
                         allStudentsBtn.visibility = View.GONE
                         noReportButton.visibility = View.GONE
-                        gorevButton.visibility = View.VISIBLE
                         messageButton.visibility = View.GONE
 
                         contentTextView.text = "Son 7 Gündeki Çalışmalarım"
@@ -421,11 +405,9 @@ class MainFragment : Fragment() {
                         recyclerViewMyStudents.visibility = View.VISIBLE
                         searchBarTeacher.visibility = View.VISIBLE
                         noReportButton.visibility = View.VISIBLE
-                        studentDenemeButton.visibility = View.GONE
                         previousRatingsButton.visibility = View.GONE
                         allStudentsBtn.visibility = View.VISIBLE
                         addStudyButton.visibility = View.GONE
-                        gorevButton.visibility = View.GONE
                         gradeSpinner.visibility = View.VISIBLE
                         contentTextView.text = "Öğrencilerim"
                         teacherCardView.visibility = View.VISIBLE
@@ -527,16 +509,6 @@ class MainFragment : Fragment() {
             previousRatingsButton.setOnClickListener {
                 val intent = Intent(activity, PreviousRatingsActivity::class.java)
                 intent.putExtra("personType", personType)
-                intent.putExtra("kurumKodu", kurumKodu.toString())
-                this.startActivity(intent)
-            }
-
-            studentDenemeButton.setOnClickListener {
-                val intent = Intent(activity, DenemelerActivity::class.java)
-                intent.putExtra("studentID", auth.uid.toString())
-                intent.putExtra("personType", personType)
-                intent.putExtra("grade", grade.toString())
-                intent.putExtra("teacher", teacher)
                 intent.putExtra("kurumKodu", kurumKodu.toString())
                 this.startActivity(intent)
             }
@@ -802,14 +774,6 @@ class MainFragment : Fragment() {
 
             }
 
-            gorevButton.setOnClickListener {
-                val intent = Intent(activity, DutiesActivity::class.java)
-                intent.putExtra("kurumKodu", kurumKodu.toString())
-                intent.putExtra("personType", personType)
-                intent.putExtra("studentID", auth.uid)
-                this.startActivity(intent)
-            }
-
             updateTime(grade)
 
 
@@ -832,7 +796,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setupStudyRecyclerView(list: ArrayList<Study>) {
-        val layoutManager = GridLayoutManager(requireActivity().applicationContext, 2)
+        val layoutManager = GridLayoutManager(requireContext(), 2)
 
         recyclerViewPreviousStudies.layoutManager = layoutManager
         recyclerViewPreviousStudiesAdapter =

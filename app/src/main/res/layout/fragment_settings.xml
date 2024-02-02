@@ -16,21 +16,21 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/currentNameTextView"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
-                android:text="@string/sim" />
+                android:layout_marginTop="20dp"
+                android:text="@string/ayarlar" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/TextInputChangeName"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="15dp"
-                android:hint="@string/yeni_sim_ve_soyisim">
+                android:hint="@string/sim_ve_soyisim">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/changeNameEditText"
@@ -41,29 +41,23 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/currentGradeTextView"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
-                android:text="@string/s_n_f" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/TextInputChangeGrade"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="15dp"
-                android:hint="@string/s_n_f">
+                android:hint="@string/s_n_f"
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/changeGradeEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:maxLength="40" />
+                    android:maxLength="2" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

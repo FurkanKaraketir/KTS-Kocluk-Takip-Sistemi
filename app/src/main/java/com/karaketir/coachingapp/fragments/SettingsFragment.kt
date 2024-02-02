@@ -104,19 +104,17 @@ class SettingsFragment : Fragment() {
 
                     val saveButton = mBinding.saveProfileButton
                     val deleteUser = mBinding.deleteAccountButton
-                    val nameText = mBinding.currentNameTextView
-                    val gradeText = mBinding.currentGradeTextView
                     val nameChangeEditText = mBinding.changeNameEditText
                     val gradeChangeEditText = mBinding.changeGradeEditText
+                    val textInputChangeGrade = mBinding.TextInputChangeGrade
 
-                    nameText.text = "İsim: $name"
+                    nameChangeEditText.setText(name)
                     if (personType == "Student") {
-                        gradeText.visibility = View.VISIBLE
-                        gradeChangeEditText.visibility = View.VISIBLE
-                        gradeText.text = "Sınıf: $grade"
+                        textInputChangeGrade.visibility = View.VISIBLE
+                        gradeChangeEditText.setText(grade.toString())
+
                     } else {
-                        gradeText.visibility = View.GONE
-                        gradeChangeEditText.visibility = View.GONE
+                        textInputChangeGrade.visibility = View.GONE
                     }
 
 

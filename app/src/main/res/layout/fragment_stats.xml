@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:gravity="center"
-                        android:text="@string/toplam" />
+                        android:text="@string/ortalama" />
 
                     <TextView
                         android:id="@+id/toplamSure"

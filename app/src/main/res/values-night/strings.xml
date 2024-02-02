@@ -157,4 +157,6 @@
     <string name="statistikler">İstatistikler</string>
     <string name="ayarlar">Ayarlar</string>
     <string name="renci_say_s">Öğrenci Sayısı:</string>
+    <string name="al_ma_ekle">Çalışma Ekle</string>
+    <string name="ortalama">Ortalama:</string>
 </resources>
