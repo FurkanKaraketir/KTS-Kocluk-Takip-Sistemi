@@ -32,28 +32,6 @@
                     android:gravity="center"
                     android:text="@string/ko_luk_statistikleri" />
 
-                <LinearLayout
-                    android:id="@+id/statsSpinnerLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zaman_aral"
-                        android:textSize="18sp" />
-
-                    <Spinner
-                        android:id="@+id/statsZamanAraligiSpinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:spinnerMode="dialog"
-                        android:tooltipText="Alan Seçimi Yapınız"
-                        tools:ignore="UnusedAttribute" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/statsGradeSpinnerLayout"
@@ -79,13 +57,36 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/statsSpinnerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/zaman_aral"
+                        android:textSize="18sp" />
+
+                    <Spinner
+                        android:id="@+id/statsZamanAraligiSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:spinnerMode="dialog"
+                        android:tooltipText="Alan Seçimi Yapınız"
+                        tools:ignore="UnusedAttribute" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
+                        style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
@@ -94,7 +95,7 @@
 
                     <TextView
                         android:id="@+id/toplamSure"
-                        style="@style/TextAppearance.AppCompat.Title"
+                        style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
@@ -102,7 +103,7 @@
 
                     <TextView
                         android:id="@+id/toplamSoru"
-                        style="@style/TextAppearance.AppCompat.Title"
+                        style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"

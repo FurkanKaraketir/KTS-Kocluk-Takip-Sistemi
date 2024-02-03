@@ -22,6 +22,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.EnterTytActivity
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.adapter.DenemelerRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentDenemelerBinding
@@ -30,7 +31,7 @@ import java.util.Calendar
 import java.util.Date
 
 
-class DenemelerFragment : Fragment() {
+class DenemelerFragment(private var mainActivity: MainActivity) : Fragment() {
     init {
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
@@ -123,7 +124,7 @@ class DenemelerFragment : Fragment() {
                 val turSpinner = mBinding.denemeTurSpinner
                 val denemeAddButton = mBinding.denemeAddButton
 
-                layoutManager = GridLayoutManager(requireContext(), 2)
+                layoutManager = GridLayoutManager(mainActivity, 2)
 
                 if (personType == "Student") {
                     denemeAddButton.visibility = View.VISIBLE
@@ -133,10 +134,10 @@ class DenemelerFragment : Fragment() {
 
 
                 val denemeAdapter = ArrayAdapter(
-                    requireActivity(), android.R.layout.simple_spinner_item, zamanAraliklari
+                    mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
                 )
                 val turAdapter = ArrayAdapter(
-                    requireActivity(), android.R.layout.simple_spinner_item, turler
+                    mainActivity, android.R.layout.simple_spinner_item, turler
                 )
 
 
@@ -537,14 +538,14 @@ class DenemelerFragment : Fragment() {
 
 
                     if (teacher.isNotEmpty()) {
-                        val popup = PopupMenu(requireContext(), it)
+                        val popup = PopupMenu(mainActivity, it)
                         //inflate menu with layout mainmenu
                         popup.inflate(R.menu.subject_context)
                         popup.show()
 
                         popup.setOnMenuItemClickListener { item ->
                             if (item.itemId == R.id.TYT) {
-                                val intent = Intent(requireActivity(), EnterTytActivity::class.java)
+                                val intent = Intent(mainActivity, EnterTytActivity::class.java)
                                 intent.putExtra("studyType", "TYT")
                                 intent.putExtra("grade", grade.toString())
                                 intent.putExtra("teacher", teacher)
@@ -553,7 +554,7 @@ class DenemelerFragment : Fragment() {
                             }
 
                             if (item.itemId == R.id.AYT) {
-                                val intent = Intent(requireActivity(), EnterTytActivity::class.java)
+                                val intent = Intent(mainActivity, EnterTytActivity::class.java)
                                 intent.putExtra("studyType", "AYT")
                                 intent.putExtra("grade", grade.toString())
                                 intent.putExtra("teacher", teacher)
@@ -564,9 +565,7 @@ class DenemelerFragment : Fragment() {
                         }
                     } else {
                         Toast.makeText(
-                            requireActivity(),
-                            "Koç Öğretmeniniz Bulunmamaktadır.",
-                            Toast.LENGTH_SHORT
+                            mainActivity, "Koç Öğretmeniniz Bulunmamaktadır.", Toast.LENGTH_SHORT
                         ).show()
                     }
 

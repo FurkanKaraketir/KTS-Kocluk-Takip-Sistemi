@@ -19,11 +19,13 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.EnterDutyActivity
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.adapter.DutiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentDutiesBinding
 import com.karaketir.coachingapp.models.Duty
 
-class DutiesFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class DutiesFragment(private var mainActivity: MainActivity) : Fragment(),
+    AdapterView.OnItemSelectedListener {
 
 
     init {
@@ -102,7 +104,7 @@ class DutiesFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 val gorevTuruSpinner = mBinding.gorevSpinner
                 dutyAddButton = mBinding.addDutyButton
                 val dutyAdapter = ArrayAdapter(
-                    requireActivity(), android.R.layout.simple_spinner_item, gorevTurleri
+                    mainActivity, android.R.layout.simple_spinner_item, gorevTurleri
                 )
                 dutyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 gorevTuruSpinner.adapter = dutyAdapter
@@ -115,7 +117,7 @@ class DutiesFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
 
 
-                val layoutManager = GridLayoutManager(requireActivity(), 2)
+                val layoutManager = GridLayoutManager(mainActivity, 2)
 
                 dutiesRecyclerView.layoutManager = layoutManager
 
@@ -260,7 +262,7 @@ class DutiesFragment : Fragment(), AdapterView.OnItemSelectedListener {
         dutyAddButton = binding.addDutyButton
 
         dutyAddButton.setOnClickListener {
-            val sendIntent = Intent(requireActivity(), EnterDutyActivity::class.java)
+            val sendIntent = Intent(mainActivity, EnterDutyActivity::class.java)
             sendIntent.putExtra("studentID", studentID)
             sendIntent.putExtra("kurumKodu", kurumKodu.toString())
             this.startActivity(sendIntent)

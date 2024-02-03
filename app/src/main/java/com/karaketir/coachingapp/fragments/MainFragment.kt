@@ -36,6 +36,7 @@ import com.karaketir.coachingapp.BuildConfig
 import com.karaketir.coachingapp.ClassesActivity
 import com.karaketir.coachingapp.GoalsActivity
 import com.karaketir.coachingapp.LoginActivity
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.MessageActivity
 import com.karaketir.coachingapp.NoReportActivity
 import com.karaketir.coachingapp.PreviousRatingsActivity
@@ -58,7 +59,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.util.Calendar
 import java.util.Locale
 
-class MainFragment : Fragment() {
+class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
     init {
         System.setProperty(
@@ -155,7 +156,6 @@ class MainFragment : Fragment() {
 
             var sayacVisible = false
 
-            val contentTextView = mBinding.contentTextView
             val topStudentsButton = mBinding.topStudentsButton
             val addStudyButton = mBinding.addStudyButton
             addStudyButton.visibility = View.GONE
@@ -163,7 +163,6 @@ class MainFragment : Fragment() {
             val previousRatingsButton = mBinding.previousRatingsButton
             val allStudentsBtn = mBinding.allStudentsBtn
             val searchEditText = mBinding.searchStudentMainActivityEditText
-            val studySearchEditText = mBinding.searchStudyEditText
             val hedeflerStudentButton = mBinding.hedefStudentButton
             val gradeSpinner = mBinding.gradeSpinner
             val kocOgretmenTextView = mBinding.kocOgretmenTextView
@@ -184,7 +183,7 @@ class MainFragment : Fragment() {
             updateButton.setOnClickListener {
                 openLink(
                     "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp",
-                    requireContext()
+                    mainActivity
                 )
             }
 
@@ -258,32 +257,6 @@ class MainFragment : Fragment() {
 
             })
 
-            studySearchEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    filteredStudyList = ArrayList()
-                    if (p0.toString() != "") {
-                        for (item in studyList) {
-                            if (item.studyName.lowercase(Locale.getDefault())
-                                    .contains(p0.toString().lowercase(Locale.getDefault()))
-                            ) {
-                                filteredStudyList.add(item)
-                            }
-                        }
-                        setupStudyRecyclerView(filteredStudyList)
-                    } else {
-                        setupStudyRecyclerView(studyList)
-                    }
-                }
-
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-            })
-
             try {
                 db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener {
                     name = it.get("nameAndSurname").toString()
@@ -334,7 +307,6 @@ class MainFragment : Fragment() {
                         gradeSpinner.visibility = View.GONE
                         topStudentsButton.visibility = View.GONE
                         teacherSpinner.visibility = View.GONE
-                        studySearchEditText.visibility = View.VISIBLE
                         searchEditText.visibility = View.GONE
                         previousRatingsButton.visibility = View.VISIBLE
                         hedeflerStudentButton.visibility = View.VISIBLE
@@ -342,8 +314,6 @@ class MainFragment : Fragment() {
                         allStudentsBtn.visibility = View.GONE
                         noReportButton.visibility = View.GONE
                         messageButton.visibility = View.GONE
-
-                        contentTextView.text = "Son 7 Gündeki Çalışmalarım"
 
                         cal.add(Calendar.DAY_OF_YEAR, 2)
                         val bitisTarihi = cal.time
@@ -395,7 +365,6 @@ class MainFragment : Fragment() {
                         teacher = ""
                         personType = "Teacher"
                         dersProgramiButton.visibility = View.GONE
-                        studySearchEditText.visibility = View.GONE
                         hedeflerStudentButton.visibility = View.GONE
                         excelButton.visibility = View.VISIBLE
                         searchEditText.visibility = View.VISIBLE
@@ -409,12 +378,11 @@ class MainFragment : Fragment() {
                         allStudentsBtn.visibility = View.VISIBLE
                         addStudyButton.visibility = View.GONE
                         gradeSpinner.visibility = View.VISIBLE
-                        contentTextView.text = "Öğrencilerim"
                         teacherCardView.visibility = View.VISIBLE
                         messageButton.visibility = View.VISIBLE
 
                         messageButton.setOnClickListener {
-                            val newIntent = Intent(requireActivity(), MessageActivity::class.java)
+                            val newIntent = Intent(mainActivity, MessageActivity::class.java)
                             newIntent.putExtra("kurumKodu", kurumKodu.toString())
                             this.startActivity(newIntent)
                         }
@@ -429,7 +397,7 @@ class MainFragment : Fragment() {
 
                         excelButton.setOnClickListener {
 
-                            clearCache(requireActivity().applicationContext)
+                            clearCache(mainActivity)
                             Toast.makeText(activity, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT)
                                 .show()
 
@@ -440,7 +408,7 @@ class MainFragment : Fragment() {
                                 kurumKodu.toString(),
                                 auth,
                                 db,
-                                requireContext(),
+                                mainActivity,
                                 workbook
                             )
 
@@ -451,7 +419,7 @@ class MainFragment : Fragment() {
 
 
                         val tarihAdapter = ArrayAdapter(
-                            requireActivity(), android.R.layout.simple_spinner_item, zamanAraliklari
+                            mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
                         )
 
                         tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -471,7 +439,7 @@ class MainFragment : Fragment() {
                             }
 
                         val gradeAdapter = ArrayAdapter(
-                            requireActivity(), android.R.layout.simple_spinner_item, gradeList
+                            mainActivity, android.R.layout.simple_spinner_item, gradeList
                         )
                         gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         gradeSpinner.adapter = gradeAdapter
@@ -496,7 +464,6 @@ class MainFragment : Fragment() {
 
                     TransitionManager.beginDelayedTransition(sayacContainer)
                     sayacVisible = !sayacVisible
-                    contentTextView.visibility = if (sayacVisible) View.VISIBLE else View.GONE
 
                 }
 
@@ -745,7 +712,7 @@ class MainFragment : Fragment() {
                                 }
                                 myIntent.putExtra("list", raporGondermeyenList)
                                 myIntent.putExtra("secilenZaman", secilenZaman)
-                                requireActivity().startActivity(myIntent)
+                                mainActivity.startActivity(myIntent)
                             }
 
                         }
@@ -756,7 +723,7 @@ class MainFragment : Fragment() {
 
             signOutButton.setOnClickListener {
 
-                val signOutAlertDialog = AlertDialog.Builder(requireContext())
+                val signOutAlertDialog = AlertDialog.Builder(mainActivity)
                 signOutAlertDialog.setTitle("Çıkış Yap")
                 signOutAlertDialog.setMessage("Hesabınızdan Çıkış Yapmak İstediğinize Emin misiniz?")
                 signOutAlertDialog.setPositiveButton("Çıkış") { _, _ ->
@@ -784,7 +751,7 @@ class MainFragment : Fragment() {
 
 
     private fun setupStudentRecyclerView(list: ArrayList<Student>) {
-        val layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        val layoutManager = LinearLayoutManager(mainActivity)
 
         recyclerViewMyStudents.layoutManager = layoutManager
 
@@ -796,7 +763,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setupStudyRecyclerView(list: ArrayList<Study>) {
-        val layoutManager = GridLayoutManager(requireContext(), 2)
+        val layoutManager = GridLayoutManager(mainActivity, 2)
 
         recyclerViewPreviousStudies.layoutManager = layoutManager
         recyclerViewPreviousStudiesAdapter =
@@ -876,7 +843,7 @@ class MainFragment : Fragment() {
         auth.signOut()
         val intent = Intent(activity, LoginActivity::class.java)
         this.startActivity(intent)
-        requireActivity().finish()
+        mainActivity.finish()
     }
 
 
@@ -1021,7 +988,7 @@ class MainFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 createExcel(
-                    requireContext(), secilenGrade, secilenZaman, workbook
+                    mainActivity, secilenGrade, secilenZaman, workbook
                 )
             } else {
                 // Permission not granted, handle accordingly
@@ -1030,13 +997,13 @@ class MainFragment : Fragment() {
 
     private fun askForPermissions() {
         if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                mainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission not granted, request it
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            createExcel(requireActivity().applicationContext, secilenGrade, secilenZaman, workbook)
+            createExcel(mainActivity, secilenGrade, secilenZaman, workbook)
         }
     }
 

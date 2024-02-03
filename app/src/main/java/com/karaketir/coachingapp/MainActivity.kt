@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 fragmentContainerTeacher.visibility = View.VISIBLE
                 bottomNavigationTeacher.visibility = View.VISIBLE
                 bottomNavigationStudent.visibility = View.GONE
-                replaceFragmentTeacher(MainFragment())
+                replaceFragmentTeacher(MainFragment(this))
 
             } else {
                 isTeacher = false
@@ -105,30 +105,30 @@ class MainActivity : AppCompatActivity() {
                 bottomNavigationTeacher.visibility = View.GONE
                 bottomNavigationStudent.visibility = View.VISIBLE
 
-                replaceFragmentStudent(MainFragment())
+                replaceFragmentStudent(MainFragment(this))
             }
 
             binding.bottomNavigationTeacher.setOnItemSelectedListener {
 
                 when (it.itemId) {
                     R.id.navigation_home -> {
-                        replaceFragmentTeacher(MainFragment())
+                        replaceFragmentTeacher(MainFragment(this))
 
                     }
 
                     R.id.navigation_stats -> {
-                        replaceFragmentTeacher(StatsFragment())
+                        replaceFragmentTeacher(StatsFragment(this))
 
                     }
 
                     R.id.navigation_denemeler -> {
-                        replaceFragmentTeacher(DenemelerTeacherFragment())
+                        replaceFragmentTeacher(DenemelerTeacherFragment(this))
 
 
                     }
 
                     R.id.navigation_settings -> {
-                        replaceFragmentTeacher(SettingsFragment())
+                        replaceFragmentTeacher(SettingsFragment(this))
                     }
 
                     else -> {
@@ -143,19 +143,19 @@ class MainActivity : AppCompatActivity() {
 
                 when (it.itemId) {
                     R.id.navigation_home -> {
-                        replaceFragmentStudent(MainFragment())
+                        replaceFragmentStudent(MainFragment(this))
 
                     }
 
                     R.id.navigation_denemeler -> {
-                        replaceFragmentStudent(DenemelerFragment())
+                        replaceFragmentStudent(DenemelerFragment(this))
 
                     }
                     R.id.navigation_duties -> {
-                        replaceFragmentStudent(DutiesFragment())
+                        replaceFragmentStudent(DutiesFragment(this))
                     }
                     R.id.navigation_settings -> {
-                        replaceFragmentStudent(SettingsFragment())
+                        replaceFragmentStudent(SettingsFragment(this))
                     }
 
                     else -> {

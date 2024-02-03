@@ -13,10 +13,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.databinding.FragmentSettingsBinding
 import com.karaketir.coachingapp.services.openLink
 
-class SettingsFragment : Fragment() {
+class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
 
     init {
         System.setProperty(
@@ -97,7 +98,7 @@ class SettingsFragment : Fragment() {
 
                     developerButton.setOnClickListener {
                         openLink(
-                            "https://www.linkedin.com/in/furkankaraketir/", requireContext()
+                            "https://www.linkedin.com/in/furkankaraketir/", mainActivity
                         )
                     }
 
@@ -121,7 +122,7 @@ class SettingsFragment : Fragment() {
 
                     saveButton.setOnClickListener {
 
-                        val alertDialog = AlertDialog.Builder(requireActivity())
+                        val alertDialog = AlertDialog.Builder(mainActivity)
                         alertDialog.setTitle("Kaydet")
                         alertDialog.setMessage("Değişiklikleri Kaydetmek İstediğinize Emin misiniz?")
                         alertDialog.setPositiveButton("Kaydet") { _, _ ->
@@ -146,7 +147,7 @@ class SettingsFragment : Fragment() {
                                     .collection(personType).document(auth.uid.toString())
                                     .update("grade", gradeChangeEditText.text.toString().toInt())
                             }
-                            Toast.makeText(requireContext(), "İşlem Başarılı!", Toast.LENGTH_SHORT)
+                            Toast.makeText(mainActivity, "İşlem Başarılı!", Toast.LENGTH_SHORT)
                                 .show()
 
 
@@ -159,7 +160,7 @@ class SettingsFragment : Fragment() {
                     }
 
                     deleteUser.setOnClickListener {
-                        val alertDialog = AlertDialog.Builder(requireActivity())
+                        val alertDialog = AlertDialog.Builder(mainActivity)
                         alertDialog.setTitle("Hesabı Sil")
                         alertDialog.setMessage("Hesabınızı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
                         alertDialog.setPositiveButton("Sil") { _, _ ->
@@ -172,7 +173,7 @@ class SettingsFragment : Fragment() {
                                             Firebase.auth.currentUser!!.delete()
                                                 .addOnSuccessListener {
                                                     Toast.makeText(
-                                                        requireContext(),
+                                                        mainActivity,
                                                         "İşlem Başarılı!",
                                                         Toast.LENGTH_SHORT
                                                     ).show()

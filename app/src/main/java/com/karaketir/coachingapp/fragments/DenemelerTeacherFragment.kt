@@ -17,12 +17,13 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.AddDenemeTeacherActivity
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.adapter.DenemelerTeacherRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentDenemelerTeacherBinding
 import com.karaketir.coachingapp.models.DenemeTeacher
 
 
-class DenemelerTeacherFragment : Fragment() {
+class DenemelerTeacherFragment(private var mainActivity: MainActivity) : Fragment() {
     init {
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
@@ -85,7 +86,7 @@ class DenemelerTeacherFragment : Fragment() {
 
         if (isBindingAvailable()) {
             val mBinding = binding
-            val layoutManager = LinearLayoutManager(requireContext())
+            val layoutManager = LinearLayoutManager(mainActivity)
 
             val recyclerView = mBinding.recyclerViewDenemeler
             val addDenemeButton = mBinding.addDeneme
@@ -95,16 +96,16 @@ class DenemelerTeacherFragment : Fragment() {
             val gradeSpinner = mBinding.denemeTeacherGradeSpinner
             val turSpinner = mBinding.denemeTeacherTurSpinner
             addDenemeButton.setOnClickListener {
-                val intent = Intent(requireContext(), AddDenemeTeacherActivity::class.java)
+                val intent = Intent(mainActivity, AddDenemeTeacherActivity::class.java)
                 intent.putExtra("kurumKodu", kurumKodu.toString())
                 this.startActivity(intent)
             }
 
             val gradeAdapter = ArrayAdapter(
-                requireContext(), android.R.layout.simple_spinner_item, gradeList
+                mainActivity, android.R.layout.simple_spinner_item, gradeList
             )
             val turAdapter = ArrayAdapter(
-                requireContext(), android.R.layout.simple_spinner_item, turler
+                mainActivity, android.R.layout.simple_spinner_item, turler
             )
 
             gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

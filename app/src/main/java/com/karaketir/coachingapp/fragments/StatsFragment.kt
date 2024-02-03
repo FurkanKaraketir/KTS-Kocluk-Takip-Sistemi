@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.karaketir.coachingapp.fragments
 
 import android.Manifest
@@ -12,8 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Message
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.karaketir.coachingapp.StatsActivity
+import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentStatsBinding
 import com.karaketir.coachingapp.models.Statistic
@@ -50,13 +46,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import kotlin.concurrent.fixedRateTimer
 
-class StatsFragment : Fragment() {
+class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
     private var _binding: FragmentStatsBinding? = null
     private var isViewCreated = false
     private lateinit var mBinding: FragmentStatsBinding
@@ -84,7 +78,7 @@ class StatsFragment : Fragment() {
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var layoutManager: GridLayoutManager
-    private var secilenZamanAraligi = "Bugün"
+    private var secilenZamanAraligi = "Seçiniz"
     private var kurumKodu = 0
     private val workbook = XSSFWorkbook()
     private var secilenGrade = "Bütün Sınıflar"
@@ -97,6 +91,7 @@ class StatsFragment : Fragment() {
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
 
     private val zamanAraliklari = arrayOf(
+        "Seçiniz",
         "Bugün",
         "Dün",
         "Bu Hafta",
@@ -159,17 +154,17 @@ class StatsFragment : Fragment() {
 
             val fileSaveButton = mBinding.fileSaveExcelButton
 
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = GridLayoutManager(mainActivity, 2)
             val statsZamanSpinner = mBinding.statsZamanAraligiSpinner
 
             val statsGradeSpinner = mBinding.statsGradeSpinner
 
             val statsAdapter = ArrayAdapter(
-                requireContext(), android.R.layout.simple_spinner_item, zamanAraliklari
+                mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
             )
 
             val gradeAdapter = ArrayAdapter(
-                requireContext(), android.R.layout.simple_spinner_item, gradeList
+                mainActivity, android.R.layout.simple_spinner_item, gradeList
             )
 
             statsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -219,29 +214,10 @@ class StatsFragment : Fragment() {
 
             }
 
-            val weakHandler = Handler(WeakReferenceHandlerCallback(this))
-
-            weakHandler.post(object : Runnable {
-                override fun run() {
-                    // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
-                    weakHandler.postDelayed(this, 2000)
-                    showSum()
-                }
-            })
 
         }
 
 
-    }
-
-    class WeakReferenceHandlerCallback(fragment: StatsFragment) : Handler.Callback {
-        private val weakReference = WeakReference(fragment)
-
-        override fun handleMessage(msg: Message): Boolean {
-            weakReference.get()
-
-            return true
-        }
     }
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
@@ -254,7 +230,6 @@ class StatsFragment : Fragment() {
                 toplamSoru += i.cozulenSoru.toFloat()
             }
         }
-
 
         val toplamSureSaat = toplamSure / 60
         toplamSureTextView.text = toplamSure.format(2) + "dk " + "(${
@@ -278,7 +253,7 @@ class StatsFragment : Fragment() {
 
     private fun askForPermissions() {
         if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                mainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission not granted, request it
@@ -304,7 +279,7 @@ class StatsFragment : Fragment() {
                 arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
 
 
-            val cursor: Cursor? = requireContext().contentResolver.query(
+            val cursor: Cursor? = mainActivity.contentResolver.query(
                 contentUri, null, selection, selectionArgs, null
             )
 
@@ -313,7 +288,7 @@ class StatsFragment : Fragment() {
             if (cursor != null) {
                 if (cursor.count == 0) {
                     Toast.makeText(
-                        requireContext(),
+                        mainActivity,
                         "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/\"",
                         Toast.LENGTH_LONG
                     ).show()
@@ -331,20 +306,19 @@ class StatsFragment : Fragment() {
                             MediaStore.MediaColumns.RELATIVE_PATH,
                             Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
                         ) //end "/" is not mandatory
-                        uri = requireContext().contentResolver.insert(
+                        uri = mainActivity.contentResolver.insert(
                             MediaStore.Files.getContentUri("external"), values
                         ) //important!
-                        val outputStream = requireContext().contentResolver.openOutputStream(uri!!)
+                        val outputStream = mainActivity.contentResolver.openOutputStream(uri!!)
                         workbook.write(outputStream)
                         outputStream!!.flush()
                         //outputStream!!.write("This is menu category data.".toByteArray())
                         outputStream.close()
                         Toast.makeText(
-                            requireContext(), "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                            mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
                         ).show()
                     } catch (e: IOException) {
-                        Toast.makeText(requireContext(), "İşlem Başarısız!", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
                     }
 
                 } else {
@@ -360,7 +334,7 @@ class StatsFragment : Fragment() {
                     }
                     if (uri == null) {
                         Toast.makeText(
-                            requireContext(),
+                            mainActivity,
                             "\"$secilenGrade - $secilenZamanAraligi - $current.xls\" Bulunamadı",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -378,20 +352,19 @@ class StatsFragment : Fragment() {
                                 MediaStore.MediaColumns.RELATIVE_PATH,
                                 Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
                             ) //end "/" is not mandatory
-                            uri = requireContext().contentResolver.insert(
+                            uri = mainActivity.contentResolver.insert(
                                 MediaStore.Files.getContentUri("external"), values
                             ) //important!
-                            val outputStream =
-                                requireContext().contentResolver.openOutputStream(uri!!)
+                            val outputStream = mainActivity.contentResolver.openOutputStream(uri!!)
                             workbook.write(outputStream)
                             outputStream!!.flush()
                             //outputStream!!.write("This is menu category data.".toByteArray())
                             outputStream.close()
                             Toast.makeText(
-                                requireContext(), "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                                mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: IOException) {
-                            Toast.makeText(requireContext(), "İşlem Başarısız!", Toast.LENGTH_SHORT)
+                            Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT)
                                 .show()
                         }
 
@@ -399,7 +372,7 @@ class StatsFragment : Fragment() {
                     } else {
                         try {
                             val outputStream: OutputStream? =
-                                requireContext().contentResolver.openOutputStream(
+                                mainActivity.contentResolver.openOutputStream(
                                     uri, "rwt"
                                 ) //overwrite mode, see below
                             workbook.write(outputStream)
@@ -407,10 +380,10 @@ class StatsFragment : Fragment() {
                             //outputStream!!.write("This is menu category data.".toByteArray())
                             outputStream.close()
                             Toast.makeText(
-                                requireContext(), "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                                mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: IOException) {
-                            Toast.makeText(requireContext(), "İşlem Başarısız!", Toast.LENGTH_SHORT)
+                            Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
@@ -430,7 +403,7 @@ class StatsFragment : Fragment() {
                 val fileOutputStream = FileOutputStream(filePath)
                 workbook.write(fileOutputStream)
                 Toast.makeText(
-                    requireContext(), "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
+                    mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
                 ).show()
                 fileOutputStream.flush()
 
@@ -519,7 +492,7 @@ class StatsFragment : Fragment() {
 
             }
         }
-        Toast.makeText(requireContext(), "Excel Dosyası Oluşturuldu", Toast.LENGTH_SHORT).show()
+        Toast.makeText(mainActivity, "Excel Dosyası Oluşturuldu", Toast.LENGTH_SHORT).show()
     }
 
     private fun getHeaderStyle(workbook: Workbook): CellStyle {
@@ -569,6 +542,12 @@ class StatsFragment : Fragment() {
         cal.clear(Calendar.MILLISECOND)
 
         when (secilenZamanAraligi) {
+            "Seçiniz" -> {
+                baslangicTarihi = cal.time
+                bitisTarihi = cal.time
+
+            }
+
             "Bugün" -> {
                 baslangicTarihi = cal.time
 
@@ -735,7 +714,7 @@ class StatsFragment : Fragment() {
         }
 
 
-        val dersListesi = kotlin.collections.ArrayList<String>()
+        val dersListesi = ArrayList<String>()
 
 
 
@@ -789,7 +768,7 @@ class StatsFragment : Fragment() {
 
                                                         if (currentValue != null) {
                                                             dersSoruHash[dersIndex] =
-                                                                currentValue + cozulenSoru
+                                                                currentValue + cozulenSoru.toFloat()
                                                         }
 
 
@@ -804,7 +783,7 @@ class StatsFragment : Fragment() {
 
                                                         if (currentValue != null) {
                                                             dersSureHash[dersIndex] =
-                                                                currentValue + toplamCalisma
+                                                                currentValue + toplamCalisma.toFloat()
                                                         }
 
 
@@ -831,8 +810,10 @@ class StatsFragment : Fragment() {
                                                         )
                                                         recyclerViewStatsAdapter.notifyDataSetChanged()
                                                     }
+
                                                 }
 
+                                                showSum()
 
                                             }
 
@@ -888,7 +869,7 @@ class StatsFragment : Fragment() {
 
                                                         if (currentValue != null) {
                                                             dersSoruHash[dersIndex] =
-                                                                currentValue + cozulenSoru
+                                                                currentValue + cozulenSoru.toFloat()
                                                         }
 
 
@@ -903,7 +884,7 @@ class StatsFragment : Fragment() {
 
                                                         if (currentValue != null) {
                                                             dersSureHash[dersIndex] =
-                                                                currentValue + toplamCalisma
+                                                                currentValue + toplamCalisma.toFloat()
                                                         }
 
 
@@ -931,6 +912,7 @@ class StatsFragment : Fragment() {
 
 
                                                 }
+                                                showSum()
 
 
                                             }

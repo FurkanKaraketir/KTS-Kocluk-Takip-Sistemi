@@ -11,361 +11,337 @@
         android:orientation="vertical"
         tools:context=".fragments.MainFragment">
 
-        <ScrollView
+        <RelativeLayout
+            android:id="@+id/relative"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <RelativeLayout
-                android:id="@+id/relative"
+            <LinearLayout
+                android:id="@+id/welcomeText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/welcomeText"
+                <RelativeLayout
+                    android:id="@+id/transitions_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
-                    <RelativeLayout
-                        android:id="@+id/transitions_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/helloText"
+                        style="@style/MaterialAlertDialog.Material3.Title.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:gravity="center"
+                        android:text="@string/merhaba"
+                        android:textSize="20sp"
+                        app:icon="@drawable/baseline_account_circle_24" />
 
-                        <TextView
-                            android:id="@+id/helloText"
-                            style="@style/MaterialAlertDialog.Material3.Title.Text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginTop="25dp"
-                            android:layout_marginBottom="25dp"
-                            android:gravity="center"
-                            android:text="@string/merhaba"
-                            android:textSize="20sp"
-                            app:icon="@drawable/baseline_account_circle_24" />
+                    <TextView
+                        android:id="@+id/nameAndSurnameTextView"
+                        style="@style/MaterialAlertDialog.Material3.Title.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:layout_toEndOf="@id/helloText"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:icon="@drawable/baseline_account_circle_24" />
 
-                        <TextView
-                            android:id="@+id/nameAndSurnameTextView"
-                            style="@style/MaterialAlertDialog.Material3.Title.Text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginTop="25dp"
-                            android:layout_marginBottom="25dp"
-                            android:layout_toEndOf="@id/helloText"
-                            android:gravity="center"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            app:icon="@drawable/baseline_account_circle_24" />
-
-                        <Button
-                            android:id="@+id/signOutButton"
-                            style="@style/Widget.Material3.Button.IconButton.Outlined"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_margin="10dp"
-                            android:contentDescription="@string/add_something"
-                            android:src="@drawable/ic_baseline_highlight_off_24"
-                            app:icon="@drawable/ic_baseline_highlight_off_24"
-                            tools:ignore="RelativeOverlap" />
+                    <Button
+                        android:id="@+id/signOutButton"
+                        style="@style/Widget.Material3.Button.IconButton.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="10dp"
+                        android:contentDescription="@string/add_something"
+                        android:src="@drawable/ic_baseline_highlight_off_24"
+                        app:icon="@drawable/ic_baseline_highlight_off_24"
+                        tools:ignore="RelativeOverlap" />
 
 
-                    </RelativeLayout>
+                </RelativeLayout>
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/teacherCardView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginStart="15dp"
-                            android:visibility="gone"
-                            app:cardCornerRadius="10dp">
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/teacherCardView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="15dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="10dp">
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal">
-
-                                <Button
-                                    android:id="@+id/teacherButtonImage"
-                                    style="@style/Widget.Material3.Button.IconButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:icon="@drawable/baseline_man_24" />
-
-                                <TextView
-                                    android:id="@+id/studentCountTextView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginEnd="10dp"
-                                    android:layout_toEndOf="@+id/teacherButtonImage"
-                                    android:gravity="center"
-                                    android:text="@string/renci_say_s" />
-
-                                <ProgressBar
-                                    android:id="@+id/progressBar"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginEnd="10dp"
-                                    android:layout_toEndOf="@id/studentCountTextView" />
-                            </RelativeLayout>
-
-
-                        </androidx.cardview.widget.CardView>
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/YKSsayacCardView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="15dp"
-                            android:visibility="gone"
-                            app:cardCornerRadius="10dp">
-
-                            <TextView
-                                android:id="@+id/YKSsayac"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="14dp"
-                                android:gravity="center"
-                                android:shadowRadius="10" />
-                        </androidx.cardview.widget.CardView>
-
-                        <TextView
-                            android:id="@+id/kocOgretmenTextView"
-                            style="@style/bodyMenuText"
-                            android:layout_width="200dp"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_margin="15dp"
-                            android:shadowRadius="10"
-                            android:text="@string/ko_retmenin"
-                            android:visibility="gone" />
-
-                    </RelativeLayout>
-
-
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:id="@+id/sayacContainer"
+                        <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <Button
-                                android:id="@+id/noReportButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                                android:id="@+id/teacherButtonImage"
+                                style="@style/Widget.Material3.Button.IconButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/rapor_g_ndermeyenler"
-                                android:visibility="gone"
-                                app:icon="@drawable/ic_baseline_error_outline_24">
+                                app:icon="@drawable/baseline_man_24" />
 
-                            </Button>
-
-                            <Button
-                                android:id="@+id/previousRatingsButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            <TextView
+                                android:id="@+id/studentCountTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/de_erlendirmeler"
-                                android:visibility="gone"
-                                app:icon="@drawable/baseline_stars_24" />
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/teacherButtonImage"
+                                android:gravity="center"
+                                android:text="@string/renci_say_s" />
 
-                            <Button
-                                android:id="@+id/hedefStudentButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="10dp"
-                                android:text="@string/haftal_k_hedefler"
-                                android:textSize="15sp"
-                                android:visibility="gone"
-                                app:icon="@drawable/ic_baseline_outlined_flag_24" />
-
-                            <Button
-                                android:id="@+id/allStudentsBtn"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/t_m_renciler"
-                                android:visibility="gone"
-                                app:icon="@drawable/ic_baseline_people_outline_24">
-
-                            </Button>
+                            <ProgressBar
+                                android:id="@+id/progressBar"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@id/studentCountTextView" />
+                        </RelativeLayout>
 
 
-                            <Button
-                                android:id="@+id/excelButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/excel_tablosu_olu_tur"
-                                android:visibility="gone"
-                                app:icon="@drawable/baseline_upload_file_24">
+                    </androidx.cardview.widget.CardView>
 
-                            </Button>
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/YKSsayacCardView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="10dp">
 
-                            <Button
-                                android:id="@+id/topStudentsButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/renci_s_ralamas"
-                                android:visibility="gone"
-                                app:icon="@drawable/baseline_supervisor_account_24">
+                        <TextView
+                            android:id="@+id/YKSsayac"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="14dp"
+                            android:gravity="center"
+                            android:shadowRadius="10" />
+                    </androidx.cardview.widget.CardView>
 
-                            </Button>
+                    <TextView
+                        android:id="@+id/kocOgretmenTextView"
+                        style="@style/bodyMenuText"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="15dp"
+                        android:shadowRadius="10"
+                        android:text="@string/ko_retmenin"
+                        android:visibility="gone" />
 
-                            <Button
-                                android:id="@+id/dersProgramiButton"
-                                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:text="@string/ders_program"
-                                android:visibility="gone"
-                                app:icon="@drawable/baseline_table_chart_24" />
-
-
-                        </LinearLayout>
-
-                    </HorizontalScrollView>
+                </RelativeLayout>
 
 
-                </LinearLayout>
-
-
-                <TextView
-                    android:id="@+id/contentTextView"
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/welcomeText"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:text="" />
-
-                <EditText
-                    android:id="@+id/searchStudyEditText"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/contentTextView"
-                    android:layout_margin="8dp"
-                    android:autofillHints="ÇalışmaAra"
-                    android:drawableStart="@drawable/search"
-                    android:hint="@string/al_ma_ara"
-                    android:inputType="text"
-                    android:maxLength="40"
-                    android:visibility="gone" />
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/searchStudyEditText"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
-                        android:id="@+id/search_bar_teacher"
-                        android:layout_width="match_parent"
+                        android:id="@+id/sayacContainer"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:visibility="gone">
+                        android:orientation="horizontal">
 
-                        <Spinner
-                            android:id="@+id/studyZamanAraligiSpinner"
-                            style="@style/bodyMenuText"
+                        <Button
+                            android:id="@+id/noReportButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:shadowRadius="10"
-                            android:spinnerMode="dialog"
-                            android:tooltipText="Alan Seçimi Yapınız"
-                            tools:ignore="UnusedAttribute" />
+                            android:layout_margin="10dp"
+                            android:text="@string/rapor_g_ndermeyenler"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_baseline_error_outline_24">
 
+                        </Button>
 
-                        <Spinner
-                            android:id="@+id/gradeSpinner"
-                            style="@style/bodyMenuText"
+                        <Button
+                            android:id="@+id/previousRatingsButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:shadowRadius="10"
-                            android:spinnerMode="dialog"
-                            android:tooltipText="Alan Seçimi Yapınız"
-                            tools:ignore="UnusedAttribute" />
+                            android:layout_margin="10dp"
+                            android:text="@string/de_erlendirmeler"
+                            android:visibility="gone"
+                            app:icon="@drawable/baseline_stars_24" />
+
+                        <Button
+                            android:id="@+id/hedefStudentButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:text="@string/haftal_k_hedefler"
+                            android:textSize="15sp"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_baseline_outlined_flag_24" />
+
+                        <Button
+                            android:id="@+id/allStudentsBtn"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/t_m_renciler"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_baseline_people_outline_24">
+
+                        </Button>
+
+
+                        <Button
+                            android:id="@+id/excelButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/excel_tablosu_olu_tur"
+                            android:visibility="gone"
+                            app:icon="@drawable/baseline_upload_file_24">
+
+                        </Button>
+
+                        <Button
+                            android:id="@+id/topStudentsButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/renci_s_ralamas"
+                            android:visibility="gone"
+                            app:icon="@drawable/baseline_supervisor_account_24">
+
+                        </Button>
+
+                        <Button
+                            android:id="@+id/dersProgramiButton"
+                            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:text="@string/ders_program"
+                            android:visibility="gone"
+                            app:icon="@drawable/baseline_table_chart_24" />
 
 
                     </LinearLayout>
 
-                    <EditText
-                        android:id="@+id/searchStudentMainActivityEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:autofillHints="StudentName"
-                        android:drawableStart="@drawable/search"
-                        android:hint="@string/renci_ara"
-                        android:inputType="text"
-                        android:maxLength="40"
-                        android:visibility="gone">
+                </HorizontalScrollView>
 
-                    </EditText>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/welcomeText"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/search_bar_teacher"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Spinner
+                        android:id="@+id/studyZamanAraligiSpinner"
+                        style="@style/bodyMenuText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:shadowRadius="10"
+                        android:spinnerMode="dialog"
+                        android:tooltipText="Alan Seçimi Yapınız"
+                        tools:ignore="UnusedAttribute" />
+
+
+                    <Spinner
+                        android:id="@+id/gradeSpinner"
+                        style="@style/bodyMenuText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:shadowRadius="10"
+                        android:spinnerMode="dialog"
+                        android:tooltipText="Alan Seçimi Yapınız"
+                        tools:ignore="UnusedAttribute" />
+
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/searchStudentMainActivityEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:autofillHints="StudentName"
+                    android:drawableStart="@drawable/search"
+                    android:hint="@string/renci_ara"
+                    android:inputType="text"
+                    android:maxLength="40"
+                    android:visibility="gone">
+
+                </EditText>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    app:cardCornerRadius="20dp">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/myStudents"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
-                        android:visibility="gone"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
-                    </androidx.recyclerview.widget.RecyclerView>
-
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/previousStudies"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="10dp"
                         android:visibility="gone">
 
 
                     </androidx.recyclerview.widget.RecyclerView>
-                </LinearLayout>
 
 
-            </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-        </ScrollView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/previousStudies"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:visibility="gone">
+
+
+                </androidx.recyclerview.widget.RecyclerView>
+            </LinearLayout>
+
+
+        </RelativeLayout>
 
 
         <androidx.cardview.widget.CardView
