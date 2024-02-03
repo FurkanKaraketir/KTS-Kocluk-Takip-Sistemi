@@ -59,15 +59,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragmentTeacher(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container_teacher, fragment)
-        transaction.commit()
+        if (!supportFragmentManager.isDestroyed) {
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container_teacher, fragment)
+            transaction.commit()
+        }
     }
 
     private fun replaceFragmentStudent(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container_student, fragment)
-        transaction.commit()
+        if (!supportFragmentManager.isDestroyed) {
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container_student, fragment)
+            transaction.commit()
+        }
+
     }
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
@@ -87,7 +92,11 @@ class MainActivity : AppCompatActivity() {
 
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { snapshot ->
-            kurumKodu = snapshot["kurumKodu"].toString().toInt()
+            kurumKodu = try {
+                snapshot["kurumKodu"].toString().toInt()
+            } catch (e: Exception) {
+                763455
+            }
             if (snapshot["personType"].toString() == "Teacher") {
                 isTeacher = true
 
@@ -151,9 +160,11 @@ class MainActivity : AppCompatActivity() {
                         replaceFragmentStudent(DenemelerFragment(this))
 
                     }
+
                     R.id.navigation_duties -> {
                         replaceFragmentStudent(DutiesFragment(this))
                     }
+
                     R.id.navigation_settings -> {
                         replaceFragmentStudent(SettingsFragment(this))
                     }

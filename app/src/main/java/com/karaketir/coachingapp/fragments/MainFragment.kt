@@ -277,6 +277,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                         var cal = Calendar.getInstance()
                         grade = it.get("grade").toString().toInt()
+                        updateTime(grade)
                         teacher = it.get("teacher").toString()
                         dersProgramiButton.visibility = View.VISIBLE
                         addStudyButton.visibility = View.VISIBLE
@@ -380,6 +381,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         gradeSpinner.visibility = View.VISIBLE
                         teacherCardView.visibility = View.VISIBLE
                         messageButton.visibility = View.VISIBLE
+                        updateTime(grade)
 
                         messageButton.setOnClickListener {
                             val newIntent = Intent(mainActivity, MessageActivity::class.java)
@@ -741,8 +743,6 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
             }
 
-            updateTime(grade)
-
 
         }
 
@@ -864,12 +864,14 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                     eventDate[Calendar.MINUTE] = 15
                     eventDate[Calendar.SECOND] = 0
 
+
                     val diff = eventDate.timeInMillis - currentDate.timeInMillis
+
                     val days = diff / (24 * 60 * 60 * 1000)
                     val years = days / 365
+                    val remainingDays = days - (years * 365)
+                    val ay = remainingDays / 30
 
-
-                    val ay = days / 30
 
                     if (personType != "Student") {
                         if (currentDate[Calendar.MONTH] == 10 && currentDate[Calendar.DAY_OF_MONTH] == 24) {
@@ -881,13 +883,12 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         } else {
 
 
-                            textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${days % 30} Gün"
+                            textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
                             mBinding.YKSsayacCardView.visibility = View.VISIBLE
-
                         }
 
                     } else {
-                        textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${days % 30} Gün"
+                        textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
                         mBinding.YKSsayacCardView.visibility = View.VISIBLE
 
                     }
@@ -908,13 +909,15 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                     eventDate[Calendar.MINUTE] = 15
                     eventDate[Calendar.SECOND] = 0
 
+
                     val diff = eventDate.timeInMillis - currentDate.timeInMillis
 
                     val days = diff / (24 * 60 * 60 * 1000)
-                    val ay = days / 30
                     val years = days / 365
+                    val remainingDays = days - (years * 365)
+                    val ay = remainingDays / 30
 
-                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${days % 30} Gün"
+                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
                     mBinding.YKSsayacCardView.visibility = View.VISIBLE
 
 
@@ -936,9 +939,10 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                     val days = diff / (24 * 60 * 60 * 1000)
                     val years = days / 365
-                    val ay = days / 30
+                    val remainingDays = days - (years * 365)
+                    val ay = remainingDays / 30
 
-                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${days % 30} Gün"
+                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
                     mBinding.YKSsayacCardView.visibility = View.VISIBLE
 
 
@@ -960,9 +964,10 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                     val days = diff / (24 * 60 * 60 * 1000)
                     val years = days / 365
-                    val ay = days / 30
+                    val remainingDays = days - (years * 365)
+                    val ay = remainingDays / 30
 
-                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${days % 30} Gün"
+                    textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
                     mBinding.YKSsayacCardView.visibility = View.VISIBLE
 
 
