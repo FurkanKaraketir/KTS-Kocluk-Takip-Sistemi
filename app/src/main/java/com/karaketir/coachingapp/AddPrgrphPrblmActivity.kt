@@ -1,14 +1,19 @@
 package com.karaketir.coachingapp
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityAddPrgrphPrblmBinding
+import com.karaketir.coachingapp.services.WorldTimeApi
+import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class AddPrgrphPrblmActivity : AppCompatActivity() {
@@ -37,6 +42,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
     private var kurumKodu = 763455
 
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityAddPrgrphPrblmBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -45,6 +51,9 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
+        val cal = Calendar.getInstance()
+        var studyTime: Calendar
+        val cal2 = Calendar.getInstance()
         val paragrafTitle = binding.paragrafTitle
         val paragrafSaveButton = binding.paragrafSaveButton
         val currentTestsMinutesEditText = binding.paragrafDkEditText
@@ -55,7 +64,41 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
 
         val dersAdi = intent.getStringExtra("dersAdi").toString()
         kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        val retrofit = Retrofit.Builder().baseUrl("http://worldtimeapi.org")
+            .addConverterFactory(GsonConverterFactory.create()).build()
 
+        val worldTimeApi = retrofit.create(WorldTimeApi::class.java)
+
+        val currentTime = runBlocking {
+            try {
+                worldTimeApi.getCurrentTime()
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                null
+            }
+        }
+
+        if (currentTime != null) {
+            //turn string to date
+            val date = currentTime.datetime.split("T")[0]
+            val time = currentTime.datetime.split("T")[1].split(".")[0]
+            cal[Calendar.YEAR] = date.split("-")[0].toInt()
+            cal[Calendar.MONTH] = date.split("-")[1].toInt() - 1
+            cal[Calendar.DAY_OF_MONTH] = date.split("-")[2].toInt()
+            cal[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
+            cal[Calendar.MINUTE] = time.split(":")[1].toInt()
+            cal[Calendar.SECOND] = time.split(":")[2].toInt()
+
+            cal2[Calendar.YEAR] = date.split("-")[0].toInt()
+            cal2[Calendar.MONTH] = date.split("-")[1].toInt() - 1
+            cal2[Calendar.DAY_OF_MONTH] = date.split("-")[2].toInt()
+            cal2[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
+            cal2[Calendar.MINUTE] = time.split(":")[1].toInt()
+            cal2[Calendar.SECOND] = time.split(":")[2].toInt()
+
+        } else {
+            println("null")
+        }
         paragrafTitle.text = dersAdi
 
         paragrafSaveButton.setOnClickListener {
@@ -63,8 +106,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
 
             var stopper = false
             var stopper2 = false
-            val cal = Calendar.getInstance()
-            val studyTime = Calendar.getInstance()
+            studyTime = cal2
             studyTime.add(Calendar.HOUR_OF_DAY, -5)
 
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !

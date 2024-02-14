@@ -14,8 +14,12 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.databinding.ActivityEnterStudyBinding
-import java.util.*
-import kotlin.collections.ArrayList
+import com.karaketir.coachingapp.services.WorldTimeApi
+import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Calendar
+import java.util.UUID
 
 @Suppress("UNCHECKED_CAST")
 class EnterStudyActivity : AppCompatActivity() {
@@ -39,7 +43,6 @@ class EnterStudyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEnterStudyBinding
     private lateinit var auth: FirebaseAuth
     private var konuAdlari = ArrayList<String>()
-
     private var konuDk = 0
     private var soruDk = 0
     private var soruSayi = 0
@@ -49,7 +52,7 @@ class EnterStudyActivity : AppCompatActivity() {
     private var secilenKonu = ""
     private var secilenDocumentID = ""
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEnterStudyBinding.inflate(layoutInflater)
@@ -73,7 +76,43 @@ class EnterStudyActivity : AppCompatActivity() {
         val subjectType = intent.getStringExtra("studyType")
         val dersAdi = intent.getStringExtra("dersAdi")
         secilenKonu = ""
+        val retrofit = Retrofit.Builder().baseUrl("http://worldtimeapi.org")
+            .addConverterFactory(GsonConverterFactory.create()).build()
 
+        val worldTimeApi = retrofit.create(WorldTimeApi::class.java)
+        val cal = Calendar.getInstance()
+        val cal2 = Calendar.getInstance()
+
+        val currentTime = runBlocking {
+            try {
+                worldTimeApi.getCurrentTime()
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                null
+            }
+        }
+
+        if (currentTime != null) {
+
+            val date = currentTime.datetime.split("T")[0]
+            val time = currentTime.datetime.split("T")[1].split(".")[0]
+            cal[Calendar.YEAR] = date.split("-")[0].toInt()
+            cal[Calendar.MONTH] = date.split("-")[1].toInt() - 1
+            cal[Calendar.DAY_OF_MONTH] = date.split("-")[2].toInt()
+            cal[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
+            cal[Calendar.MINUTE] = time.split(":")[1].toInt()
+            cal[Calendar.SECOND] = time.split(":")[2].toInt()
+
+            cal2[Calendar.YEAR] = date.split("-")[0].toInt()
+            cal2[Calendar.MONTH] = date.split("-")[1].toInt() - 1
+            cal2[Calendar.DAY_OF_MONTH] = date.split("-")[2].toInt()
+            cal2[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
+            cal2[Calendar.MINUTE] = time.split(":")[1].toInt()
+            cal2[Calendar.SECOND] = time.split(":")[2].toInt()
+
+        } else {
+            println("null")
+        }
         textInputCurrentMinutes.hint = "Kaç Dakika Konu Çalıştın?"
         textInputCurrentMinutes.helperText = "Kaç Dakika Konu Çalıştın?"
 
@@ -152,9 +191,7 @@ class EnterStudyActivity : AppCompatActivity() {
             studySaveButton.isClickable = false
             var stopper = false
             var stopper2 = false
-            val cal = Calendar.getInstance()
-            val studyTime = Calendar.getInstance()
-            studyTime.add(Calendar.HOUR_OF_DAY, -5)
+            cal2.add(Calendar.HOUR_OF_DAY, -5)
 
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
@@ -180,7 +217,7 @@ class EnterStudyActivity : AppCompatActivity() {
 
                         val study = hashMapOf(
                             "id" to documentID,
-                            "timestamp" to studyTime.time,
+                            "timestamp" to cal2.time,
                             "konuAnlatımı" to konuDk,
                             "konuTestiDK" to soruDk,
                             "dersAdi" to dersAdi,
@@ -215,7 +252,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                             for (document in value) {
                                                 val studyUpdate = hashMapOf(
                                                     "id" to document.id,
-                                                    "timestamp" to studyTime.time,
+                                                    "timestamp" to cal2.time,
                                                     "konuAnlatımı" to konuDk + document.get(
                                                         "konuAnlatımı"
                                                     ).toString().toInt(),
@@ -250,7 +287,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                 .document(auth.uid.toString())
                                                                 .collection("Duties")
                                                                 .whereGreaterThan(
-                                                                    "bitisZamani", studyTime.time
+                                                                    "bitisZamani", cal2.time
                                                                 ).whereEqualTo(
                                                                     "dersAdi", dersAdi
                                                                 ).whereEqualTo(
@@ -288,20 +325,18 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                     db.collection(
                                                                                         "School"
                                                                                     ).document(
-                                                                                            kurumKodu.toString()
-                                                                                        )
-                                                                                        .collection(
-                                                                                            "Student"
-                                                                                        ).document(
-                                                                                            auth.uid.toString()
-                                                                                        )
-                                                                                        .collection(
-                                                                                            "Duties"
-                                                                                        ).document(
-                                                                                            document5.id
-                                                                                        ).update(
-                                                                                            gorevUpdate as Map<String, Any>
-                                                                                        )
+                                                                                        kurumKodu.toString()
+                                                                                    ).collection(
+                                                                                        "Student"
+                                                                                    ).document(
+                                                                                        auth.uid.toString()
+                                                                                    ).collection(
+                                                                                        "Duties"
+                                                                                    ).document(
+                                                                                        document5.id
+                                                                                    ).update(
+                                                                                        gorevUpdate as Map<String, Any>
+                                                                                    )
                                                                                         .addOnSuccessListener {
 
                                                                                             if (document5.get(
@@ -395,7 +430,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                             .collection("Student")
                                                             .document(auth.uid.toString())
                                                             .collection("Duties").whereGreaterThan(
-                                                                "bitisZamani", studyTime.time
+                                                                "bitisZamani", cal2.time
                                                             ).whereEqualTo(
                                                                 "dersAdi", dersAdi
                                                             ).whereEqualTo(
@@ -434,16 +469,16 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                 ).document(
                                                                                     kurumKodu.toString()
                                                                                 ).collection(
-                                                                                        "Student"
-                                                                                    ).document(
-                                                                                        auth.uid.toString()
-                                                                                    ).collection(
-                                                                                        "Duties"
-                                                                                    ).document(
-                                                                                        document5.id
-                                                                                    ).update(
-                                                                                        gorevUpdate as Map<String, Any>
-                                                                                    )
+                                                                                    "Student"
+                                                                                ).document(
+                                                                                    auth.uid.toString()
+                                                                                ).collection(
+                                                                                    "Duties"
+                                                                                ).document(
+                                                                                    document5.id
+                                                                                ).update(
+                                                                                    gorevUpdate as Map<String, Any>
+                                                                                )
                                                                                     .addOnSuccessListener {
 
                                                                                         if (document5.get(
@@ -541,7 +576,7 @@ class EnterStudyActivity : AppCompatActivity() {
                                                     .collection("Student")
                                                     .document(auth.uid.toString())
                                                     .collection("Duties").whereGreaterThan(
-                                                        "bitisZamani", studyTime.time
+                                                        "bitisZamani", cal2.time
                                                     ).whereEqualTo("dersAdi", dersAdi)
                                                     .whereEqualTo("tür", subjectType).whereEqualTo(
                                                         "konuAdi", secilenKonu
@@ -587,17 +622,17 @@ class EnterStudyActivity : AppCompatActivity() {
                                                                                 ).document(
                                                                                     kurumKodu.toString()
                                                                                 ).collection(
-                                                                                        "Student"
-                                                                                    ).document(
-                                                                                        auth.uid.toString()
-                                                                                    ).collection(
-                                                                                        "Duties"
-                                                                                    ).document(
-                                                                                        document5.id
-                                                                                    ).update(
-                                                                                        "tamamlandi",
-                                                                                        true
-                                                                                    )
+                                                                                    "Student"
+                                                                                ).document(
+                                                                                    auth.uid.toString()
+                                                                                ).collection(
+                                                                                    "Duties"
+                                                                                ).document(
+                                                                                    document5.id
+                                                                                ).update(
+                                                                                    "tamamlandi",
+                                                                                    true
+                                                                                )
                                                                                     .addOnSuccessListener {
                                                                                         Toast.makeText(
                                                                                             this,

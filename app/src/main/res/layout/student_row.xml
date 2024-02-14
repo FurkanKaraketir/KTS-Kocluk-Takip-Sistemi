@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="35dp"
         android:layout_toEndOf="@id/studentGradeTextView"
         android:orientation="vertical">
 

@@ -26,6 +26,7 @@ import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.IndexedColorMap
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import retrofit2.http.GET
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -1104,6 +1105,29 @@ fun addData(
     }
 
 
+}
+
+data class WorldTime(
+    val abbreviation: String,
+    val client_ip: String,
+    val datetime: String,
+    val day_of_week: Int,
+    val day_of_year: Int,
+    val dst: Boolean,
+    val dst_from: Any?,
+    val dst_offset: Int,
+    val dst_until: Any?,
+    val raw_offset: Int,
+    val timezone: String,
+    val unixtime: Long,
+    val utc_datetime: String,
+    val utc_offset: String,
+    val week_number: Int
+)
+
+interface WorldTimeApi {
+    @GET("/api/ip")
+    suspend fun getCurrentTime(): WorldTime
 }
 
 fun Float.format(digits: Int) = "%.${digits}f".format(this)
