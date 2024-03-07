@@ -37,35 +37,12 @@
         android:gravity="center"
         android:text="@string/kay_tl_bir_hesab_n_varsa_bu_sayfadan_giri_yapabilirsin" />
 
-
-    <Button
-        android:id="@+id/signInGoogleButton"
-        style="@style/Widget.Material3.Button.IconButton.Outlined"
-        android:layout_width="320dp"
-        android:layout_height="56dp"
-        android:layout_below="@id/kay_tl_bir_"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:text="@string/google_ile_giri_yap"
-        app:icon="@drawable/google">
-
-    </Button>
-
-    <TextView
-        android:id="@+id/or"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/signInGoogleButton"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="@string/ya_da" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TextInputLoginEmail"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/or"
+        android:layout_below="@id/kay_tl_bir_"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
         android:hint="@string/email">

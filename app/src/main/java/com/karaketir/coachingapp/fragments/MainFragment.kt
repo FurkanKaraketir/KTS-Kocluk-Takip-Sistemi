@@ -59,7 +59,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.util.Calendar
 import java.util.Locale
 
-class MainFragment(private var mainActivity: MainActivity) : Fragment() {
+public class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
     init {
         System.setProperty(
@@ -106,7 +106,6 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
     )
 
     private lateinit var filteredList: ArrayList<Student>
-    private lateinit var filteredStudyList: ArrayList<Study>
 
     private var studentList = ArrayList<Student>()
     private var grade = 0
@@ -783,7 +782,6 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
         mBinding.studentCountTextView.text = "Öğrenci Sayısı: "
         mBinding.progressBar.visibility = View.VISIBLE
 
-        Toast.makeText(activity, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
         if (secilenGrade == "Bütün Sınıflar") {
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { documents, _ ->

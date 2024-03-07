@@ -40,24 +40,6 @@
             android:gravity="center"
             android:text="@string/kay_tl_bir_hesab_n_yoksa_bu_sayfadan_kay_t_olabilirsin" />
 
-        <Button
-            android:id="@+id/signInGoogleButton"
-            style="@style/Widget.Material3.Button.IconButton.Outlined"
-            android:layout_width="320dp"
-            android:layout_height="56dp"
-            android:layout_margin="10dp"
-            android:text="@string/google_ile_kaydol"
-            app:icon="@drawable/google">
-
-        </Button>
-
-        <TextView
-            android:id="@+id/or"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/ya_da" />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TextInputNameAndSurname"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

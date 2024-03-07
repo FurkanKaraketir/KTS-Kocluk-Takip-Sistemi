@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragmentTeacher(fragment: Fragment) {
-        if (!supportFragmentManager.isDestroyed) {
+        if (!isFinishing && !supportFragmentManager.isStateSaved) {
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fragment_container_teacher, fragment)
             transaction.commit()
@@ -67,12 +67,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragmentStudent(fragment: Fragment) {
-        if (!supportFragmentManager.isDestroyed) {
+        if (!isFinishing && !supportFragmentManager.isStateSaved) {
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fragment_container_student, fragment)
             transaction.commit()
         }
-
     }
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")

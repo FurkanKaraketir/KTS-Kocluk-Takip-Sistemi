@@ -126,9 +126,9 @@
     <string name="furkan_karaketir_taraf_ndan_geli_tirildi">Furkan Karaketir Tarafından Geliştirildi</string>
     <string name="kaydet">Kaydet</string>
     <string name="renci_d_zenle">Öğrenci Düzenle</string>
-    <string name="mesaj_ba_l">Mesaj Başlığı</string>
-    <string name="mesaj_eri_i">Mesaj İçeriği</string>
-    <string name="mesaj_g_nder">Mesaj Gönder</string>
+    <string name="mesaj_ba_l">Bildirim Başlığı</string>
+    <string name="mesaj_eri_i">Bildirim İçeriği</string>
+    <string name="mesaj_g_nder">Bildirim Gönder</string>
     <string name="g_nder">Gönder</string>
     <string name="hedef_se_iniz">Hedef Seçiniz:</string>
     <string name="ders_program">Çalışma Programı</string>
