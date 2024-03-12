@@ -1,139 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
 
+    >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".fragments.StatsFragment">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/dutiesCard"
+        <RelativeLayout
+            android:id="@+id/relative"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            app:cardCornerRadius="10dp">
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/welcomeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/transitions_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/helloText"
+                        style="@style/MaterialAlertDialog.Material3.Title.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:gravity="center"
+                        android:text="@string/ko_luk_statistikleri"
+                        android:textSize="20sp"
+                        app:icon="@drawable/baseline_account_circle_24" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/teacherCardView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="15dp"
+                        app:cardCornerRadius="10dp"
+                        tools:ignore="RelativeOverlap">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/teacherButtonImage"
+                                style="@style/Widget.Material3.Button.IconButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:icon="@drawable/insert_chart" />
+
+                            <TextView
+                                android:id="@+id/ortalamaTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/teacherButtonImage"
+                                android:gravity="center"
+                                android:text="@string/ortalama" />
+
+                            <TextView
+                                android:id="@+id/toplamSure"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/ortalamaTextView"
+                                android:gravity="center" />
+
+                            <TextView
+                                android:id="@+id/toplamSoru"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/toplamSure"
+                                android:gravity="center" />
+
+                        </RelativeLayout>
+
+
+                    </androidx.cardview.widget.CardView>
+
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@id/welcomeText"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/studiesTextView"
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="15dp"
-                    android:gravity="center"
-                    android:text="@string/ko_luk_statistikleri" />
-
-
                 <LinearLayout
-                    android:id="@+id/statsGradeSpinnerLayout"
+                    android:id="@+id/search_bar_teacher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
                     android:gravity="center"
                     android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/s_n_f"
-                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/statsGradeSpinner"
+                        style="@style/bodyMenuText"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:shadowRadius="10"
                         android:spinnerMode="dialog"
                         android:tooltipText="Alan Seçimi Yapınız"
                         tools:ignore="UnusedAttribute" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/statsSpinnerLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zaman_aral"
-                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/statsZamanAraligiSpinner"
+                        style="@style/bodyMenuText"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:shadowRadius="10"
                         android:spinnerMode="dialog"
                         android:tooltipText="Alan Seçimi Yapınız"
                         tools:ignore="UnusedAttribute" />
+
+
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/customDateLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:visibility="gone">
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:id="@+id/baslangicTarihiTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:gravity="center"
-                        android:text="@string/ortalama" />
+                        android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/toplamSure"
-                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:id="@+id/bitisTarihiTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:gravity="center" />
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="15dp"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
 
-                    <TextView
-                        android:id="@+id/toplamSoru"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:gravity="center" />
-                </LinearLayout>
+                </RelativeLayout>
 
-                <Button
-                    android:id="@+id/fileSaveExcelButton"
-                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="7dp"
-                    android:text="@string/excel_tablosu_olu_tur"
-                    app:icon="@drawable/baseline_upload_file_24" />
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="50dp"
+                    app:cardCornerRadius="20dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/dersAdi"
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_margin="10dp"
+                            android:text="@string/ders_ad"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/ortSoruText"
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_margin="10dp"
+                            android:text="@string/ort_soru"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/ortSureText"
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_margin="10dp"
+                            android:layout_toStartOf="@id/ortSoruText"
+                            android:text="@string/ort_s_re"
+                            android:textSize="14sp"
+                            tools:ignore="RelativeOverlap" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/statsRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_below="@id/dersAdi">
+
+
+                        </androidx.recyclerview.widget.RecyclerView>
+
+                    </RelativeLayout>
+
+
+                </androidx.cardview.widget.CardView>
 
 
             </LinearLayout>
 
 
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/statsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        <Button
+            android:id="@+id/fileSaveExcelButton"
+            style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
+            android:text="@string/excel_tablosu_olu_tur"
+            app:icon="@drawable/baseline_upload_file_24">
 
-    </LinearLayout>
+        </Button>
 
+    </RelativeLayout>
 </layout>

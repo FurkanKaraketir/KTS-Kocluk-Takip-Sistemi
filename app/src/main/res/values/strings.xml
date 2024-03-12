@@ -162,4 +162,7 @@
     <string name="renci_say_s">Öğrenci Sayısı:</string>
     <string name="al_ma_ekle">Çalışma Ekle</string>
     <string name="ortalama">Ortalama:</string>
+    <string name="ders_ad">Ders Adı</string>
+    <string name="ort_s_re">Ort. Süre</string>
+    <string name="ort_soru">Ort. Soru</string>
 </resources>

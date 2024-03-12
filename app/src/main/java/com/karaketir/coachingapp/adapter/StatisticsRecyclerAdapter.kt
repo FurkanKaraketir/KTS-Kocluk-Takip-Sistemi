@@ -36,10 +36,10 @@ class StatisticsRecyclerAdapter(
                 } else {
                     binding.statsDersAdi.text = myItem.dersAdi
                 }
-                binding.statsToplamCalisma.text = "Ortalama Çalışılan Süre:  ${
+                binding.statsToplamCalisma.text = "${
                     myItem.toplamCalisma.toFloat().format(2)
                 } dk"
-                binding.statsCozulenSoru.text = "Ortalama Çözülen Soru:  ${
+                binding.statsCozulenSoru.text = "${
                     myItem.cozulenSoru.toFloat().format(2)
                 } Soru"
 
