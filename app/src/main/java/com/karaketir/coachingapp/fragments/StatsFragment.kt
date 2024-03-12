@@ -625,16 +625,13 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
         }
 
 
-        val toplamSureSaat = toplamSure / 60
         CellUtil.createCell(row, 0, "Toplam")
         CellUtil.createCell(
-            row, 1, toplamSure.format(2) + "dk " + "(${
-                toplamSureSaat.format(2)
-            } Saat)"
+            row, 1, toplamSure.format(2) + "dk "
         ) //Column 1
 
 
-        CellUtil.createCell(row, 2, "${toplamSoru.format(2)} Soru")
+        CellUtil.createCell(row, 2, toplamSoru.format(2) + " Soru")
         var indexNum = 0
         if (ogrenciSayisi != 0) {
 
@@ -643,19 +640,16 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
 
                 val dersSure = dersSureHash[i]
                 if (dersSure != null) {
-                    val sureSaat = (dersSure) / (60 * ogrenciSayisi)
 
                     CellUtil.createCell(row2, 0, i)
                     CellUtil.createCell(
-                        row2,
-                        1,
-                        (dersSure / (ogrenciSayisi)).format(2) + "dk " + "(${sureSaat.format(2)} Saat)"
+                        row2, 1, (dersSure / (ogrenciSayisi)).format(2)
                     )
                 }
                 val dersSoru = dersSoruHash[i]
                 if (dersSoru != null) {
                     CellUtil.createCell(
-                        row2, 2, (dersSoru / ogrenciSayisi).format(2) + " Soru"
+                        row2, 2, (dersSoru / ogrenciSayisi).format(2)
                     )
                 }
                 indexNum += 1
