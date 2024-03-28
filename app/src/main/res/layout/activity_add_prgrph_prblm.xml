@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".AddPrgrphPrblmActivity">
 
@@ -14,6 +15,16 @@
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:text="" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/studyDateButton"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="@string/al_ma_tarihi"
+        android:textSize="18sp"
+        app:icon="@drawable/ic_baseline_timer_24" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TextInputParagrafDK"

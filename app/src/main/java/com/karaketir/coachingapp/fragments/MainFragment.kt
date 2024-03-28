@@ -59,7 +59,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.util.Calendar
 import java.util.Locale
 
-public class MainFragment(private var mainActivity: MainActivity) : Fragment() {
+class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
     init {
         System.setProperty(

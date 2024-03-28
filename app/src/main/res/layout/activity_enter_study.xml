@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".EnterStudyActivity">
 
     <RelativeLayout
@@ -51,13 +52,24 @@
                 tools:ignore="UnusedAttribute" />
         </LinearLayout>
 
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/studyDateButton"
+            android:layout_width="320dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:layout_below="@id/studySpinnerLayout"
+            android:layout_centerHorizontal="true"
+            android:text="@string/al_ma_tarihi"
+            android:textSize="18sp"
+            app:icon="@drawable/ic_baseline_timer_24" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TextInputCurrentMinutes"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/studySpinnerLayout"
+            android:layout_below="@id/studyDateButton"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_margin="20dp"

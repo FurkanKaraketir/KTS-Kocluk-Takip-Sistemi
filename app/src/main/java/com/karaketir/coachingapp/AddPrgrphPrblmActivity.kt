@@ -1,6 +1,7 @@
 package com.karaketir.coachingapp
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +43,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
     private var kurumKodu = 763455
 
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityAddPrgrphPrblmBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -58,6 +59,8 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
         val paragrafSaveButton = binding.paragrafSaveButton
         val currentTestsMinutesEditText = binding.paragrafDkEditText
         val currentTestsEditText = binding.paragrafSoruEditText
+        val tarihSecButton = binding.studyDateButton
+
         val intent = intent
         val documentID = UUID.randomUUID().toString()
         val subjectType = "TYT"
@@ -78,6 +81,22 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
             }
         }
 
+
+        tarihSecButton.setOnClickListener {
+
+            val year = cal2.get(Calendar.YEAR)
+            val month = cal2.get(Calendar.MONTH)
+            val day = cal2.get(Calendar.DAY_OF_MONTH)
+
+            val dpd = DatePickerDialog(this, { _, year2, monthOfYear, dayOfMonth ->
+                tarihSecButton.text = ("Çalışma Tarihi: $dayOfMonth/${monthOfYear + 1}/$year2")
+                cal.set(year2, monthOfYear, dayOfMonth, 0, 0, 0)
+                cal2.set(year2, monthOfYear, dayOfMonth, 0, 0, 0)
+            }, year, month, day)
+
+            dpd.show()
+        }
+
         if (currentTime != null) {
             //turn string to date
             val date = currentTime.datetime.split("T")[0]
@@ -95,6 +114,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
             cal2[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
             cal2[Calendar.MINUTE] = time.split(":")[1].toInt()
             cal2[Calendar.SECOND] = time.split(":")[2].toInt()
+            tarihSecButton.text = ("Çalışma Tarihi: ${cal2[Calendar.DAY_OF_MONTH]}/${cal[Calendar.MONTH] + 1}/${cal2[Calendar.YEAR]}")
 
         } else {
             println("null")
@@ -107,7 +127,6 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
             var stopper = false
             var stopper2 = false
             studyTime = cal2
-            studyTime.add(Calendar.HOUR_OF_DAY, -5)
 
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 

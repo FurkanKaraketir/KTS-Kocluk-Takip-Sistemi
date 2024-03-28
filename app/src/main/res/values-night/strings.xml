@@ -162,4 +162,5 @@
     <string name="ders_ad">Ders Adı</string>
     <string name="ort_s_re">Ort. Süre</string>
     <string name="ort_soru">Ort. Soru</string>
+    <string name="al_ma_tarihi">Çalışma Tarihi:</string>
 </resources>

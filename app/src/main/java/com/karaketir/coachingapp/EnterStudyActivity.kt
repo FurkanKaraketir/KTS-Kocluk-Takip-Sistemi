@@ -1,6 +1,7 @@
 package com.karaketir.coachingapp
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -69,6 +70,7 @@ class EnterStudyActivity : AppCompatActivity() {
         val currentMinutesEditText = binding.currentMinutesEditText
         val currentTestsMinutesEditText = binding.currentTestsMinutesEditText
         val currentTestsEditText = binding.currentTestsEditText
+        val tarihSecButton = binding.studyDateButton
 
 
         val spinner = binding.studySpinner
@@ -83,6 +85,7 @@ class EnterStudyActivity : AppCompatActivity() {
         val cal = Calendar.getInstance()
         val cal2 = Calendar.getInstance()
 
+
         val currentTime = runBlocking {
             try {
                 worldTimeApi.getCurrentTime()
@@ -92,6 +95,20 @@ class EnterStudyActivity : AppCompatActivity() {
             }
         }
 
+        tarihSecButton.setOnClickListener {
+
+            val year = cal2.get(Calendar.YEAR)
+            val month = cal2.get(Calendar.MONTH)
+            val day = cal2.get(Calendar.DAY_OF_MONTH)
+
+            val dpd = DatePickerDialog(this, { _, year2, monthOfYear, dayOfMonth ->
+                tarihSecButton.text = ("Çalışma Tarihi: $dayOfMonth/${monthOfYear + 1}/$year2")
+                cal.set(year2, monthOfYear, dayOfMonth, 0, 0, 0)
+                cal2.set(year2, monthOfYear, dayOfMonth, 0, 0, 0)
+            }, year, month, day)
+
+            dpd.show()
+        }
         if (currentTime != null) {
 
             val date = currentTime.datetime.split("T")[0]
@@ -109,6 +126,8 @@ class EnterStudyActivity : AppCompatActivity() {
             cal2[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
             cal2[Calendar.MINUTE] = time.split(":")[1].toInt()
             cal2[Calendar.SECOND] = time.split(":")[2].toInt()
+            tarihSecButton.text = ("Çalışma Tarihi: ${cal2[Calendar.DAY_OF_MONTH]}/${cal[Calendar.MONTH] + 1}/${cal2[Calendar.YEAR]}")
+
 
         } else {
             println("null")
@@ -191,7 +210,6 @@ class EnterStudyActivity : AppCompatActivity() {
             studySaveButton.isClickable = false
             var stopper = false
             var stopper2 = false
-            cal2.add(Calendar.HOUR_OF_DAY, -5)
 
             cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
 
