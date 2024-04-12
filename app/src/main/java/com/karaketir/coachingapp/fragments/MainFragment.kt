@@ -2,6 +2,7 @@ package com.karaketir.coachingapp.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -56,7 +57,9 @@ import com.karaketir.coachingapp.services.getHeaderStyle
 import com.karaketir.coachingapp.services.openLink
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class MainFragment(private var mainActivity: MainActivity) : Fragment() {
@@ -86,10 +89,13 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
     private val workbook = XSSFWorkbook()
     private var studyList = ArrayList<Study>()
     private var secilenGrade = "Bütün Sınıflar"
-    private var secilenZaman = "Bugün"
+    private var secilenZaman = "Seçiniz"
+    private lateinit var baslangicTarihi: Date
+    private lateinit var bitisTarihi: Date
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
     private var raporGondermeyenList = ArrayList<Student>()
     private val zamanAraliklari = arrayOf(
+        "Seçiniz",
         "Bugün",
         "Dün",
         "Bu Hafta",
@@ -97,12 +103,8 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
         "Bu Ay",
         "Son 30 Gün",
         "Geçen Ay",
-        "Son 2 Ay",
-        "Son 3 Ay",
-        "Son 4 Ay",
-        "Son 5 Ay",
-        "Son 6 Ay",
-        "Tüm Zamanlar"
+        "Tüm Zamanlar",
+        "Özel"
     )
 
     private lateinit var filteredList: ArrayList<Student>
@@ -175,6 +177,11 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
             textYKSsayac = mBinding.YKSsayac
             val teacherCardView = mBinding.teacherCardView
             val messageButton = mBinding.sendMessageButton
+
+
+            val customDateLayout = mBinding.customDateLayout
+            val baslangicTarihiTextView = mBinding.baslangicTarihiTextView
+            val bitisTarihiTextView = mBinding.bitisTarihiTextView
 
 
             var kocID = ""
@@ -283,6 +290,8 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         kocOgretmenTextView.visibility = View.VISIBLE
                         excelButton.visibility = View.GONE
                         teacherCardView.visibility = View.GONE
+                        customDateLayout.visibility = View.GONE
+
 
                         db.collection("School").document(kurumKodu.toString()).collection("Student")
                             .document(auth.uid.toString()).get().addOnSuccessListener { student ->
@@ -365,6 +374,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         teacher = ""
                         personType = "Teacher"
                         dersProgramiButton.visibility = View.GONE
+                        customDateLayout.visibility = View.VISIBLE
                         hedeflerStudentButton.visibility = View.GONE
                         excelButton.visibility = View.VISIBLE
                         searchEditText.visibility = View.VISIBLE
@@ -427,11 +437,186 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         teacherSpinner.adapter = tarihAdapter
                         teacherSpinner.onItemSelectedListener =
                             object : AdapterView.OnItemSelectedListener {
+                                @SuppressLint("SimpleDateFormat")
                                 override fun onItemSelected(
                                     p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                                 ) {
                                     secilenZaman = zamanAraliklari[p2]
-                                    getData()
+                                    if (secilenZaman == "Özel") {
+                                        customDateLayout.visibility = View.VISIBLE
+                                        val cal = Calendar.getInstance()
+                                        val dateSetListener =
+                                            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                                                cal.set(Calendar.YEAR, year)
+                                                cal.set(Calendar.MONTH, month)
+                                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                                                baslangicTarihi = cal.time
+                                                baslangicTarihiTextView.text =
+                                                    "Başlangıç Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
+                                                        baslangicTarihi
+                                                    )
+                                                getData()
+                                            }
+                                        val dateSetListener2 =
+                                            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                                                cal.set(Calendar.YEAR, year)
+                                                cal.set(Calendar.MONTH, month)
+                                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                                                bitisTarihi = cal.time
+                                                bitisTarihiTextView.text =
+                                                    "Bitiş Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
+                                                        bitisTarihi
+                                                    )
+                                                getData()
+                                            }
+                                        baslangicTarihiTextView.setOnClickListener {
+                                            DatePickerDialog(
+                                                mainActivity,
+                                                dateSetListener,
+                                                cal.get(Calendar.YEAR),
+                                                cal.get(Calendar.MONTH),
+                                                cal.get(Calendar.DAY_OF_MONTH)
+                                            ).show()
+                                        }
+                                        bitisTarihiTextView.setOnClickListener {
+                                            DatePickerDialog(
+                                                mainActivity,
+                                                dateSetListener2,
+                                                cal.get(Calendar.YEAR),
+                                                cal.get(Calendar.MONTH),
+                                                cal.get(Calendar.DAY_OF_MONTH)
+                                            ).show()
+                                        }
+
+                                    } else {
+                                        customDateLayout.visibility = View.GONE
+                                        var cal = Calendar.getInstance()
+                                        cal[Calendar.HOUR_OF_DAY] =
+                                            0 // ! clear would not reset the hour of day !
+
+                                        cal.clear(Calendar.MINUTE)
+                                        cal.clear(Calendar.SECOND)
+                                        cal.clear(Calendar.MILLISECOND)
+
+                                        when (secilenZaman) {
+                                            "Seçiniz" -> {
+                                                baslangicTarihi = cal.time
+                                                bitisTarihi = cal.time
+
+                                            }
+
+                                            "Bugün" -> {
+                                                baslangicTarihi = cal.time
+
+
+                                                cal.add(Calendar.DAY_OF_YEAR, 1)
+                                                bitisTarihi = cal.time
+                                            }
+
+                                            "Dün" -> {
+                                                bitisTarihi = cal.time
+
+                                                cal.add(Calendar.DAY_OF_YEAR, -1)
+                                                baslangicTarihi = cal.time
+                                            }
+
+                                            "Bu Hafta" -> {
+                                                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                                                baslangicTarihi = cal.time
+
+
+                                                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                                                bitisTarihi = cal.time
+
+                                            }
+
+                                            "Geçen Hafta" -> {
+                                                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                                                bitisTarihi = cal.time
+
+
+                                                cal.add(Calendar.DAY_OF_YEAR, -7)
+                                                baslangicTarihi = cal.time
+
+
+                                            }
+
+                                            "Son 30 Gün" -> {
+                                                cal = Calendar.getInstance()
+
+                                                bitisTarihi = cal.time
+
+                                                cal.add(Calendar.DAY_OF_YEAR, -30)
+
+                                                baslangicTarihi = cal.time
+
+                                            }
+
+                                            "Bu Ay" -> {
+
+                                                cal = Calendar.getInstance()
+                                                cal[Calendar.HOUR_OF_DAY] =
+                                                    0 // ! clear would not reset the hour of day !
+
+                                                cal.clear(Calendar.MINUTE)
+                                                cal.clear(Calendar.SECOND)
+                                                cal.clear(Calendar.MILLISECOND)
+
+                                                cal.set(Calendar.DAY_OF_MONTH, 1)
+                                                baslangicTarihi = cal.time
+
+
+                                                cal.add(Calendar.MONTH, 1)
+                                                bitisTarihi = cal.time
+
+
+                                            }
+
+                                            "Geçen Ay" -> {
+                                                cal = Calendar.getInstance()
+                                                cal[Calendar.HOUR_OF_DAY] =
+                                                    0 // ! clear would not reset the hour of day !
+
+                                                cal.clear(Calendar.MINUTE)
+                                                cal.clear(Calendar.SECOND)
+                                                cal.clear(Calendar.MILLISECOND)
+
+                                                cal.set(Calendar.DAY_OF_MONTH, 1)
+                                                bitisTarihi = cal.time
+
+
+                                                cal.add(Calendar.MONTH, -1)
+                                                baslangicTarihi = cal.time
+
+                                            }
+
+                                            "Tüm Zamanlar" -> {
+                                                cal.set(
+                                                    1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK
+                                                )
+                                                baslangicTarihi = cal.time
+
+
+                                                cal.set(
+                                                    2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK
+                                                )
+                                                bitisTarihi = cal.time
+
+                                            }
+                                        }
+                                        baslangicTarihiTextView.text =
+                                            "Başlangıç Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
+                                                baslangicTarihi
+                                            )
+
+                                        bitisTarihiTextView.text =
+                                            "Bitiş Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
+                                                bitisTarihi
+                                            )
+
+                                        getData()
+
+                                    }
                                 }
 
                                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -503,184 +688,9 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                 val myIntent = Intent(activity, NoReportActivity::class.java)
                 myIntent.putExtra("kurumKodu", kurumKodu.toString())
                 myIntent.putExtra("grade", secilenGrade)
-                var cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
+                myIntent.putExtra("baslangicTarihi", baslangicTarihi)
+                myIntent.putExtra("bitisTarihi", bitisTarihi)
 
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                var baslangicTarihi = cal.time
-                var bitisTarihi = cal.time
-
-
-                when (secilenZaman) {
-
-                    "Bugün" -> {
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.DAY_OF_YEAR, 1)
-                        bitisTarihi = cal.time
-                    }
-
-                    "Dün" -> {
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.DAY_OF_YEAR, -1)
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Bu Hafta" -> {
-                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.WEEK_OF_YEAR, 1)
-                        bitisTarihi = cal.time
-
-                    }
-
-                    "Geçen Hafta" -> {
-                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                        bitisTarihi = cal.time
-
-
-                        cal.add(Calendar.DAY_OF_YEAR, -7)
-                        baslangicTarihi = cal.time
-
-
-                    }
-
-                    "Bu Ay" -> {
-
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        cal.set(Calendar.DAY_OF_MONTH, 1)
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.MONTH, 1)
-                        bitisTarihi = cal.time
-
-
-                    }
-
-                    "Son 30 Gün" -> {
-                        cal = Calendar.getInstance()
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.DAY_OF_YEAR, -30)
-
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Geçen Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        cal.set(Calendar.DAY_OF_MONTH, 1)
-                        bitisTarihi = cal.time
-
-
-                        cal.add(Calendar.MONTH, -1)
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Son 2 Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.MONTH, -2)
-                        baslangicTarihi = cal.time
-                    }
-
-                    "Son 3 Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.MONTH, -3)
-                        baslangicTarihi = cal.time
-                    }
-
-                    "Son 4 Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.MONTH, -4)
-                        baslangicTarihi = cal.time
-                    }
-
-                    "Son 5 Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.MONTH, -5)
-                        baslangicTarihi = cal.time
-                    }
-
-                    "Son 6 Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.MONTH, -6)
-                        baslangicTarihi = cal.time
-                    }
-
-
-                    "Tüm Zamanlar" -> {
-                        cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                        baslangicTarihi = cal.time
-
-
-                        cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                        bitisTarihi = cal.time
-
-                    }
-                }
                 raporGondermeyenList.clear()
 
                 var my = 0
@@ -755,7 +765,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
         recyclerViewMyStudents.layoutManager = layoutManager
 
         recyclerViewMyStudentsRecyclerAdapter =
-            StudentsRecyclerAdapter(list, secilenZaman, kurumKodu)
+            StudentsRecyclerAdapter(list, kurumKodu, baslangicTarihi, bitisTarihi, secilenZaman)
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 

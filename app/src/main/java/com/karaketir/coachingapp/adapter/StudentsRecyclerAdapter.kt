@@ -16,12 +16,14 @@ import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.Date
 
 open class StudentsRecyclerAdapter(
     private val studentList: ArrayList<Student>,
+    private val kurumKodu: Int,
+    private val baslangicTarihi: Date,
+    private val bitisTarihi: Date,
     private val secilenZaman: String,
-    private val kurumKodu: Int
 ) : RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -100,118 +102,13 @@ open class StudentsRecyclerAdapter(
 
                 studentCard.setOnClickListener {
                     val intent = Intent(holder.itemView.context, StudiesActivity::class.java)
+                    intent.putExtra("baslangicTarihi", baslangicTarihi)
+                    intent.putExtra("bitisTarihi", bitisTarihi)
                     intent.putExtra("secilenZaman", secilenZaman)
                     intent.putExtra("studentID", myItem.id)
                     intent.putExtra("kurumKodu", kurumKodu.toString())
                     println(myItem.id)
                     holder.itemView.context.startActivity(intent)
-                }
-
-                var cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                var baslangicTarihi = cal.time
-                var bitisTarihi = cal.time
-
-
-                when (secilenZaman) {
-
-                    "Bugün" -> {
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.DAY_OF_YEAR, 1)
-                        bitisTarihi = cal.time
-                    }
-
-                    "Dün" -> {
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.DAY_OF_YEAR, -1)
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Bu Hafta" -> {
-                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.WEEK_OF_YEAR, 1)
-                        bitisTarihi = cal.time
-
-                    }
-
-                    "Geçen Hafta" -> {
-                        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                        bitisTarihi = cal.time
-
-
-                        cal.add(Calendar.DAY_OF_YEAR, -7)
-                        baslangicTarihi = cal.time
-
-
-                    }
-                    "Son 30 Gün" -> {
-                        cal = Calendar.getInstance()
-
-                        bitisTarihi = cal.time
-
-                        cal.add(Calendar.DAY_OF_YEAR, -30)
-
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Bu Ay" -> {
-
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        cal.set(Calendar.DAY_OF_MONTH, 1)
-                        baslangicTarihi = cal.time
-
-
-                        cal.add(Calendar.MONTH, 1)
-                        bitisTarihi = cal.time
-
-
-                    }
-
-                    "Geçen Ay" -> {
-                        cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        cal.set(Calendar.DAY_OF_MONTH, 1)
-                        bitisTarihi = cal.time
-
-
-                        cal.add(Calendar.MONTH, -1)
-                        baslangicTarihi = cal.time
-
-                    }
-
-                    "Tüm Zamanlar" -> {
-                        cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                        baslangicTarihi = cal.time
-
-
-                        cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                        bitisTarihi = cal.time
-
-                    }
                 }
 
 

@@ -14,8 +14,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,6 +43,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 
 
 class NoReportActivity : AppCompatActivity() {
@@ -76,6 +75,9 @@ class NoReportActivity : AppCompatActivity() {
     private var raporGondermeyenList = ArrayList<Student>()
 
 
+    private lateinit var baslangicTarihi: Date
+    private lateinit var bitisTarihi: Date
+
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
 
     @SuppressLint("SetTextI18n")
@@ -94,6 +96,9 @@ class NoReportActivity : AppCompatActivity() {
         raporGondermeyenList = intent.getSerializableExtra("list") as ArrayList<Student>
         raporGondermeyenList.sortBy { it.studentName }
         secilenZaman = intent.getStringExtra("secilenZaman").toString()
+        baslangicTarihi = intent.getSerializableExtra("baslangicTarihi") as Date
+        bitisTarihi = intent.getSerializableExtra("bitisTarihi") as Date
+
         secilenGrade = intent.getStringExtra("grade").toString()
 
         val titleNoReport = binding.titleNoReport
@@ -146,8 +151,9 @@ class NoReportActivity : AppCompatActivity() {
 
         recyclerViewMyStudents.layoutManager = layoutManager
 
-        recyclerViewMyStudentsRecyclerAdapter =
-            StudentsRecyclerAdapter(raporGondermeyenList, secilenZaman, kurumKodu)
+        recyclerViewMyStudentsRecyclerAdapter = StudentsRecyclerAdapter(
+            raporGondermeyenList, kurumKodu, baslangicTarihi, bitisTarihi, secilenZaman
+        )
 
         recyclerViewMyStudents.adapter = recyclerViewMyStudentsRecyclerAdapter
 

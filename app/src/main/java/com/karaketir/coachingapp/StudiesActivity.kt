@@ -15,8 +15,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.View
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +31,11 @@ import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
-import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.IndexedColors
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.IndexedColorMap
 import org.apache.poi.xssf.usermodel.XSSFColor
@@ -43,8 +45,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Calendar
+import java.util.Date
 
 
 class StudiesActivity : AppCompatActivity() {
@@ -99,6 +101,9 @@ class StudiesActivity : AppCompatActivity() {
         val intent = intent
         studentID = intent.getStringExtra("studentID").toString()
         secilenZamanAraligi = intent.getStringExtra("secilenZaman").toString()
+        baslangicTarihi = intent.getSerializableExtra("baslangicTarihi") as Date
+        bitisTarihi = intent.getSerializableExtra("bitisTarihi") as Date
+
 
         val sheet: Sheet = workbook.createSheet("Sayfa 1")
 
@@ -134,20 +139,12 @@ class StudiesActivity : AppCompatActivity() {
             this.startActivity(newIntent)
         }
 
-
-        var cal = Calendar.getInstance()
-        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
         println(studentID)
 
         db.collection("User").document(studentID).get().addOnSuccessListener {
             name = it.get("nameAndSurname").toString()
             nameTextView.text = name
         }
-        cal.clear(Calendar.MINUTE)
-        cal.clear(Calendar.SECOND)
-        cal.clear(Calendar.MILLISECOND)
-
         zamanAraligiTextView.text = secilenZamanAraligi
 
         excelCreateButton.setOnClickListener {
@@ -159,176 +156,6 @@ class StudiesActivity : AppCompatActivity() {
 
         }
 
-        when (secilenZamanAraligi) {
-
-            "Bugün" -> {
-                binding.starScroll.visibility = View.VISIBLE
-                baslangicTarihi = cal.time
-
-
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-                bitisTarihi = cal.time
-            }
-
-            "Dün" -> {
-                binding.starScroll.visibility = View.VISIBLE
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.DAY_OF_YEAR, -1)
-                baslangicTarihi = cal.time
-
-            }
-
-            "Bu Hafta" -> {
-                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                baslangicTarihi = cal.time
-
-
-                cal.add(Calendar.WEEK_OF_YEAR, 1)
-                bitisTarihi = cal.time
-
-            }
-
-            "Son 30 Gün" -> {
-                cal = Calendar.getInstance()
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.DAY_OF_YEAR, -30)
-
-                baslangicTarihi = cal.time
-
-            }
-
-            "Geçen Hafta" -> {
-                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                bitisTarihi = cal.time
-
-
-                cal.add(Calendar.DAY_OF_YEAR, -7)
-                baslangicTarihi = cal.time
-
-
-            }
-
-            "Bu Ay" -> {
-
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                baslangicTarihi = cal.time
-
-
-                cal.add(Calendar.MONTH, 1)
-                bitisTarihi = cal.time
-
-
-            }
-
-            "Geçen Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                bitisTarihi = cal.time
-
-
-                cal.add(Calendar.MONTH, -1)
-                baslangicTarihi = cal.time
-
-            }
-
-            "Son 2 Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.MONTH, -2)
-                baslangicTarihi = cal.time
-            }
-
-            "Son 3 Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.MONTH, -3)
-                baslangicTarihi = cal.time
-            }
-
-            "Son 4 Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.MONTH, -4)
-                baslangicTarihi = cal.time
-            }
-
-            "Son 5 Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.MONTH, -5)
-                baslangicTarihi = cal.time
-            }
-
-            "Son 6 Ay" -> {
-                cal = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                cal.clear(Calendar.MINUTE)
-                cal.clear(Calendar.SECOND)
-                cal.clear(Calendar.MILLISECOND)
-
-                bitisTarihi = cal.time
-
-                cal.add(Calendar.MONTH, -6)
-                baslangicTarihi = cal.time
-            }
-
-
-            "Tüm Zamanlar" -> {
-                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                baslangicTarihi = cal.time
-
-
-                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                bitisTarihi = cal.time
-
-            }
-
-        }
         var toplamSure = 0
         var toplamSoru = 0
 
