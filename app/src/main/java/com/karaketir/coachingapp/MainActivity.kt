@@ -1,10 +1,15 @@
 package com.karaketir.coachingapp
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -89,6 +94,16 @@ class MainActivity : AppCompatActivity() {
         val fragmentContainerTeacher = binding.fragmentContainerTeacher
         val fragmentContainerStudent = binding.fragmentContainerStudent
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permission not granted, request it
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { snapshot ->
             kurumKodu = try {
@@ -181,6 +196,11 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { _: Boolean ->
+
+        }
 
 
 }
