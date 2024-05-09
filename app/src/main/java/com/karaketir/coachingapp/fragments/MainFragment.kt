@@ -881,6 +881,8 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                     val ay = remainingDays / 30
 
 
+
+
                     if (personType != "Student") {
                         if (currentDate[Calendar.MONTH] == 10 && currentDate[Calendar.DAY_OF_MONTH] == 24) {
                             textYKSsayac.text = "Öğretmenler Gününüz Kutlu Olsun"
@@ -891,13 +893,26 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         } else {
 
 
-                            textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
-                            mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                            //date cant be negative
+                            if (remainingDays < 0) {
+                                textYKSsayac.text = "Son: 0 Yıl, 0 Ay, 0 Gün"
+                                mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                            } else {
+                                textYKSsayac.text =
+                                    "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
+                                mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                            }
                         }
 
                     } else {
-                        textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
-                        mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                        //date cant be negative
+                        if (remainingDays < 0) {
+                            textYKSsayac.text = "Son: 0 Yıl, 0 Ay, 0 Gün"
+                            mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                        } else {
+                            textYKSsayac.text = "Son: $years Yıl, $ay Ay, ${remainingDays % 30} Gün"
+                            mBinding.YKSsayacCardView.visibility = View.VISIBLE
+                        }
 
                     }
 
