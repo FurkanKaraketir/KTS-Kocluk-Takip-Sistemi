@@ -14,7 +14,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -27,10 +26,10 @@ import com.karaketir.coachingapp.fragments.MainFragment
 import com.karaketir.coachingapp.fragments.SettingsFragment
 import com.karaketir.coachingapp.fragments.StatsFragment
 
+
 class MainActivity : AppCompatActivity() {
 
     init {
-        // Setting system properties for XML parsing with Apache POI
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
             "com.fasterxml.aalto.stax.InputFactoryImpl"
@@ -56,29 +55,27 @@ class MainActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+            this.startActivity(intent)
             finish()
         } else {
-            subscribeToFirebaseTopics()
+            FirebaseMessaging.getInstance().subscribeToTopic("all")
+            FirebaseMessaging.getInstance().subscribeToTopic(auth.uid.toString())
         }
-    }
-
-    private fun subscribeToFirebaseTopics() {
-        FirebaseMessaging.getInstance().subscribeToTopic("all")
-        FirebaseMessaging.getInstance().subscribeToTopic(auth.uid.toString())
     }
 
     private fun replaceFragmentTeacher(fragment: Fragment) {
         if (!isFinishing && !supportFragmentManager.isStateSaved) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_teacher, fragment).commit()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container_teacher, fragment)
+            transaction.commit()
         }
     }
 
     private fun replaceFragmentStudent(fragment: Fragment) {
         if (!isFinishing && !supportFragmentManager.isStateSaved) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_student, fragment).commit()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container_student, fragment)
+            transaction.commit()
         }
     }
 
@@ -92,86 +89,118 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
 
-        setupUI()
-        checkAndRequestNotificationPermission()
+        val bottomNavigationTeacher = binding.bottomNavigationTeacher
+        val bottomNavigationStudent = binding.bottomNavigationStudent
+        val fragmentContainerTeacher = binding.fragmentContainerTeacher
+        val fragmentContainerStudent = binding.fragmentContainerStudent
 
-        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { snapshot ->
-            handleUserType(snapshot)
-        }.addOnFailureListener {
-            // Handle potential failure in retrieving user data
-        }
-    }
-
-    private fun setupUI() {
-        binding.bottomNavigationTeacher.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_home -> replaceFragmentTeacher(MainFragment(this))
-                R.id.navigation_stats -> replaceFragmentTeacher(StatsFragment(this))
-                R.id.navigation_denemeler -> replaceFragmentTeacher(DenemelerTeacherFragment(this))
-                R.id.navigation_settings -> replaceFragmentTeacher(SettingsFragment(this))
-                else -> { /* No action needed */
-                }
-            }
-            true
-        }
-
-        binding.bottomNavigationStudent.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_home -> replaceFragmentStudent(MainFragment(this))
-                R.id.navigation_denemeler -> replaceFragmentStudent(DenemelerFragment(this))
-                R.id.navigation_duties -> replaceFragmentStudent(DutiesFragment(this))
-                R.id.navigation_settings -> replaceFragmentStudent(SettingsFragment(this))
-                else -> { /* No action needed */
-                }
-            }
-            true
-        }
-    }
-
-    private fun checkAndRequestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
+                // Permission not granted, request it
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-    }
 
-    private fun handleUserType(snapshot: DocumentSnapshot) {
-        kurumKodu = try {
-            snapshot["kurumKodu"].toString().toInt()
-        } catch (e: Exception) {
-            763455
+        db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { snapshot ->
+            kurumKodu = try {
+                snapshot["kurumKodu"].toString().toInt()
+            } catch (e: Exception) {
+                763455
+            }
+            if (snapshot["personType"].toString() == "Teacher") {
+                isTeacher = true
+
+                fragmentContainerStudent.visibility = View.GONE
+                fragmentContainerTeacher.visibility = View.VISIBLE
+                bottomNavigationTeacher.visibility = View.VISIBLE
+                bottomNavigationStudent.visibility = View.GONE
+                replaceFragmentTeacher(MainFragment(this))
+
+            } else {
+                isTeacher = false
+
+                fragmentContainerStudent.visibility = View.VISIBLE
+                fragmentContainerTeacher.visibility = View.GONE
+                bottomNavigationTeacher.visibility = View.GONE
+                bottomNavigationStudent.visibility = View.VISIBLE
+
+                replaceFragmentStudent(MainFragment(this))
+            }
+
+            binding.bottomNavigationTeacher.setOnItemSelectedListener {
+
+                when (it.itemId) {
+                    R.id.navigation_home -> {
+                        replaceFragmentTeacher(MainFragment(this))
+
+                    }
+
+                    R.id.navigation_stats -> {
+                        replaceFragmentTeacher(StatsFragment(this))
+
+                    }
+
+                    R.id.navigation_denemeler -> {
+                        replaceFragmentTeacher(DenemelerTeacherFragment(this))
+
+
+                    }
+
+                    R.id.navigation_settings -> {
+                        replaceFragmentTeacher(SettingsFragment(this))
+                    }
+
+                    else -> {
+
+                    }
+                }
+
+                true
+            }
+
+            binding.bottomNavigationStudent.setOnItemSelectedListener {
+
+                when (it.itemId) {
+                    R.id.navigation_home -> {
+                        replaceFragmentStudent(MainFragment(this))
+
+                    }
+
+                    R.id.navigation_denemeler -> {
+                        replaceFragmentStudent(DenemelerFragment(this))
+
+                    }
+
+                    R.id.navigation_duties -> {
+                        replaceFragmentStudent(DutiesFragment(this))
+                    }
+
+                    R.id.navigation_settings -> {
+                        replaceFragmentStudent(SettingsFragment(this))
+                    }
+
+                    else -> {
+
+                    }
+                }
+
+                true
+            }
+
+
         }
 
-        isTeacher = snapshot["personType"].toString() == "Teacher"
-        if (isTeacher) {
-            setupTeacherUI()
-        } else {
-            setupStudentUI()
-        }
-    }
 
-    private fun setupTeacherUI() {
-        binding.fragmentContainerStudent.visibility = View.GONE
-        binding.fragmentContainerTeacher.visibility = View.VISIBLE
-        binding.bottomNavigationTeacher.visibility = View.VISIBLE
-        binding.bottomNavigationStudent.visibility = View.GONE
-        replaceFragmentTeacher(MainFragment(this))
-    }
-
-    private fun setupStudentUI() {
-        binding.fragmentContainerStudent.visibility = View.VISIBLE
-        binding.fragmentContainerTeacher.visibility = View.GONE
-        binding.bottomNavigationTeacher.visibility = View.GONE
-        binding.bottomNavigationStudent.visibility = View.VISIBLE
-        replaceFragmentStudent(MainFragment(this))
     }
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _: Boolean ->
-            // Handle the permission request response
+
         }
+
+
 }
