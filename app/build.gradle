@@ -23,8 +23,8 @@ android {
         minSdk 23
         //noinspection EditedTargetSdkVersion
         targetSdk 34
-        versionCode 126
-        versionName "v0.8.6"
+        versionCode 130
+        versionName "v0.9.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
