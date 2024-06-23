@@ -62,7 +62,13 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class MainFragment(private var mainActivity: MainActivity) : Fragment() {
+class MainFragment : Fragment() {
+
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
+    }
 
     init {
         System.setProperty(
@@ -187,10 +193,12 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
             var kocID = ""
 
             updateButton.setOnClickListener {
-                openLink(
-                    "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp",
-                    mainActivity
-                )
+                mainActivity?.let { it1 ->
+                    openLink(
+                        "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp",
+                        it1
+                    )
+                }
             }
 
             dersProgramiButton.setOnClickListener {
@@ -408,20 +416,22 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                         excelButton.setOnClickListener {
 
-                            clearCache(mainActivity)
+                            mainActivity?.let { it1 -> clearCache(it1) }
                             Toast.makeText(activity, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT)
                                 .show()
 
-                            addData(
-                                sheet,
-                                secilenZaman,
-                                secilenGrade,
-                                kurumKodu.toString(),
-                                auth,
-                                db,
-                                mainActivity,
-                                workbook
-                            )
+                            mainActivity?.let { it1 ->
+                                addData(
+                                    sheet,
+                                    secilenZaman,
+                                    secilenGrade,
+                                    kurumKodu.toString(),
+                                    auth,
+                                    db,
+                                    it1,
+                                    workbook
+                                )
+                            }
 
                             askForPermissions()
 
@@ -429,11 +439,13 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                         }
 
 
-                        val tarihAdapter = ArrayAdapter(
-                            mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
-                        )
+                        val tarihAdapter = mainActivity?.let { it1 ->
+                            ArrayAdapter(
+                                it1, android.R.layout.simple_spinner_item, zamanAraliklari
+                            )
+                        }
 
-                        tarihAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        tarihAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         teacherSpinner.adapter = tarihAdapter
                         teacherSpinner.onItemSelectedListener =
                             object : AdapterView.OnItemSelectedListener {
@@ -470,22 +482,26 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                                                 getData()
                                             }
                                         baslangicTarihiTextView.setOnClickListener {
-                                            DatePickerDialog(
-                                                mainActivity,
-                                                dateSetListener,
-                                                cal.get(Calendar.YEAR),
-                                                cal.get(Calendar.MONTH),
-                                                cal.get(Calendar.DAY_OF_MONTH)
-                                            ).show()
+                                            mainActivity?.let { it1 ->
+                                                DatePickerDialog(
+                                                    it1,
+                                                    dateSetListener,
+                                                    cal.get(Calendar.YEAR),
+                                                    cal.get(Calendar.MONTH),
+                                                    cal.get(Calendar.DAY_OF_MONTH)
+                                                ).show()
+                                            }
                                         }
                                         bitisTarihiTextView.setOnClickListener {
-                                            DatePickerDialog(
-                                                mainActivity,
-                                                dateSetListener2,
-                                                cal.get(Calendar.YEAR),
-                                                cal.get(Calendar.MONTH),
-                                                cal.get(Calendar.DAY_OF_MONTH)
-                                            ).show()
+                                            mainActivity?.let { it1 ->
+                                                DatePickerDialog(
+                                                    it1,
+                                                    dateSetListener2,
+                                                    cal.get(Calendar.YEAR),
+                                                    cal.get(Calendar.MONTH),
+                                                    cal.get(Calendar.DAY_OF_MONTH)
+                                                ).show()
+                                            }
                                         }
 
                                     } else {
@@ -624,10 +640,12 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                             }
 
-                        val gradeAdapter = ArrayAdapter(
-                            mainActivity, android.R.layout.simple_spinner_item, gradeList
-                        )
-                        gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        val gradeAdapter = mainActivity?.let { it1 ->
+                            ArrayAdapter(
+                                it1, android.R.layout.simple_spinner_item, gradeList
+                            )
+                        }
+                        gradeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         gradeSpinner.adapter = gradeAdapter
                         gradeSpinner.onItemSelectedListener =
                             object : AdapterView.OnItemSelectedListener {
@@ -723,7 +741,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
                                 }
                                 myIntent.putExtra("list", raporGondermeyenList)
                                 myIntent.putExtra("secilenZaman", secilenZaman)
-                                mainActivity.startActivity(myIntent)
+                                mainActivity?.startActivity(myIntent)
                             }
 
                         }
@@ -734,10 +752,10 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
             signOutButton.setOnClickListener {
 
-                val signOutAlertDialog = AlertDialog.Builder(mainActivity)
-                signOutAlertDialog.setTitle("Çıkış Yap")
-                signOutAlertDialog.setMessage("Hesabınızdan Çıkış Yapmak İstediğinize Emin misiniz?")
-                signOutAlertDialog.setPositiveButton("Çıkış") { _, _ ->
+                val signOutAlertDialog = mainActivity?.let { it1 -> AlertDialog.Builder(it1) }
+                signOutAlertDialog?.setTitle("Çıkış Yap")
+                signOutAlertDialog?.setMessage("Hesabınızdan Çıkış Yapmak İstediğinize Emin misiniz?")
+                signOutAlertDialog?.setPositiveButton("Çıkış") { _, _ ->
 
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(auth.uid.toString())
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(kurumKodu.toString())
@@ -745,10 +763,10 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
 
                     signOut()
                 }
-                signOutAlertDialog.setNegativeButton("İptal") { _, _ ->
+                signOutAlertDialog?.setNegativeButton("İptal") { _, _ ->
 
                 }
-                signOutAlertDialog.show()
+                signOutAlertDialog?.show()
 
             }
 
@@ -851,7 +869,7 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
         auth.signOut()
         val intent = Intent(activity, LoginActivity::class.java)
         this.startActivity(intent)
-        mainActivity.finish()
+        mainActivity?.finish()
     }
 
 
@@ -1015,23 +1033,26 @@ class MainFragment(private var mainActivity: MainActivity) : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                createExcel(
-                    mainActivity, secilenGrade, secilenZaman, workbook
-                )
+                mainActivity?.let {
+                    createExcel(
+                        it, secilenGrade, secilenZaman, workbook
+                    )
+                }
             } else {
                 // Permission not granted, handle accordingly
             }
         }
 
     private fun askForPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                mainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (mainActivity?.let {
+                ContextCompat.checkSelfPermission(
+                    it, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            } != PackageManager.PERMISSION_GRANTED) {
             // Permission not granted, request it
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            createExcel(mainActivity, secilenGrade, secilenZaman, workbook)
+            createExcel(mainActivity!!, secilenGrade, secilenZaman, workbook)
         }
     }
 

@@ -24,7 +24,7 @@ import com.karaketir.coachingapp.adapter.DutiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentDutiesBinding
 import com.karaketir.coachingapp.models.Duty
 
-class DutiesFragment(private var mainActivity: MainActivity) : Fragment(),
+class DutiesFragment : Fragment(),
     AdapterView.OnItemSelectedListener {
 
 
@@ -41,6 +41,12 @@ class DutiesFragment(private var mainActivity: MainActivity) : Fragment(),
             "org.apache.poi.javax.xml.stream.XMLEventFactory",
             "com.fasterxml.aalto.stax.EventFactoryImpl"
         )
+    }
+
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
     }
 
 
@@ -103,10 +109,12 @@ class DutiesFragment(private var mainActivity: MainActivity) : Fragment(),
                 val dutiesRecyclerView = mBinding.dutiesRecyclerView
                 val gorevTuruSpinner = mBinding.gorevSpinner
                 dutyAddButton = mBinding.addDutyButton
-                val dutyAdapter = ArrayAdapter(
-                    mainActivity, android.R.layout.simple_spinner_item, gorevTurleri
-                )
-                dutyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                val dutyAdapter = mainActivity?.let {
+                    ArrayAdapter(
+                        it, android.R.layout.simple_spinner_item, gorevTurleri
+                    )
+                }
+                dutyAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 gorevTuruSpinner.adapter = dutyAdapter
                 gorevTuruSpinner.onItemSelectedListener = this
 

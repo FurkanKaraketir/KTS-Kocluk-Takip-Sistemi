@@ -17,8 +17,13 @@ import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.databinding.FragmentSettingsBinding
 import com.karaketir.coachingapp.services.openLink
 
-class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
+class SettingsFragment: Fragment() {
 
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
+    }
     init {
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
@@ -97,9 +102,11 @@ class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
                     val developerButton = mBinding.developerButtonProfile
 
                     developerButton.setOnClickListener {
-                        openLink(
-                            "https://www.linkedin.com/in/furkankaraketir/", mainActivity
-                        )
+                        mainActivity?.let { it1 ->
+                            openLink(
+                                "https://www.linkedin.com/in/furkankaraketir/", it1
+                            )
+                        }
                     }
 
 
@@ -122,10 +129,10 @@ class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
 
                     saveButton.setOnClickListener {
 
-                        val alertDialog = AlertDialog.Builder(mainActivity)
-                        alertDialog.setTitle("Kaydet")
-                        alertDialog.setMessage("Değişiklikleri Kaydetmek İstediğinize Emin misiniz?")
-                        alertDialog.setPositiveButton("Kaydet") { _, _ ->
+                        val alertDialog = mainActivity?.let { it1 -> AlertDialog.Builder(it1) }
+                        alertDialog?.setTitle("Kaydet")
+                        alertDialog?.setMessage("Değişiklikleri Kaydetmek İstediğinize Emin misiniz?")
+                        alertDialog?.setPositiveButton("Kaydet") { _, _ ->
 
                             if (nameChangeEditText.text.toString().isNotEmpty()) {
 
@@ -152,18 +159,18 @@ class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
 
 
                         }
-                        alertDialog.setNegativeButton("İptal") { _, _ ->
+                        alertDialog?.setNegativeButton("İptal") { _, _ ->
 
                         }
-                        alertDialog.show()
+                        alertDialog?.show()
 
                     }
 
                     deleteUser.setOnClickListener {
-                        val alertDialog = AlertDialog.Builder(mainActivity)
-                        alertDialog.setTitle("Hesabı Sil")
-                        alertDialog.setMessage("Hesabınızı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
-                        alertDialog.setPositiveButton("Sil") { _, _ ->
+                        val alertDialog = mainActivity?.let { it1 -> AlertDialog.Builder(it1) }
+                        alertDialog?.setTitle("Hesabı Sil")
+                        alertDialog?.setMessage("Hesabınızı Silmek İstediğinize Emin misiniz?\nBu İşlem Geri Alınamaz!!")
+                        alertDialog?.setPositiveButton("Sil") { _, _ ->
 
                             db.collection("School").document(kurumKodu.toString())
                                 .collection(personType).document(auth.uid.toString()).delete()
@@ -183,10 +190,10 @@ class SettingsFragment(private var mainActivity: MainActivity) : Fragment() {
 
 
                         }
-                        alertDialog.setNegativeButton("İptal") { _, _ ->
+                        alertDialog?.setNegativeButton("İptal") { _, _ ->
 
                         }
-                        alertDialog.show()
+                        alertDialog?.show()
                     }
 
 

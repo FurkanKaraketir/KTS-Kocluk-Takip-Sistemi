@@ -51,13 +51,19 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
+class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
     private var isViewCreated = false
     private lateinit var mBinding: FragmentStatsBinding
     private lateinit var toplamSureTextView: TextView
     private lateinit var toplamSoruTextView: TextView
     private val binding get() = _binding ?: throw IllegalStateException("Binding is null")
+
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
+    }
 
     init {
         System.setProperty(
@@ -159,15 +165,19 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
 
             val statsGradeSpinner = mBinding.statsGradeSpinner
 
-            val statsAdapter = ArrayAdapter(
-                mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
-            )
+            val statsAdapter = mainActivity?.let {
+                ArrayAdapter(
+                    it, android.R.layout.simple_spinner_item, zamanAraliklari
+                )
+            }
 
-            val gradeAdapter = ArrayAdapter(
-                mainActivity, android.R.layout.simple_spinner_item, gradeList
-            )
+            val gradeAdapter = mainActivity?.let {
+                ArrayAdapter(
+                    it, android.R.layout.simple_spinner_item, gradeList
+                )
+            }
 
-            statsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            statsAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             statsZamanSpinner.adapter = statsAdapter
 
 
@@ -215,22 +225,26 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
                                 getData()
                             }
                         baslangicTarihiTextView.setOnClickListener {
-                            DatePickerDialog(
-                                mainActivity,
-                                dateSetListener,
-                                cal.get(Calendar.YEAR),
-                                cal.get(Calendar.MONTH),
-                                cal.get(Calendar.DAY_OF_MONTH)
-                            ).show()
+                            mainActivity?.let { it1 ->
+                                DatePickerDialog(
+                                    it1,
+                                    dateSetListener,
+                                    cal.get(Calendar.YEAR),
+                                    cal.get(Calendar.MONTH),
+                                    cal.get(Calendar.DAY_OF_MONTH)
+                                ).show()
+                            }
                         }
                         bitisTarihiTextView.setOnClickListener {
-                            DatePickerDialog(
-                                mainActivity,
-                                dateSetListener2,
-                                cal.get(Calendar.YEAR),
-                                cal.get(Calendar.MONTH),
-                                cal.get(Calendar.DAY_OF_MONTH)
-                            ).show()
+                            mainActivity?.let { it1 ->
+                                DatePickerDialog(
+                                    it1,
+                                    dateSetListener2,
+                                    cal.get(Calendar.YEAR),
+                                    cal.get(Calendar.MONTH),
+                                    cal.get(Calendar.DAY_OF_MONTH)
+                                ).show()
+                            }
                         }
 
                     } else {
@@ -367,7 +381,7 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
             }
 
 
-            gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            gradeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             statsGradeSpinner.adapter = gradeAdapter
             statsGradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 @SuppressLint("SetTextI18n")
@@ -422,10 +436,11 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
         }
 
     private fun askForPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                mainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (mainActivity?.let {
+                ContextCompat.checkSelfPermission(
+                    it, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            } != PackageManager.PERMISSION_GRANTED) {
             // Permission not granted, request it
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
@@ -449,7 +464,7 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
                 arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
 
 
-            val cursor: Cursor? = mainActivity.contentResolver.query(
+            val cursor: Cursor? = mainActivity?.contentResolver?.query(
                 contentUri, null, selection, selectionArgs, null
             )
 
@@ -476,10 +491,10 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
                             MediaStore.MediaColumns.RELATIVE_PATH,
                             Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
                         ) //end "/" is not mandatory
-                        uri = mainActivity.contentResolver.insert(
+                        uri = mainActivity?.contentResolver?.insert(
                             MediaStore.Files.getContentUri("external"), values
                         ) //important!
-                        val outputStream = mainActivity.contentResolver.openOutputStream(uri!!)
+                        val outputStream = mainActivity?.contentResolver?.openOutputStream(uri!!)
                         workbook.write(outputStream)
                         outputStream!!.flush()
                         //outputStream!!.write("This is menu category data.".toByteArray())
@@ -522,10 +537,11 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
                                 MediaStore.MediaColumns.RELATIVE_PATH,
                                 Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
                             ) //end "/" is not mandatory
-                            uri = mainActivity.contentResolver.insert(
+                            uri = mainActivity?.contentResolver?.insert(
                                 MediaStore.Files.getContentUri("external"), values
                             ) //important!
-                            val outputStream = mainActivity.contentResolver.openOutputStream(uri!!)
+                            val outputStream =
+                                mainActivity?.contentResolver?.openOutputStream(uri!!)
                             workbook.write(outputStream)
                             outputStream!!.flush()
                             //outputStream!!.write("This is menu category data.".toByteArray())
@@ -542,7 +558,7 @@ class StatsFragment(private var mainActivity: MainActivity) : Fragment() {
                     } else {
                         try {
                             val outputStream: OutputStream? =
-                                mainActivity.contentResolver.openOutputStream(
+                                mainActivity?.contentResolver?.openOutputStream(
                                     uri, "rwt"
                                 ) //overwrite mode, see below
                             workbook.write(outputStream)

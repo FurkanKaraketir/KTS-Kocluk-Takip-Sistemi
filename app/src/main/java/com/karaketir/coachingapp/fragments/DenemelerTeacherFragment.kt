@@ -23,7 +23,14 @@ import com.karaketir.coachingapp.databinding.FragmentDenemelerTeacherBinding
 import com.karaketir.coachingapp.models.DenemeTeacher
 
 
-class DenemelerTeacherFragment(private var mainActivity: MainActivity) : Fragment() {
+class DenemelerTeacherFragment : Fragment() {
+
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
+    }
+
     init {
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
@@ -101,14 +108,18 @@ class DenemelerTeacherFragment(private var mainActivity: MainActivity) : Fragmen
                 this.startActivity(intent)
             }
 
-            val gradeAdapter = ArrayAdapter(
-                mainActivity, android.R.layout.simple_spinner_item, gradeList
-            )
-            val turAdapter = ArrayAdapter(
-                mainActivity, android.R.layout.simple_spinner_item, turler
-            )
+            val gradeAdapter = mainActivity?.let {
+                ArrayAdapter(
+                    it, android.R.layout.simple_spinner_item, gradeList
+                )
+            }
+            val turAdapter = mainActivity?.let {
+                ArrayAdapter(
+                    it, android.R.layout.simple_spinner_item, turler
+                )
+            }
 
-            gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            gradeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             gradeSpinner.adapter = gradeAdapter
             gradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -117,7 +128,7 @@ class DenemelerTeacherFragment(private var mainActivity: MainActivity) : Fragmen
 
                     secilenGrade = gradeList[position]
 
-                    turAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    turAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     turSpinner.adapter = turAdapter
                     turSpinner.onItemSelectedListener =
                         object : AdapterView.OnItemSelectedListener {

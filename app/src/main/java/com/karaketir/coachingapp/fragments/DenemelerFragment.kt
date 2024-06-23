@@ -31,7 +31,14 @@ import java.util.Calendar
 import java.util.Date
 
 
-class DenemelerFragment(private var mainActivity: MainActivity) : Fragment() {
+class DenemelerFragment : Fragment() {
+
+    private var mainActivity: MainActivity? = null
+
+    fun setMainActivity(activity: MainActivity) {
+        this.mainActivity = activity
+    }
+
     init {
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
@@ -133,15 +140,19 @@ class DenemelerFragment(private var mainActivity: MainActivity) : Fragment() {
                 }
 
 
-                val denemeAdapter = ArrayAdapter(
-                    mainActivity, android.R.layout.simple_spinner_item, zamanAraliklari
-                )
-                val turAdapter = ArrayAdapter(
-                    mainActivity, android.R.layout.simple_spinner_item, turler
-                )
+                val denemeAdapter = mainActivity?.let {
+                    ArrayAdapter(
+                        it, android.R.layout.simple_spinner_item, zamanAraliklari
+                    )
+                }
+                val turAdapter = mainActivity?.let {
+                    ArrayAdapter(
+                        it, android.R.layout.simple_spinner_item, turler
+                    )
+                }
 
 
-                denemeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                denemeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = denemeAdapter
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     @SuppressLint("NotifyDataSetChanged")
@@ -338,7 +349,7 @@ class DenemelerFragment(private var mainActivity: MainActivity) : Fragment() {
                             }
                         }
 
-                        turAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        turAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         turSpinner.adapter = turAdapter
                         turSpinner.onItemSelectedListener =
                             object : AdapterView.OnItemSelectedListener {

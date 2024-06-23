@@ -19,13 +19,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
-import com.karaketir.coachingapp.fragments.DenemelerFragment
-import com.karaketir.coachingapp.fragments.DenemelerTeacherFragment
-import com.karaketir.coachingapp.fragments.DutiesFragment
-import com.karaketir.coachingapp.fragments.MainFragment
-import com.karaketir.coachingapp.fragments.SettingsFragment
-import com.karaketir.coachingapp.fragments.StatsFragment
-
+import com.karaketir.coachingapp.fragments.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -118,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 fragmentContainerTeacher.visibility = View.VISIBLE
                 bottomNavigationTeacher.visibility = View.VISIBLE
                 bottomNavigationStudent.visibility = View.GONE
-                replaceFragmentTeacher(MainFragment(this))
+                replaceFragmentTeacher(MainFragment().apply { setMainActivity(this@MainActivity) })
 
             } else {
                 isTeacher = false
@@ -128,30 +122,30 @@ class MainActivity : AppCompatActivity() {
                 bottomNavigationTeacher.visibility = View.GONE
                 bottomNavigationStudent.visibility = View.VISIBLE
 
-                replaceFragmentStudent(MainFragment(this))
+                replaceFragmentStudent(MainFragment().apply { setMainActivity(this@MainActivity) })
             }
 
             binding.bottomNavigationTeacher.setOnItemSelectedListener {
 
                 when (it.itemId) {
                     R.id.navigation_home -> {
-                        replaceFragmentTeacher(MainFragment(this))
+                        replaceFragmentTeacher(MainFragment().apply { setMainActivity(this@MainActivity) })
 
                     }
 
                     R.id.navigation_stats -> {
-                        replaceFragmentTeacher(StatsFragment(this))
+                        replaceFragmentTeacher(StatsFragment().apply { setMainActivity(this@MainActivity) })
 
                     }
 
                     R.id.navigation_denemeler -> {
-                        replaceFragmentTeacher(DenemelerTeacherFragment(this))
+                        replaceFragmentTeacher(DenemelerTeacherFragment().apply { setMainActivity(this@MainActivity) })
 
 
                     }
 
                     R.id.navigation_settings -> {
-                        replaceFragmentTeacher(SettingsFragment(this))
+                        replaceFragmentTeacher(SettingsFragment().apply { setMainActivity(this@MainActivity) })
                     }
 
                     else -> {
@@ -166,21 +160,21 @@ class MainActivity : AppCompatActivity() {
 
                 when (it.itemId) {
                     R.id.navigation_home -> {
-                        replaceFragmentStudent(MainFragment(this))
+                        replaceFragmentStudent(MainFragment().apply { setMainActivity(this@MainActivity) })
 
                     }
 
                     R.id.navigation_denemeler -> {
-                        replaceFragmentStudent(DenemelerFragment(this))
+                        replaceFragmentStudent(DenemelerFragment().apply { setMainActivity(this@MainActivity) })
 
                     }
 
                     R.id.navigation_duties -> {
-                        replaceFragmentStudent(DutiesFragment(this))
+                        replaceFragmentStudent(DutiesFragment().apply { setMainActivity(this@MainActivity) })
                     }
 
                     R.id.navigation_settings -> {
-                        replaceFragmentStudent(SettingsFragment(this))
+                        replaceFragmentStudent(SettingsFragment().apply { setMainActivity(this@MainActivity) })
                     }
 
                     else -> {
@@ -201,6 +195,4 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _: Boolean ->
 
         }
-
-
 }
