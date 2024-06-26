@@ -1,161 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/studentCard"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools">
 
-
-    <LinearLayout
-        android:id="@+id/studentNameLayout"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/studentCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="35dp"
-        android:layout_toEndOf="@id/studentGradeTextView"
-        android:orientation="vertical">
-
-
-        <LinearLayout
-            android:id="@+id/fiveStarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:id="@+id/starOne"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24" />
-
-            <ImageView
-                android:id="@+id/starTwo"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starThree"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starFour"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/starFive"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@string/add_something"
-                android:src="@drawable/baseline_stars_24"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/degerlendirmeDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="10sp"
-                tools:ignore="SmallSp" />
-
-        </LinearLayout>
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp">
 
         <TextView
-            android:id="@+id/studentNameTextView"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/studentGradeTextView"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center"
             android:text=""
             android:textSize="14sp"
             android:textStyle="bold"
-            tools:ignore="RelativeOverlap" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <LinearLayout
+            android:id="@+id/studentNameLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/actionButtonsLayout"
+            app:layout_constraintStart_toEndOf="@id/studentGradeTextView"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/studentGradeTextView"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="5dp"
-        android:gravity="center"
-        android:text=""
-        android:textSize="14sp"
-        android:textStyle="bold" />
+            <LinearLayout
+                android:id="@+id/fiveStarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:ignore="UseCompoundDrawables">
 
+                <ImageView
+                    android:id="@+id/starOne"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:orientation="horizontal"
-        tools:ignore="RelativeOverlap">
+                <ImageView
+                    android:id="@+id/starTwo"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/todayStudyImageView"
+                <ImageView
+                    android:id="@+id/starThree"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/starFour"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/starFive"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:contentDescription="@string/add_something"
+                    android:src="@drawable/baseline_stars_24"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/degerlendirmeDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/studentNameTextView"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionButtonsLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/add_something" />
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/studentDeleteButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:visibility="gone"
-            app:icon="@drawable/ic_baseline_remove_circle_outline_24">
+            <ImageView
+                android:id="@+id/todayStudyImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="10dp"
+                android:contentDescription="@string/add_something" />
 
-        </Button>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/studentDeleteButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                app:icon="@drawable/ic_baseline_remove_circle_outline_24" />
 
-        <Button
-            android:id="@+id/studentHardDeleteButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:visibility="gone"
-            app:icon="@drawable/baseline_delete_outline_24">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/studentHardDeleteButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                app:icon="@drawable/baseline_delete_outline_24" />
 
-        </Button>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/studentAddButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                app:icon="@drawable/ic_baseline_add_circle_outline_24" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/studentAddButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:visibility="gone"
-            app:icon="@drawable/ic_baseline_add_circle_outline_24">
-
-        </Button>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:background="#E0E5EC" />
-
-
-</RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E5EC"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -9,13 +9,14 @@
     android:orientation="horizontal"
     android:visibility="visible">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:layout_weight="2"
         android:gravity="center"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp">
 
         <TextView
             android:id="@+id/countID"
@@ -24,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 
     <androidx.cardview.widget.CardView
