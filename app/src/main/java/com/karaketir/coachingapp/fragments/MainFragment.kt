@@ -152,12 +152,18 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        val cal1 = Calendar.getInstance()
+        baslangicTarihi = cal1.time
+        bitisTarihi = cal1.time
+
         auth = Firebase.auth
         db = Firebase.firestore
 
         isViewCreated = true
         if (isBindingAvailable()) {
             mBinding = binding
+
             val nameAndSurnameTextView = mBinding.nameAndSurnameTextView
             val sayacContainer = mBinding.sayacContainer
 
