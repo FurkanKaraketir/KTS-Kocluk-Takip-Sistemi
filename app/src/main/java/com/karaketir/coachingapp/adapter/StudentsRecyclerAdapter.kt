@@ -17,6 +17,7 @@ import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.TimeZone
 
 open class StudentsRecyclerAdapter(
     private val studentList: ArrayList<Student>,
@@ -54,6 +55,7 @@ open class StudentsRecyclerAdapter(
                 val todayStudyImageView = binding.todayStudyImageView
                 val fiveStarButton = binding.fiveStarButton
                 val degerlendirmeDate = binding.degerlendirmeDate
+                val reportDate = binding.reportDate
                 val starTwo = binding.starTwo
                 val starThree = binding.starThree
                 val starFour = binding.starFour
@@ -199,6 +201,35 @@ open class StudentsRecyclerAdapter(
                         }
                     }
 
+                // show the last report's date
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(myItem.id).collection("Studies")
+                    .orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
+                    .addSnapshotListener { value, error ->
+
+                        if (error != null) {
+                            println(error.localizedMessage)
+                        }
+
+                        if (value != null) {
+                            if (value.isEmpty) {
+                                reportDate.text = "Rapor Yok"
+                            } else {
+                                for (i in value) {
+                                    val tarih =
+                                        i.get("timestamp") as com.google.firebase.Timestamp
+                                    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm")
+                                    dateFormat.timeZone =
+                                        TimeZone.getTimeZone("GMT+3") // Set the timezone to GMT+3
+                                    val dateFormatted = dateFormat.format(tarih.toDate())
+                                    reportDate.text = dateFormatted
+                                }
+                            }
+
+                        } else {
+                            reportDate.text = "Rapor Yok"
+                        }
+                    }
 
             }
 
