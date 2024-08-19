@@ -294,8 +294,6 @@ class MainFragment : Fragment() {
                     if (it.get("personType").toString() == "Student") {
 
                         personType = "Student"
-
-                        var cal = Calendar.getInstance()
                         grade = it.get("grade").toString().toInt()
                         updateTime(grade)
                         teacher = it.get("teacher").toString()
@@ -338,10 +336,7 @@ class MainFragment : Fragment() {
                         noReportButton.visibility = View.GONE
                         messageButton.visibility = View.GONE
 
-                        cal.add(Calendar.DAY_OF_YEAR, 2)
-                        val bitisTarihi = cal.time
-
-                        cal = Calendar.getInstance()
+                        val cal: Calendar = Calendar.getInstance()
                         cal.add(Calendar.DAY_OF_YEAR, -7)
                         val baslangicTarihi = cal.time
 
@@ -350,7 +345,6 @@ class MainFragment : Fragment() {
                         db.collection("School").document(kurumKodu.toString()).collection("Student")
                             .document(auth.uid.toString()).collection("Studies")
                             .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
                             .orderBy("timestamp", Query.Direction.DESCENDING)
                             .addSnapshotListener { it1, _ ->
                                 studyList.clear()
