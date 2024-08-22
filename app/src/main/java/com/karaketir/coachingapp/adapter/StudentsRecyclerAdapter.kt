@@ -119,19 +119,18 @@ class StudentsRecyclerAdapter(
                 }
 
             // Last report date listener
-            schoolRef.collection("Student").document(student.id).collection("Studies")
-                .orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
+            schoolRef.collection("LastReports").document(student.id)
                 .addSnapshotListener { value, error ->
                     if (error != null) {
-                        println(error.localizedMessage)
+                        binding.reportIcon.visibility = View.GONE
+                        binding.reportDate.visibility = View.GONE
                         return@addSnapshotListener
                     }
-                    if (value?.isEmpty == true) {
-                        binding.reportDate.text = "Rapor Yok"
-                        return@addSnapshotListener
-                    }
-                    value?.documents?.firstOrNull()?.let { document ->
-                        updateReportDateUI(document)
+                    if (value?.exists() == true) {
+                        updateReportDateUI(value)
+                    }else{
+                        binding.reportIcon.visibility = View.GONE
+                        binding.reportDate.visibility = View.GONE
                     }
                 }
         }

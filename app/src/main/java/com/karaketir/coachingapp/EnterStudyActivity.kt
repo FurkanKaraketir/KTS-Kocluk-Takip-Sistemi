@@ -717,6 +717,29 @@ class EnterStudyActivity : AppCompatActivity() {
                                         Toast.LENGTH_SHORT
                                     ).show()
 
+                                    val cal3 = Calendar.getInstance()
+
+                                    if (currentTime != null) {
+                                        val date = currentTime.datetime.split("T")[0]
+                                        val time = currentTime.datetime.split("T")[1].split(".")[0]
+                                        cal3[Calendar.YEAR] = date.split("-")[0].toInt()
+                                        cal3[Calendar.MONTH] = date.split("-")[1].toInt() - 1
+                                        cal3[Calendar.DAY_OF_MONTH] = date.split("-")[2].toInt()
+                                        cal3[Calendar.HOUR_OF_DAY] = time.split(":")[0].toInt()
+                                        cal3[Calendar.MINUTE] = time.split(":")[1].toInt()
+                                        cal3[Calendar.SECOND] = time.split(":")[2].toInt()
+
+                                        db.collection("School").document(kurumKodu.toString())
+                                            .collection("LastReports").document(auth.uid.toString())
+                                            .set(
+                                                hashMapOf(
+                                                    "id" to auth.uid.toString(),
+                                                    "timestamp" to cal3.time
+                                                )
+                                            )
+                                    }
+
+
                                     finish()
 
 
