@@ -38,16 +38,42 @@ class StudentsRecyclerAdapter(
 
             setupClickListeners(student, adapter)
             setupFirestoreListeners(student, adapter)
+
+            binding.studentAddButton.visibility = View.GONE
+            binding.studentDeleteButton.visibility = View.VISIBLE
+
+            binding.studentDeleteButton.setOnClickListener {
+
+
+                binding.studentNameTextView.text = student.studentName
+                val removeStudent = AlertDialog.Builder(itemView.context)
+                removeStudent.setTitle("Öğrenci Çıkar")
+                removeStudent.setMessage("${student.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
+                removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
+
+                    adapter.db.collection("School").document(adapter.kurumKodu.toString())
+                        .collection("Student")
+                        .document(student.id).update("teacher", "")
+                    adapter.db.collection("User").document(student.id).update("teacher", "")
+                }
+                removeStudent.setNegativeButton("İPTAL") { _, _ ->
+
+                }
+                removeStudent.show()
+
+
+            }
         }
 
         private fun setupClickListeners(student: Student, adapter: StudentsRecyclerAdapter) {
             binding.studentGradeTextView.setOnClickListener {
-                val intent = Intent(itemView.context, StudentClassUpdateActivity::class.java).apply {
-                    putExtra("kurumKodu", adapter.kurumKodu.toString())
-                    putExtra("name", student.studentName)
-                    putExtra("grade", student.grade.toString())
-                    putExtra("id", student.id)
-                }
+                val intent =
+                    Intent(itemView.context, StudentClassUpdateActivity::class.java).apply {
+                        putExtra("kurumKodu", adapter.kurumKodu.toString())
+                        putExtra("name", student.studentName)
+                        putExtra("grade", student.grade.toString())
+                        putExtra("id", student.id)
+                    }
                 itemView.context.startActivity(intent)
             }
 
@@ -128,7 +154,7 @@ class StudentsRecyclerAdapter(
                     }
                     if (value?.exists() == true) {
                         updateReportDateUI(value)
-                    }else{
+                    } else {
                         binding.reportIcon.visibility = View.GONE
                         binding.reportDate.visibility = View.GONE
                     }
@@ -179,6 +205,7 @@ class StudentsRecyclerAdapter(
         override fun getNewListSize() = newList.size
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             oldList[oldItemPosition].id == newList[newItemPosition].id
+
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             oldList[oldItemPosition] == newList[newItemPosition]
     }
