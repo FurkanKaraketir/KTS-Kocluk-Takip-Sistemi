@@ -40,7 +40,7 @@ class DenemelerTeacherActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var denemelerList = ArrayList<DenemeTeacher>()
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0", "13")
     private val turler = arrayOf("Tüm Denemeler", "TYT", "AYT")
     private var secilenGrade = ""
     private var secilenTur = ""

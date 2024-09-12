@@ -95,7 +95,7 @@ class StatsFragment : Fragment() {
     private var dersSureHash = hashMapOf<String, Float>()
     private var statsList = ArrayList<Statistic>()
     private var ogrenciSayisi = 0
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0", "13")
 
     private val zamanAraliklari = arrayOf(
         "Seçiniz",

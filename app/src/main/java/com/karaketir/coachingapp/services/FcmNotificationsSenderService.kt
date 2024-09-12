@@ -29,7 +29,7 @@ class FcmNotificationsSenderService(
         val mainObj = JSONObject()
         try {
             db = FirebaseFirestore.getInstance()
-            db.collection("VersionCode").document("mKey").get().addOnSuccessListener {
+            db.collection("AdminData").document("serverKey").get().addOnSuccessListener {
                     fcmServerKey = it.get("key").toString()
 
                     mainObj.put("to", userFcmToken)

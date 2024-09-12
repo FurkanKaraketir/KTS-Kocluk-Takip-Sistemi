@@ -98,7 +98,7 @@ class MainFragment : Fragment() {
     private var secilenZaman = "Seçiniz"
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
-    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0")
+    private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0", "13")
     private var raporGondermeyenList = ArrayList<Student>()
     private val zamanAraliklari = arrayOf(
         "Seçiniz",
@@ -880,7 +880,7 @@ class MainFragment : Fragment() {
 
         val eventDate = Calendar.getInstance()
         when (grade) {
-            12, 0 -> {
+            12, 0, 13 -> {
                 db.collection("Dates").document("date12").get().addOnSuccessListener {
                     eventDate[Calendar.YEAR] = it.get("year").toString().toInt()
                     eventDate[Calendar.MONTH] = it.get("month").toString().toInt() - 1
