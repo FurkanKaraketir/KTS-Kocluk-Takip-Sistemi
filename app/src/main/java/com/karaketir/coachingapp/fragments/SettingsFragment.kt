@@ -96,7 +96,11 @@ class SettingsFragment: Fragment() {
                         0
                     }
                     personType = snapshot.get("personType").toString()
-                    kurumKodu = snapshot.get("kurumKodu").toString().toInt()
+                    kurumKodu = try {
+                        snapshot.get("kurumKodu").toString().toInt()
+                    } catch (e: Exception) {
+                        763455
+                    }
 
 
                     val developerButton = mBinding.developerButtonProfile

@@ -117,7 +117,13 @@ class DenemelerFragment : Fragment() {
         auth = Firebase.auth
         db = Firebase.firestore
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { user ->
-            kurumKodu = user.get("kurumKodu").toString().toInt()
+
+            kurumKodu = try {
+                user.get("kurumKodu").toString().toInt()
+            } catch (e: Exception) {
+                763455
+            }
+
             grade = user.get("grade").toString().toInt()
             teacher = user.get("teacher").toString()
             personType = user.get("personType").toString()

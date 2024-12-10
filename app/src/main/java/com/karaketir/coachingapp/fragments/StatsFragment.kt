@@ -3,6 +3,7 @@ package com.karaketir.coachingapp.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.app.AlertDialog
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.karaketir.coachingapp.MainActivity
+import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentStatsBinding
 import com.karaketir.coachingapp.models.Statistic
@@ -39,6 +42,7 @@ import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.IndexedColorMap
 import org.apache.poi.xssf.usermodel.XSSFColor
@@ -110,6 +114,7 @@ class StatsFragment : Fragment() {
         "Özel"
     )
 
+    private var hasShownInitialDialog = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -153,255 +158,192 @@ class StatsFragment : Fragment() {
             //Creating sheet header row
             createSheetHeader(cellStyle, sheet)
 
-            //Adding data to the sheet
-
             val fileSaveButton = mBinding.fileSaveExcelButton
-            val customDateLayout = mBinding.customDateLayout
-            val baslangicTarihiTextView = mBinding.baslangicTarihiTextView
-            val bitisTarihiTextView = mBinding.bitisTarihiTextView
 
             layoutManager = LinearLayoutManager(mainActivity)
             val statsZamanSpinner = mBinding.statsZamanAraligiSpinner
-
             val statsGradeSpinner = mBinding.statsGradeSpinner
 
-            val statsAdapter = mainActivity?.let {
-                ArrayAdapter(
-                    it, android.R.layout.simple_spinner_item, zamanAraliklari
-                )
+            setupSpinnerAdapters(statsZamanSpinner, statsGradeSpinner)
+
+            if (!hasShownInitialDialog) {
+                showInitialDialog(statsZamanSpinner, statsGradeSpinner)
+                hasShownInitialDialog = true
             }
-
-            val gradeAdapter = mainActivity?.let {
-                ArrayAdapter(
-                    it, android.R.layout.simple_spinner_item, gradeList
-                )
-            }
-
-            statsAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            statsZamanSpinner.adapter = statsAdapter
-
 
             fileSaveButton.setOnClickListener {
                 addData(sheet)
-
                 askForPermissions()
                 createExcel()
             }
+        }
+    }
 
-
-
-            statsZamanSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                @SuppressLint("NotifyDataSetChanged", "SimpleDateFormat")
-                override fun onItemSelected(
-                    p0: AdapterView<*>?, p1: View?, position: Int, p3: Long
-                ) {
-                    customDateLayout.visibility = View.VISIBLE
-
-                    secilenZamanAraligi = zamanAraliklari[position]
-                    if (secilenZamanAraligi == "Özel") {
-                        val cal = Calendar.getInstance()
-                        val dateSetListener =
-                            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                                cal.set(Calendar.YEAR, year)
-                                cal.set(Calendar.MONTH, month)
-                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                baslangicTarihi = cal.time
-                                baslangicTarihiTextView.text =
-                                    "Başlangıç Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
-                                        baslangicTarihi
-                                    )
-                                getData()
-                            }
-                        val dateSetListener2 =
-                            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                                cal.set(Calendar.YEAR, year)
-                                cal.set(Calendar.MONTH, month)
-                                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                                bitisTarihi = cal.time
-                                bitisTarihiTextView.text =
-                                    "Bitiş Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
-                                        bitisTarihi
-                                    )
-                                getData()
-                            }
-                        baslangicTarihiTextView.setOnClickListener {
-                            mainActivity?.let { it1 ->
-                                DatePickerDialog(
-                                    it1,
-                                    dateSetListener,
-                                    cal.get(Calendar.YEAR),
-                                    cal.get(Calendar.MONTH),
-                                    cal.get(Calendar.DAY_OF_MONTH)
-                                ).show()
-                            }
-                        }
-                        bitisTarihiTextView.setOnClickListener {
-                            mainActivity?.let { it1 ->
-                                DatePickerDialog(
-                                    it1,
-                                    dateSetListener2,
-                                    cal.get(Calendar.YEAR),
-                                    cal.get(Calendar.MONTH),
-                                    cal.get(Calendar.DAY_OF_MONTH)
-                                ).show()
-                            }
-                        }
-
-                    } else {
-
-                        var cal = Calendar.getInstance()
-                        cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
-
-                        cal.clear(Calendar.MINUTE)
-                        cal.clear(Calendar.SECOND)
-                        cal.clear(Calendar.MILLISECOND)
-
-                        when (secilenZamanAraligi) {
-                            "Seçiniz" -> {
-                                baslangicTarihi = cal.time
-                                bitisTarihi = cal.time
-
-                            }
-
-                            "Bugün" -> {
-                                baslangicTarihi = cal.time
-
-
-                                cal.add(Calendar.DAY_OF_YEAR, 1)
-                                bitisTarihi = cal.time
-                            }
-
-                            "Dün" -> {
-                                bitisTarihi = cal.time
-
-                                cal.add(Calendar.DAY_OF_YEAR, -1)
-                                baslangicTarihi = cal.time
-                            }
-
-                            "Bu Hafta" -> {
-                                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                                baslangicTarihi = cal.time
-
-
-                                cal.add(Calendar.WEEK_OF_YEAR, 1)
-                                bitisTarihi = cal.time
-
-                            }
-
-                            "Geçen Hafta" -> {
-                                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-                                bitisTarihi = cal.time
-
-
-                                cal.add(Calendar.DAY_OF_YEAR, -7)
-                                baslangicTarihi = cal.time
-
-
-                            }
-
-                            "Son 30 Gün" -> {
-                                cal = Calendar.getInstance()
-
-                                bitisTarihi = cal.time
-
-                                cal.add(Calendar.DAY_OF_YEAR, -30)
-
-                                baslangicTarihi = cal.time
-
-                            }
-
-                            "Bu Ay" -> {
-
-                                cal = Calendar.getInstance()
-                                cal[Calendar.HOUR_OF_DAY] =
-                                    0 // ! clear would not reset the hour of day !
-
-                                cal.clear(Calendar.MINUTE)
-                                cal.clear(Calendar.SECOND)
-                                cal.clear(Calendar.MILLISECOND)
-
-                                cal.set(Calendar.DAY_OF_MONTH, 1)
-                                baslangicTarihi = cal.time
-
-
-                                cal.add(Calendar.MONTH, 1)
-                                bitisTarihi = cal.time
-
-
-                            }
-
-                            "Geçen Ay" -> {
-                                cal = Calendar.getInstance()
-                                cal[Calendar.HOUR_OF_DAY] =
-                                    0 // ! clear would not reset the hour of day !
-
-                                cal.clear(Calendar.MINUTE)
-                                cal.clear(Calendar.SECOND)
-                                cal.clear(Calendar.MILLISECOND)
-
-                                cal.set(Calendar.DAY_OF_MONTH, 1)
-                                bitisTarihi = cal.time
-
-
-                                cal.add(Calendar.MONTH, -1)
-                                baslangicTarihi = cal.time
-
-                            }
-
-                            "Tüm Zamanlar" -> {
-                                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                                baslangicTarihi = cal.time
-
-
-                                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
-                                bitisTarihi = cal.time
-
-                            }
-                        }
-                        baslangicTarihiTextView.text =
-                            "Başlangıç Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
-                                baslangicTarihi
-                            )
-
-                        bitisTarihiTextView.text =
-                            "Bitiş Tarihi: " + SimpleDateFormat("dd/MM/yyyy").format(
-                                bitisTarihi
-                            )
-
-                        getData()
-
-                    }
-
-
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                }
-
-            }
-
-
-            gradeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            statsGradeSpinner.adapter = gradeAdapter
-            statsGradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                @SuppressLint("SetTextI18n")
-                override fun onItemSelected(
-                    p0: AdapterView<*>?, p1: View?, position2: Int, p3: Long
-                ) {
-                    secilenGrade = gradeList[position2]
-                    getData()
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-
-                }
-
-            }
-
-
+    private fun setupSpinnerAdapters(statsZamanSpinner: Spinner, statsGradeSpinner: Spinner) {
+        val statsAdapter = mainActivity?.let {
+            ArrayAdapter(it, android.R.layout.simple_spinner_item, zamanAraliklari)
+        }
+        val gradeAdapter = mainActivity?.let {
+            ArrayAdapter(it, android.R.layout.simple_spinner_item, gradeList)
         }
 
+        statsAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        gradeAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
+        statsZamanSpinner.adapter = statsAdapter
+        statsGradeSpinner.adapter = gradeAdapter
+
+        setupSpinnerListeners(statsZamanSpinner, statsGradeSpinner)
+    }
+
+    private fun setupSpinnerListeners(statsZamanSpinner: Spinner, statsGradeSpinner: Spinner) {
+        statsZamanSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            @SuppressLint("NotifyDataSetChanged", "SimpleDateFormat")
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                val customDateLayout = mBinding.customDateLayout
+                customDateLayout.visibility = View.VISIBLE
+
+                secilenZamanAraligi = zamanAraliklari[position]
+                handleTimeSelection(secilenZamanAraligi)
+                getData()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+        }
+
+        statsGradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            @SuppressLint("SetTextI18s")
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                secilenGrade = gradeList[position]
+                getData()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+        }
+    }
+
+    @SuppressLint("SetTextI18s", "SimpleDateFormat")
+    private fun handleTimeSelection(selectedTime: String) {
+        val cal = Calendar.getInstance()
+        cal[Calendar.HOUR_OF_DAY] = 0
+        cal.clear(Calendar.MINUTE)
+        cal.clear(Calendar.SECOND)
+        cal.clear(Calendar.MILLISECOND)
+
+        when (selectedTime) {
+            "Seçiniz" -> {
+                baslangicTarihi = cal.time
+                bitisTarihi = cal.time
+            }
+            "Bugün" -> {
+                baslangicTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+            "Dün" -> {
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+            }
+            "Bu Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                baslangicTarihi = cal.time
+                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+            "Geçen Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -7)
+                baslangicTarihi = cal.time
+            }
+            "Son 30 Gün" -> {
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+                baslangicTarihi = cal.time
+            }
+            "Bu Ay" -> {
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                baslangicTarihi = cal.time
+                cal.add(Calendar.MONTH, 1)
+                bitisTarihi = cal.time
+            }
+            "Geçen Ay" -> {
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                bitisTarihi = cal.time
+                cal.add(Calendar.MONTH, -1)
+                baslangicTarihi = cal.time
+            }
+            "Tüm Zamanlar" -> {
+                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                baslangicTarihi = cal.time
+                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                bitisTarihi = cal.time
+            }
+            "Özel" -> {
+                setupCustomDatePickers()
+            }
+        }
+
+        if (selectedTime != "Özel") {
+            updateDateTextViews()
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun setupCustomDatePickers() {
+        val cal = Calendar.getInstance()
+        val baslangicTarihiTextView = mBinding.baslangicTarihiTextView
+        val bitisTarihiTextView = mBinding.bitisTarihiTextView
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            baslangicTarihi = cal.time
+            updateDateTextViews()
+            getData()
+        }
+
+        val dateSetListener2 = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            bitisTarihi = cal.time
+            updateDateTextViews()
+            getData()
+        }
+
+        baslangicTarihiTextView.setOnClickListener {
+            mainActivity?.let { activity ->
+                DatePickerDialog(
+                    activity,
+                    dateSetListener,
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
+        }
+
+        bitisTarihiTextView.setOnClickListener {
+            mainActivity?.let { activity ->
+                DatePickerDialog(
+                    activity,
+                    dateSetListener2,
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
+    private fun updateDateTextViews() {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        mBinding.baslangicTarihiTextView.text = "Başlangıç Tarihi: ${dateFormat.format(baslangicTarihi)}"
+        mBinding.bitisTarihiTextView.text = "Bitiş Tarihi: ${dateFormat.format(bitisTarihi)}"
     }
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
@@ -410,20 +352,20 @@ class StatsFragment : Fragment() {
         var toplamSoru = 0f
         if (statsList.isNotEmpty()) {
             for (i in statsList) {
-                toplamSure += i.toplamCalisma.toFloat()
-                toplamSoru += i.cozulenSoru.toFloat()
+                toplamSure += i.toplamCalisma.replace(",", ".").toFloat()
+                toplamSoru += i.cozulenSoru.replace(",", ".").toFloat()
             }
         }
 
         val toplamSureSaat = toplamSure / 60
-        toplamSureTextView.text = toplamSure.format(2) + "dk " + "(${
-            toplamSureSaat.format(2)
-        } Saat)"
+        toplamSureTextView.text = "${toplamSure.format(2)}dk (${toplamSureSaat.format(2)} Saat)"
         toplamSoruTextView.text = "${toplamSoru.format(2)} Soru"
     }
 
 
-    private fun Float.format(digits: Int) = "%.${digits}f".format(this)
+    private fun Float.format(digits: Int): String {
+        return String.format(java.util.Locale.US, "%.${digits}f", this)
+    }
 
 
     private val requestPermissionLauncher =
@@ -472,11 +414,6 @@ class StatsFragment : Fragment() {
 
             if (cursor != null) {
                 if (cursor.count == 0) {
-                    Toast.makeText(
-                        mainActivity,
-                        "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/\"",
-                        Toast.LENGTH_LONG
-                    ).show()
 
                     try {
                         val values = ContentValues()
@@ -518,11 +455,6 @@ class StatsFragment : Fragment() {
                         }
                     }
                     if (uri == null) {
-                        Toast.makeText(
-                            mainActivity,
-                            "\"$secilenGrade - $secilenZamanAraligi - $current.xls\" Bulunamadı",
-                            Toast.LENGTH_SHORT
-                        ).show()
 
                         try {
                             val values = ContentValues()
@@ -625,54 +557,74 @@ class StatsFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     private fun addData(sheet: Sheet) {
+        try {
+            // Add information row
+            val infoRow = sheet.createRow(0)
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+            CellUtil.createCell(
+                infoRow, 
+                0, 
+                "${secilenGrade.ifEmpty { "Tüm Sınıflar" }} - ${secilenZamanAraligi} " +
+                "(${dateFormat.format(baslangicTarihi)} - ${dateFormat.format(bitisTarihi)})"
+            )
+            
+            // Merge cells for the info row
+            sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 2))
 
-        //Create row based on row index
-        val row = sheet.createRow(0)
+            // Create header row (now in row 2)
+            val headerRow = sheet.createRow(2)
+            
+            // Set fixed column widths
+            sheet.setColumnWidth(0, 30 * 256) // Ders column - wider for lesson names
+            sheet.setColumnWidth(1, 25 * 256) // Ortalama Süre column
+            sheet.setColumnWidth(2, 25 * 256) // Ortalama Soru column
 
-        var toplamSure = 0f
-        var toplamSoru = 0f
-        if (statsList.isNotEmpty()) {
-            for (i in statsList) {
-                toplamSure += i.toplamCalisma.toFloat()
-                toplamSoru += i.cozulenSoru.toFloat()
+            // Create header cells
+            CellUtil.createCell(headerRow, 0, "Ders")
+            CellUtil.createCell(headerRow, 1, "Ortalama Süre (dk)")
+            CellUtil.createCell(headerRow, 2, "Ortalama Soru")
+
+            // Add statistics rows starting from row 3
+            statsList.forEachIndexed { index, stat ->
+                val row = sheet.createRow(index + 3)
+                CellUtil.createCell(row, 0, stat.dersAdi)
+                CellUtil.createCell(row, 1, stat.toplamCalisma)
+                CellUtil.createCell(row, 2, stat.cozulenSoru)
+            }
+
+            // Add summary row with a blank row above it
+            val summaryRow = sheet.createRow(statsList.size + 5)
+            CellUtil.createCell(summaryRow, 0, "Toplam")
+            CellUtil.createCell(summaryRow, 1, calculateTotalTime())
+            CellUtil.createCell(summaryRow, 2, calculateTotalQuestions())
+
+            // Add student count information
+            val studentCountRow = sheet.createRow(statsList.size + 6)
+            CellUtil.createCell(studentCountRow, 0, "Öğrenci Sayısı: $ogrenciSayisi")
+            sheet.addMergedRegion(CellRangeAddress(
+                statsList.size + 6, 
+                statsList.size + 6, 
+                0, 
+                2
+            ))
+
+        } catch (e: Exception) {
+            mainActivity?.let {
+                Toast.makeText(it, "Excel oluşturma hatası: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
+    private fun calculateTotalTime(): String {
+        val total = statsList.sumOf { it.toplamCalisma.toDouble() }.toFloat()
+        return total.format(2)
+    }
 
-        CellUtil.createCell(row, 0, "Toplam")
-        CellUtil.createCell(
-            row, 1, toplamSure.format(2) + "dk "
-        ) //Column 1
-
-
-        CellUtil.createCell(row, 2, toplamSoru.format(2) + " Soru")
-        var indexNum = 0
-        if (ogrenciSayisi != 0) {
-
-            for (i in dersSureHash.keys) {
-                val row2 = sheet.createRow(indexNum + 1)
-
-                val dersSure = dersSureHash[i]
-                if (dersSure != null) {
-
-                    CellUtil.createCell(row2, 0, i)
-                    CellUtil.createCell(
-                        row2, 1, (dersSure / (ogrenciSayisi)).format(2)
-                    )
-                }
-                val dersSoru = dersSoruHash[i]
-                if (dersSoru != null) {
-                    CellUtil.createCell(
-                        row2, 2, (dersSoru / ogrenciSayisi).format(2)
-                    )
-                }
-                indexNum += 1
-
-            }
-        }
-        Toast.makeText(mainActivity, "Excel Dosyası Oluşturuldu", Toast.LENGTH_SHORT).show()
+    private fun calculateTotalQuestions(): String {
+        val total = statsList.sumOf { it.cozulenSoru.toDouble() }.toFloat()
+        return total.format(2)
     }
 
     private fun getHeaderStyle(workbook: Workbook): CellStyle {
@@ -700,238 +652,128 @@ class StatsFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getData() {
-
+        // Clear lists at the start
         statsList.clear()
         dersSureHash.clear()
         dersSoruHash.clear()
-
+        
         recyclerViewStats = mBinding.statsRecyclerView
         recyclerViewStats.layoutManager = layoutManager
-
         recyclerViewStatsAdapter = StatisticsRecyclerAdapter(statsList)
-
         recyclerViewStats.adapter = recyclerViewStatsAdapter
-        recyclerViewStatsAdapter.notifyDataSetChanged()
 
-
+        // Move dersListesi outside the listener to prevent multiple initializations
         val dersListesi = ArrayList<String>()
-
-
-
-        db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
-            .addSnapshotListener { dersler, _ ->
-                if (dersler != null) {
-                    for (i in dersler) {
-                        dersListesi.add(i.id)
-                    }
+        
+        db.collection("Lessons")
+            .orderBy("dersAdi", Query.Direction.ASCENDING)
+            .get() // Use get() instead of addSnapshotListener for one-time data fetch
+            .addOnSuccessListener { dersler ->
+                dersler?.forEach { ders ->
+                    dersListesi.add(ders.id)
                 }
-                for (dersIndex in dersListesi) {
-
-                    if (secilenGrade == "Bütün Sınıflar") {
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .whereEqualTo("teacher", auth.uid.toString())
-                            .addSnapshotListener { ogrencliler, _ ->
-                                statsList.clear()
-
-                                if (ogrencliler != null) {
-                                    ogrenciSayisi = ogrencliler.size()
-
-                                    for (ogrenci in ogrencliler) {
-                                        var toplamCalisma = 0
-                                        var cozulenSoru = 0
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Student").document(ogrenci.id)
-                                            .collection("Studies").whereEqualTo(
-                                                "dersAdi", dersIndex
-                                            ).whereGreaterThan(
-                                                "timestamp", baslangicTarihi
-                                            ).whereLessThan(
-                                                "timestamp", bitisTarihi
-                                            ).addSnapshotListener { studies, _ ->
-
-
-                                                if (studies != null && ogrencliler.size() != 0) {
-
-                                                    for (study in studies) {
-                                                        toplamCalisma += study.get(
-                                                            "toplamCalisma"
-                                                        ).toString().toInt()
-                                                        cozulenSoru += study.get(
-                                                            "çözülenSoru"
-                                                        ).toString().toInt()
-
-
-                                                    }
-                                                    if (dersIndex in dersSoruHash.keys) {
-
-                                                        val currentValue = dersSoruHash[dersIndex]
-
-                                                        if (currentValue != null) {
-                                                            dersSoruHash[dersIndex] =
-                                                                currentValue + cozulenSoru.toFloat()
-                                                        }
-
-
-                                                    } else {
-                                                        dersSoruHash[dersIndex] =
-                                                            cozulenSoru.toFloat()
-                                                    }
-
-                                                    if (dersIndex in dersSureHash.keys) {
-
-                                                        val currentValue = dersSureHash[dersIndex]
-
-                                                        if (currentValue != null) {
-                                                            dersSureHash[dersIndex] =
-                                                                currentValue + toplamCalisma.toFloat()
-                                                        }
-
-
-                                                    } else {
-                                                        dersSureHash[dersIndex] =
-                                                            toplamCalisma.toFloat()
-                                                    }
-
-
-
-
-                                                    statsList.clear()
-                                                    for (i in dersSureHash.keys) {
-                                                        val currentStatistic = Statistic(
-                                                            i, (dersSureHash[i]?.div(
-                                                                ogrenciSayisi
-                                                            )).toString(), (dersSoruHash[i]?.div(
-                                                                ogrenciSayisi
-                                                            )).toString()
-                                                        )
-
-                                                        statsList.add(
-                                                            currentStatistic
-                                                        )
-                                                        statsList.sortBy { it.dersAdi }
-                                                        recyclerViewStatsAdapter.notifyDataSetChanged()
-                                                    }
-
-                                                }
-
-                                                showSum()
-
-                                            }
-
-
-                                    }
-
-                                }
-
-
-                            }
-                    } else {
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .whereEqualTo("teacher", auth.uid.toString())
-                            .whereEqualTo("grade", secilenGrade.toInt())
-                            .addSnapshotListener { ogrencliler, error ->
-                                statsList.clear()
-                                if (error != null) {
-                                    println(error.localizedMessage)
-                                }
-
-                                if (ogrencliler != null) {
-                                    ogrenciSayisi = ogrencliler.size()
-
-                                    for (ogrenci in ogrencliler) {
-                                        var toplamCalisma = 0
-                                        var cozulenSoru = 0
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Student").document(ogrenci.id)
-                                            .collection("Studies").whereEqualTo(
-                                                "dersAdi", dersIndex
-                                            ).whereGreaterThan(
-                                                "timestamp", baslangicTarihi
-                                            ).whereLessThan(
-                                                "timestamp", bitisTarihi
-                                            ).addSnapshotListener { studies, _ ->
-
-
-                                                if (studies != null && ogrencliler.size() != 0) {
-
-                                                    for (study in studies) {
-                                                        toplamCalisma += study.get(
-                                                            "toplamCalisma"
-                                                        ).toString().toInt()
-                                                        cozulenSoru += study.get(
-                                                            "çözülenSoru"
-                                                        ).toString().toInt()
-
-
-                                                    }
-                                                    if (dersIndex in dersSoruHash.keys) {
-
-                                                        val currentValue = dersSoruHash[dersIndex]
-
-                                                        if (currentValue != null) {
-                                                            dersSoruHash[dersIndex] =
-                                                                currentValue + cozulenSoru.toFloat()
-                                                        }
-
-
-                                                    } else {
-                                                        dersSoruHash[dersIndex] =
-                                                            cozulenSoru.toFloat()
-                                                    }
-
-                                                    if (dersIndex in dersSureHash.keys) {
-
-                                                        val currentValue = dersSureHash[dersIndex]
-
-                                                        if (currentValue != null) {
-                                                            dersSureHash[dersIndex] =
-                                                                currentValue + toplamCalisma.toFloat()
-                                                        }
-
-
-                                                    } else {
-                                                        dersSureHash[dersIndex] =
-                                                            toplamCalisma.toFloat()
-                                                    }
-
-
-
-                                                    statsList.clear()
-                                                    for (i in dersSureHash.keys) {
-                                                        val currentStatistic = Statistic(
-                                                            i, (dersSureHash[i]?.div(
-                                                                ogrenciSayisi
-                                                            )).toString(), (dersSoruHash[i]?.div(
-                                                                ogrenciSayisi
-                                                            )).toString()
-                                                        )
-                                                        statsList.add(
-                                                            currentStatistic
-                                                        )
-                                                        statsList.sortBy { it.dersAdi }
-
-                                                        recyclerViewStatsAdapter.notifyDataSetChanged()
-                                                    }
-
-
-                                                }
-                                                showSum()
-
-
-                                            }
-
-
-                                    }
-
-                                }
-
-
-                            }
-                    }
-                }
-
+                
+                // Process each ders after getting the full list
+                processStudentData(dersListesi)
             }
+    }
 
+    private fun processStudentData(dersListesi: List<String>) {
+        val studentQuery = if (secilenGrade == "Bütün Sınıflar") {
+            db.collection("School")
+                .document(kurumKodu.toString())
+                .collection("Student")
+                .whereEqualTo("teacher", auth.uid.toString())
+        } else {
+            db.collection("School")
+                .document(kurumKodu.toString())
+                .collection("Student")
+                .whereEqualTo("teacher", auth.uid.toString())
+                .whereEqualTo("grade", secilenGrade.toInt())
+        }
 
+        studentQuery.get().addOnSuccessListener { students ->
+            ogrenciSayisi = students.size()
+            
+            // Process each student's data for each ders
+            students.forEach { student ->
+                dersListesi.forEach { ders ->
+                    processStudentDersData(student.id, ders)
+                }
+            }
+        }
+    }
+
+    private fun processStudentDersData(studentId: String, dersAdi: String) {
+        db.collection("School")
+            .document(kurumKodu.toString())
+            .collection("Student")
+            .document(studentId)
+            .collection("Studies")
+            .whereEqualTo("dersAdi", dersAdi)
+            .whereGreaterThan("timestamp", baslangicTarihi)
+            .whereLessThan("timestamp", bitisTarihi)
+            .get()
+            .addOnSuccessListener { studies ->
+                var toplamCalisma = 0
+                var cozulenSoru = 0
+                
+                studies.forEach { study ->
+                    toplamCalisma += study.get("toplamCalisma").toString().toInt()
+                    cozulenSoru += study.get("çözülenSoru").toString().toInt()
+                }
+
+                // Update the hash maps atomically
+                synchronized(dersSureHash) {
+                    dersSureHash[dersAdi] = (dersSureHash[dersAdi] ?: 0f) + toplamCalisma.toFloat()
+                }
+                synchronized(dersSoruHash) {
+                    dersSoruHash[dersAdi] = (dersSoruHash[dersAdi] ?: 0f) + cozulenSoru.toFloat()
+                }
+
+                // Update the UI
+                updateStatsList()
+            }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateStatsList() {
+        if (ogrenciSayisi > 0) {
+            statsList.clear()
+            dersSureHash.forEach { (dersAdi, toplamSure) ->
+                val ortalamaSure = (toplamSure / ogrenciSayisi).format(2)
+                val ortalamaSoru = ((dersSoruHash[dersAdi] ?: 0f) / ogrenciSayisi).format(2)
+                
+                statsList.add(Statistic(dersAdi, ortalamaSure, ortalamaSoru))
+            }
+            statsList.sortBy { it.dersAdi }
+            recyclerViewStatsAdapter.notifyDataSetChanged()
+            showSum()
+        }
+    }
+
+    private fun showInitialDialog(statsZamanSpinner: Spinner, statsGradeSpinner: Spinner) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_initial_stats, null)
+        val dialogGradeSpinner = dialogView.findViewById<Spinner>(R.id.dialogGradeSpinner)
+        val dialogTimeSpinner = dialogView.findViewById<Spinner>(R.id.dialogTimeSpinner)
+
+        // Set up dialog spinners with same adapters
+        dialogGradeSpinner.adapter = statsGradeSpinner.adapter
+        dialogTimeSpinner.adapter = statsZamanSpinner.adapter
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("İstatistik Filtreleri")
+            .setView(dialogView)
+            .setPositiveButton("Tamam") { dialog, _ ->
+                // Set the main spinners to match dialog selections
+                statsGradeSpinner.setSelection(dialogGradeSpinner.selectedItemPosition)
+                statsZamanSpinner.setSelection(dialogTimeSpinner.selectedItemPosition)
+                dialog.dismiss()
+            }
+            .setNegativeButton("İptal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

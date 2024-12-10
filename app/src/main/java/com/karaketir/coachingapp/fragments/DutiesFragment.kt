@@ -99,7 +99,11 @@ class DutiesFragment : Fragment(),
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { user ->
             studentID = auth.uid.toString()
-            kurumKodu = user.get("kurumKodu").toString().toInt()
+            kurumKodu = try {
+                user.get("kurumKodu").toString().toInt()
+            } catch (e: Exception) {
+                763455
+            }
             personType = user.get("personType").toString()
 
             if (isBindingAvailable()) {

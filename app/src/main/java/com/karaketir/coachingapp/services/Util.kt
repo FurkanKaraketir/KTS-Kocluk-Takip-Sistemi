@@ -768,52 +768,49 @@ fun addData(
                                             .toInt()
                                     }
 
-                                    val toplamSureSaat = ogrenciToplamSure / 60f
 
                                     CellUtil.createCell(
-                                        row, 1, "$ogrenciToplamSure dk " + "(${
-                                            toplamSureSaat.format(2)
-                                        } Saat)"
+                                        row, 1, "$ogrenciToplamSure"
                                     )
                                     CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
 
-                                    CellUtil.createCell(row, 3, matSure.toString() + "dk")
+                                    CellUtil.createCell(row, 3, matSure.toString())
                                     CellUtil.createCell(row, 4, matSoru.toString())
 
-                                    CellUtil.createCell(row, 5, problemSure.toString() + "dk")
+                                    CellUtil.createCell(row, 5, problemSure.toString())
                                     CellUtil.createCell(row, 6, problemSoru.toString())
 
-                                    CellUtil.createCell(row, 7, geometriSure.toString() + "dk")
+                                    CellUtil.createCell(row, 7, geometriSure.toString())
                                     CellUtil.createCell(row, 8, geometriSoru.toString())
 
-                                    CellUtil.createCell(row, 9, paragrafSure.toString() + "dk")
+                                    CellUtil.createCell(row, 9, paragrafSure.toString())
                                     CellUtil.createCell(row, 10, paragrafSoru.toString())
 
-                                    CellUtil.createCell(row, 11, turkceSure.toString() + "dk")
+                                    CellUtil.createCell(row, 11, turkceSure.toString())
                                     CellUtil.createCell(row, 12, turkceSoru.toString())
 
-                                    CellUtil.createCell(row, 13, fizikSure.toString() + "dk")
+                                    CellUtil.createCell(row, 13, fizikSure.toString())
                                     CellUtil.createCell(row, 14, fizikSoru.toString())
 
-                                    CellUtil.createCell(row, 15, kimyaSure.toString() + "dk")
+                                    CellUtil.createCell(row, 15, kimyaSure.toString())
                                     CellUtil.createCell(row, 16, kimyaSoru.toString())
 
-                                    CellUtil.createCell(row, 17, biyoSure.toString() + "dk")
+                                    CellUtil.createCell(row, 17, biyoSure.toString())
                                     CellUtil.createCell(row, 18, biyoSoru.toString())
 
-                                    CellUtil.createCell(row, 19, tarihSure.toString() + "dk")
+                                    CellUtil.createCell(row, 19, tarihSure.toString())
                                     CellUtil.createCell(row, 20, tarihSoru.toString())
 
-                                    CellUtil.createCell(row, 21, cografyaSure.toString() + "dk")
+                                    CellUtil.createCell(row, 21, cografyaSure.toString())
                                     CellUtil.createCell(row, 22, cografyaSoru.toString())
 
-                                    CellUtil.createCell(row, 23, felsefeSure.toString() + "dk")
+                                    CellUtil.createCell(row, 23, felsefeSure.toString())
                                     CellUtil.createCell(row, 24, felsefeSoru.toString())
 
-                                    CellUtil.createCell(row, 25, dinSure.toString() + "dk")
+                                    CellUtil.createCell(row, 25, dinSure.toString())
                                     CellUtil.createCell(row, 26, dinSoru.toString())
 
-                                    CellUtil.createCell(row, 27, digerSure.toString() + "dk")
+                                    CellUtil.createCell(row, 27, digerSure.toString())
                                     CellUtil.createCell(row, 28, digerSoru.toString())
 
                                 }
@@ -1037,54 +1034,50 @@ fun addData(
                                             .toInt()
                                     }
 
-                                    val toplamSureSaat = ogrenciToplamSure / 60f
-
                                     CellUtil.createCell(
-                                        row, 1, "$ogrenciToplamSure dk " + "(${
-                                            toplamSureSaat.format(2)
-                                        } Saat)"
+                                        row, 1, "$ogrenciToplamSure"
                                     )
                                     CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
 
                                     CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
 
-                                    CellUtil.createCell(row, 3, matSure.toString() + "dk")
+                                    CellUtil.createCell(row, 3, matSure.toString())
                                     CellUtil.createCell(row, 4, matSoru.toString())
 
-                                    CellUtil.createCell(row, 5, problemSure.toString() + "dk")
+                                    CellUtil.createCell(row, 5, problemSure.toString())
                                     CellUtil.createCell(row, 6, problemSoru.toString())
 
-                                    CellUtil.createCell(row, 7, geometriSure.toString() + "dk")
+                                    CellUtil.createCell(row, 7, geometriSure.toString())
                                     CellUtil.createCell(row, 8, geometriSoru.toString())
 
-                                    CellUtil.createCell(row, 9, paragrafSure.toString() + "dk")
+                                    CellUtil.createCell(row, 9, paragrafSure.toString())
                                     CellUtil.createCell(row, 10, paragrafSoru.toString())
 
-                                    CellUtil.createCell(row, 11, turkceSure.toString() + "dk")
+                                    CellUtil.createCell(row, 11, turkceSure.toString())
                                     CellUtil.createCell(row, 12, turkceSoru.toString())
 
-                                    CellUtil.createCell(row, 13, fizikSure.toString() + "dk")
+                                    CellUtil.createCell(row, 13, fizikSure.toString())
                                     CellUtil.createCell(row, 14, fizikSoru.toString())
 
-                                    CellUtil.createCell(row, 15, kimyaSure.toString() + "dk")
+                                    CellUtil.createCell(row, 15, kimyaSure.toString())
                                     CellUtil.createCell(row, 16, kimyaSoru.toString())
 
-                                    CellUtil.createCell(row, 17, biyoSure.toString() + "dk")
+                                    CellUtil.createCell(row, 17, biyoSure.toString())
                                     CellUtil.createCell(row, 18, biyoSoru.toString())
 
-                                    CellUtil.createCell(row, 19, tarihSure.toString() + "dk")
+                                    CellUtil.createCell(row, 19, tarihSure.toString())
                                     CellUtil.createCell(row, 20, tarihSoru.toString())
 
-                                    CellUtil.createCell(row, 21, cografyaSure.toString() + "dk")
+                                    CellUtil.createCell(row, 21, cografyaSure.toString())
                                     CellUtil.createCell(row, 22, cografyaSoru.toString())
 
-                                    CellUtil.createCell(row, 23, felsefeSure.toString() + "dk")
+                                    CellUtil.createCell(row, 23, felsefeSure.toString())
                                     CellUtil.createCell(row, 24, felsefeSoru.toString())
 
-                                    CellUtil.createCell(row, 25, dinSure.toString() + "dk")
+                                    CellUtil.createCell(row, 25, dinSure.toString())
                                     CellUtil.createCell(row, 26, dinSoru.toString())
 
-                                    CellUtil.createCell(row, 27, digerSure.toString() + "dk")
+                                    CellUtil.createCell(row, 27, digerSure.toString())
                                     CellUtil.createCell(row, 28, digerSoru.toString())
 
 
