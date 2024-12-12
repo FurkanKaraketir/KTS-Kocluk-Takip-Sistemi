@@ -578,27 +578,32 @@ class StatsFragment : Fragment() {
             
             // Set fixed column widths
             sheet.setColumnWidth(0, 30 * 256) // Ders column - wider for lesson names
-            sheet.setColumnWidth(1, 25 * 256) // Ortalama Süre column
-            sheet.setColumnWidth(2, 25 * 256) // Ortalama Soru column
+            sheet.setColumnWidth(1, 25 * 256) // Ortalama Süre (dk) column
+            sheet.setColumnWidth(2, 25 * 256) // Ortalama Süre (saat) column
+            sheet.setColumnWidth(3, 25 * 256) // Ortalama Soru column
 
             // Create header cells
             CellUtil.createCell(headerRow, 0, "Ders")
             CellUtil.createCell(headerRow, 1, "Ortalama Süre (dk)")
-            CellUtil.createCell(headerRow, 2, "Ortalama Soru")
+            CellUtil.createCell(headerRow, 2, "Ortalama Süre (saat)")
+            CellUtil.createCell(headerRow, 3, "Ortalama Soru")
 
             // Add statistics rows starting from row 3
             statsList.forEachIndexed { index, stat ->
                 val row = sheet.createRow(index + 3)
                 CellUtil.createCell(row, 0, stat.dersAdi)
                 CellUtil.createCell(row, 1, stat.toplamCalisma)
-                CellUtil.createCell(row, 2, stat.cozulenSoru)
+                CellUtil.createCell(row, 2, String.format("%.2f", stat.toplamCalisma.toFloat() / 60))
+                CellUtil.createCell(row, 3, stat.cozulenSoru)
             }
 
             // Add summary row with a blank row above it
             val summaryRow = sheet.createRow(statsList.size + 5)
             CellUtil.createCell(summaryRow, 0, "Toplam")
-            CellUtil.createCell(summaryRow, 1, calculateTotalTime())
-            CellUtil.createCell(summaryRow, 2, calculateTotalQuestions())
+            val totalTime = calculateTotalTime()
+            CellUtil.createCell(summaryRow, 1, totalTime)
+            CellUtil.createCell(summaryRow, 2, String.format("%.2f", totalTime.toFloat() / 60))
+            CellUtil.createCell(summaryRow, 3, calculateTotalQuestions())
 
             // Add student count information
             val studentCountRow = sheet.createRow(statsList.size + 6)
@@ -607,7 +612,7 @@ class StatsFragment : Fragment() {
                 statsList.size + 6, 
                 statsList.size + 6, 
                 0, 
-                2
+                3
             ))
 
         } catch (e: Exception) {

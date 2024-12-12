@@ -6,7 +6,10 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
@@ -20,6 +23,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,12 +59,15 @@ import com.karaketir.coachingapp.services.createExcel
 import com.karaketir.coachingapp.services.createSheetHeader
 import com.karaketir.coachingapp.services.getHeaderStyle
 import com.karaketir.coachingapp.services.openLink
-import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
+import android.content.ContentValues
+import android.os.Environment
 
 class MainFragment : Fragment() {
 
@@ -92,7 +99,7 @@ class MainFragment : Fragment() {
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
-    private val workbook = XSSFWorkbook()
+    private var workbook = XSSFWorkbook()
     private var studyList = ArrayList<Study>()
     private var secilenGrade = "Bütün Sınıflar"
     private var secilenZaman = "Seçiniz"
@@ -406,36 +413,32 @@ class MainFragment : Fragment() {
                             this.startActivity(newIntent)
                         }
 
-                        val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-                        //Create Header Cell Style
-                        val cellStyle = getHeaderStyle(workbook)
-
-                        //Creating sheet header row
-                        createSheetHeader(cellStyle, sheet)
-
                         excelButton.setOnClickListener {
+
+                            //clear list of
+
+                            if (secilenZaman == "Seçiniz") {
+                                Toast.makeText(
+                                    mainActivity,
+                                    "Lütfen bir zaman aralığı seçiniz",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@setOnClickListener
+                            }
+
+                            // Create a new workbook instance to clear previous stats
+                            workbook = XSSFWorkbook()
+                            val sheet: Sheet = workbook.createSheet("Sayfa 1")
+                            val cellStyle = getHeaderStyle(workbook)
+                            createSheetHeader(cellStyle, sheet)
 
                             mainActivity?.let { it1 -> clearCache(it1) }
                             Toast.makeText(activity, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT)
                                 .show()
 
-                            mainActivity?.let { it1 ->
-                                addData(
-                                    sheet,
-                                    secilenZaman,
-                                    secilenGrade,
-                                    kurumKodu.toString(),
-                                    auth,
-                                    db,
-                                    it1,
-                                    workbook
-                                )
+                            addData(sheet) {
+                                createExcel()
                             }
-
-                            askForPermissions()
-
-
                         }
 
 
@@ -1049,12 +1052,291 @@ class MainFragment : Fragment() {
                     it, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             } != PackageManager.PERMISSION_GRANTED) {
-            // Permission not granted, request it
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            createExcel(mainActivity!!, secilenGrade, secilenZaman, workbook)
+            createExcel()
         }
     }
 
+    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
+        val row = sheet.createRow(0)
+        
+        val headers = arrayOf(
+            "Öğrenci Adı",
+            "Sınıf", 
+            "Toplam Çalışma Süresi (dk)",
+            "Toplam Çalışma Süresi (saat)",
+            "Günlük Ortalama Çalışma (saat)",
+            "Toplam Soru Sayısı",
+            "Günlük Ortalama Soru",
+            "Toplam Çalışma Sayısı",
+            "Günlük Ortalama Çalışma Sayısı"
+        )
+
+        headers.forEachIndexed { index, header ->
+            val cell = row.createCell(index)
+            cell.setCellValue(header)
+            cell.cellStyle = cellStyle
+            
+            // Set column widths
+            when (index) {
+                0 -> sheet.setColumnWidth(index, 30 * 256) // Öğrenci Adı - wider
+                1 -> sheet.setColumnWidth(index, 10 * 256) // Sınıf - narrow
+                else -> sheet.setColumnWidth(index, 25 * 256) // Other columns - medium
+            }
+        }
+    }
+
+    private fun getHeaderStyle(workbook: Workbook): CellStyle {
+        val cellStyle = workbook.createCellStyle()
+        cellStyle.fillForegroundColor = IndexedColors.LIGHT_BLUE.index
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        return cellStyle
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun handleTimeSelection(selectedTime: String) {
+        val cal = Calendar.getInstance()
+        cal[Calendar.HOUR_OF_DAY] = 0
+        cal.clear(Calendar.MINUTE)
+        cal.clear(Calendar.SECOND)
+        cal.clear(Calendar.MILLISECOND)
+
+        when (selectedTime) {
+            "Seçiniz" -> {
+                baslangicTarihi = cal.time
+                bitisTarihi = cal.time
+            }
+
+            "Bugün" -> {
+                baslangicTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+
+            "Dün" -> {
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -1)
+                baslangicTarihi = cal.time
+            }
+
+            "Bu Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                baslangicTarihi = cal.time
+                cal.add(Calendar.WEEK_OF_YEAR, 1)
+                bitisTarihi = cal.time
+            }
+
+            "Geçen Hafta" -> {
+                cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -7)
+                baslangicTarihi = cal.time
+            }
+
+            "Bu Ay" -> {
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                baslangicTarihi = cal.time
+                cal.add(Calendar.MONTH, 1)
+                bitisTarihi = cal.time
+            }
+
+            "Son 30 Gün" -> {
+                bitisTarihi = cal.time
+                cal.add(Calendar.DAY_OF_YEAR, -30)
+                baslangicTarihi = cal.time
+            }
+
+            "Geçen Ay" -> {
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                bitisTarihi = cal.time
+                cal.add(Calendar.MONTH, -1)
+                baslangicTarihi = cal.time
+            }
+
+            "Tüm Zamanlar" -> {
+                cal.set(1970, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                baslangicTarihi = cal.time
+                cal.set(2077, Calendar.JANUARY, Calendar.DAY_OF_WEEK)
+                bitisTarihi = cal.time
+            }
+        }
+    }
+
+    private fun addData(sheet: Sheet, onComplete: () -> Unit) {
+        var completedStudents = 0
+        var rowIndex = 1
+
+        if (studentList.isEmpty()) {
+            onComplete()
+            return
+        }
+
+        // Create cell style for numbers with 2 decimal places
+        val decimalStyle = workbook.createCellStyle()
+        val format = workbook.createDataFormat()
+        decimalStyle.dataFormat = format.getFormat("0.00")
+
+        studentList.forEach { student ->
+            db.collection("School")
+                .document(kurumKodu.toString())
+                .collection("Student")
+                .document(student.id)
+                .collection("Studies")
+                .whereGreaterThan("timestamp", baslangicTarihi)
+                .whereLessThan("timestamp", bitisTarihi)
+                .get()
+                .addOnSuccessListener { studies ->
+                    val row = sheet.createRow(rowIndex++)
+                    
+                    // Student info
+                    row.createCell(0).setCellValue(student.studentName)
+                    row.createCell(1).setCellValue(student.grade.toString())
+                    
+                    // Calculate totals
+                    var totalTime = 0.0
+                    var totalQuestions = 0.0
+                    val studyCount = studies.size().toDouble()
+                    
+                    studies.forEach { study ->
+                        totalTime += study.get("toplamCalisma")?.toString()?.toDoubleOrNull() ?: 0.0
+                        totalQuestions += study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
+                    }
+
+                    // Calculate date range in days (ensure it's at least 1 to prevent division by zero)
+                    val daysBetween = maxOf(((bitisTarihi.time - baslangicTarihi.time) / (1000.0 * 60 * 60 * 24)) + 1, 1.0)
+                    
+                    // Calculate daily averages
+                    val avgHoursPerDay = (totalTime / 60.0) / daysBetween
+                    val avgQuestionsPerDay = totalQuestions / daysBetween
+                    val avgStudiesPerDay = studyCount / daysBetween
+                    
+                    // Add totals and averages using numeric cells
+                    val timeCell = row.createCell(2)
+                    timeCell.setCellValue(totalTime)
+                    timeCell.cellStyle = decimalStyle
+                    
+                    val hoursCell = row.createCell(3)
+                    hoursCell.setCellValue(totalTime / 60.0)
+                    hoursCell.cellStyle = decimalStyle
+                    
+                    val avgHoursCell = row.createCell(4)
+                    avgHoursCell.setCellValue(avgHoursPerDay)
+                    avgHoursCell.cellStyle = decimalStyle
+                    
+                    val questionsCell = row.createCell(5)
+                    questionsCell.setCellValue(totalQuestions)
+                    questionsCell.cellStyle = decimalStyle
+                    
+                    val avgQuestionsCell = row.createCell(6)
+                    avgQuestionsCell.setCellValue(avgQuestionsPerDay)
+                    avgQuestionsCell.cellStyle = decimalStyle
+                    
+                    val studyCountCell = row.createCell(7)
+                    studyCountCell.setCellValue(studyCount)
+                    studyCountCell.cellStyle = decimalStyle
+                    
+                    val avgStudiesCell = row.createCell(8)
+                    avgStudiesCell.setCellValue(avgStudiesPerDay)
+                    avgStudiesCell.cellStyle = decimalStyle
+
+                    completedStudents++
+                    if (completedStudents == studentList.size) {
+                        // Add summary row
+                        val summaryRow = sheet.createRow(rowIndex)
+                        val summaryStyle = workbook.createCellStyle()
+                        summaryStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index)
+                        summaryStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+                        summaryStyle.setDataFormat(format.getFormat("0.00"))
+
+                        summaryRow.createCell(0).apply {
+                            setCellValue("ORTALAMA")
+                            cellStyle = summaryStyle
+                        }
+
+                        // Calculate averages for all students
+                        val avgFormula = { col: String -> "AVERAGE($col${2}:$col${rowIndex})" }
+                        
+                        // Skip first two columns (name and grade)
+                        for (i in 2..8) {
+                            val cell = summaryRow.createCell(i)
+                            cell.cellFormula = avgFormula(('A' + i).toString())
+                            cell.cellStyle = summaryStyle
+                        }
+
+                        onComplete()
+                    }
+                }
+                .addOnFailureListener {
+                    completedStudents++
+                    if (completedStudents == studentList.size) {
+                        onComplete()
+                    }
+                }
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun createExcel() {
+        mainActivity?.let { activity ->
+            Toast.makeText(activity, "Excel dosyası hazırlanıyor...", Toast.LENGTH_SHORT).show()
+
+            addData(workbook.getSheetAt(0)) {
+                try {
+                    val fileName = "Öğrenci_Çalışmaları_${
+                        SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(Date())
+                    }.xlsx"
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val contentValues = ContentValues().apply {
+                            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                            put(
+                                MediaStore.MediaColumns.MIME_TYPE,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
+                            put(
+                                MediaStore.MediaColumns.RELATIVE_PATH,
+                                Environment.DIRECTORY_DOCUMENTS
+                            )
+                        }
+
+                        activity.contentResolver?.insert(
+                            MediaStore.Files.getContentUri("external"),
+                            contentValues
+                        )?.let { uri ->
+                            activity.contentResolver?.openOutputStream(uri)?.use { outputStream ->
+                                workbook.write(outputStream)
+                            }
+                            Toast.makeText(
+                                activity,
+                                "Excel dosyası başarıyla oluşturuldu",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        val path =
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                        val file = File(path, fileName)
+
+                        FileOutputStream(file).use { outputStream ->
+                            workbook.write(outputStream)
+                        }
+                        Toast.makeText(
+                            activity,
+                            "Excel dosyası başarıyla oluşturuldu",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Toast.makeText(
+                        activity,
+                        "Excel dosyası oluşturulurken hata oluştu: ${e.localizedMessage}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
 
 }

@@ -513,15 +513,17 @@ class StudiesActivity : AppCompatActivity() {
         CellUtil.createCell(headerRow, 0, "Ders Adı")
         CellUtil.createCell(headerRow, 1, "Tür")
         CellUtil.createCell(headerRow, 2, "Konu Adı")
-        CellUtil.createCell(headerRow, 3, "Toplam Çalışma")
-        CellUtil.createCell(headerRow, 4, "Çözülen Soru")
+        CellUtil.createCell(headerRow, 3, "Toplam Çalışma (dk)")
+        CellUtil.createCell(headerRow, 4, "Toplam Çalışma (saat)")
+        CellUtil.createCell(headerRow, 5, "Çözülen Soru")
 
         // Set column widths
         sheet.setColumnWidth(0, 5000) // Adjust width for "Ders Adı"
         sheet.setColumnWidth(1, 3000) // Adjust width for "Tür"
         sheet.setColumnWidth(2, 5000) // Adjust width for "Konu Adı"
-        sheet.setColumnWidth(3, 4000) // Adjust width for "Toplam Çalışma"
-        sheet.setColumnWidth(4, 4000) // Adjust width for "Çözülen Soru"
+        sheet.setColumnWidth(3, 4500) // Adjust width for "Toplam Çalışma (dk)"
+        sheet.setColumnWidth(4, 4500) // Adjust width for "Toplam Çalışma (saat)"
+        sheet.setColumnWidth(5, 4000) // Adjust width for "Çözülen Soru"
 
         var indexNum = 1 // Start from the second row for data
         db.collection("School").document(kurumKodu.toString()).collection("Student")
@@ -537,7 +539,8 @@ class StudiesActivity : AppCompatActivity() {
                         CellUtil.createCell(row, 1, i.get("tür").toString())
                         CellUtil.createCell(row, 2, i.get("konuAdi").toString())
                         CellUtil.createCell(row, 3, (i.get("toplamCalisma").toString()))
-                        CellUtil.createCell(row, 4, (i.get("çözülenSoru").toString()))
+                        CellUtil.createCell(row, 4, String.format("%.2f", i.get("toplamCalisma").toString().toFloat() / 60))
+                        CellUtil.createCell(row, 5, (i.get("çözülenSoru").toString()))
                         indexNum += 1
                     }
                     createExcel()
