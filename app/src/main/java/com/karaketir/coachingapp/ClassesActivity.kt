@@ -15,9 +15,9 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.GradeOptionAdapter
+import com.karaketir.coachingapp.adapter.ProgramOptionAdapter
 import com.karaketir.coachingapp.adapter.SubjectTileAdapter
 import com.karaketir.coachingapp.curriculum.CurriculumProgram
-import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
 import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.databinding.ActivityClassesBinding
@@ -26,17 +26,20 @@ import kotlinx.coroutines.tasks.await
 
 class ClassesActivity : AppCompatActivity() {
 
-    private enum class PickerStep { GRADE, SUBJECT }
+    private enum class PickerStep { GRADE, PROGRAM, SUBJECT }
 
     private lateinit var binding: ActivityClassesBinding
     private var kurumKodu = 0
     private var profileGrade = 12
     private var selectedGrade = 12
-    private var gradeConfig = GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms)
+    private var gradeConfig = GradeCurriculumRepository.defaultConfig()
+    private var profileCurriculumProgram: CurriculumProgram? = null
+    private var selectedProgram: CurriculumProgram? = null
     private var currentStep = PickerStep.GRADE
     private var subjectBusy = false
 
     private lateinit var gradeAdapter: GradeOptionAdapter
+    private lateinit var programAdapter: ProgramOptionAdapter
     private lateinit var subjectAdapter: SubjectTileAdapter
 
     private val auth: FirebaseAuth by lazy { Firebase.auth }
@@ -50,6 +53,10 @@ class ClassesActivity : AppCompatActivity() {
         kurumKodu = intent.getStringExtra("kurumKodu").orEmpty().toIntOrNull() ?: 763455
 
         gradeAdapter = GradeOptionAdapter(profileGrade) { grade -> onGradeSelected(grade) }
+        programAdapter = ProgramOptionAdapter(
+            highlightProgram = CurriculumProgram.LEGACY,
+            profilePreferredProgram = null,
+        ) { program -> onProgramSelected(program) }
         subjectAdapter = SubjectTileAdapter(emptyList()) { tile -> handleSubjectClick(tile.name) }
 
         binding.pickerRecyclerView.layoutManager = GridLayoutManager(this, 2)
@@ -59,11 +66,19 @@ class ClassesActivity : AppCompatActivity() {
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (currentStep == PickerStep.SUBJECT) {
-                        showGradeStep()
-                    } else {
-                        isEnabled = false
-                        onBackPressedDispatcher.onBackPressed()
+                    when (currentStep) {
+                        PickerStep.SUBJECT -> {
+                            if (GradeCurriculumRepository.offersProgramChoice(gradeConfig, selectedGrade)) {
+                                showProgramStep()
+                            } else {
+                                showGradeStep()
+                            }
+                        }
+                        PickerStep.PROGRAM -> showGradeStep()
+                        PickerStep.GRADE -> {
+                            isEnabled = false
+                            onBackPressedDispatcher.onBackPressed()
+                        }
                     }
                 }
             },
@@ -80,9 +95,11 @@ class ClassesActivity : AppCompatActivity() {
                 profileGrade = userSnap.getLong("grade")?.toInt()
                     ?: userSnap.getString("grade")?.toIntOrNull()
                     ?: 12
+                profileCurriculumProgram =
+                    CurriculumProgram.fromFirestore(userSnap.getString("curriculumProgram"))
                 gradeConfig = GradeCurriculumRepository.load(db)
             } catch (_: Exception) {
-                gradeConfig = GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms)
+                gradeConfig = GradeCurriculumRepository.defaultConfig()
             }
             selectedGrade = profileGrade
             gradeAdapter = GradeOptionAdapter(profileGrade) { grade -> onGradeSelected(grade) }
@@ -95,6 +112,16 @@ class ClassesActivity : AppCompatActivity() {
 
     private fun onGradeSelected(grade: Int) {
         selectedGrade = grade
+        selectedProgram = null
+        if (GradeCurriculumRepository.offersProgramChoice(gradeConfig, grade)) {
+            showProgramStep()
+        } else {
+            showSubjectStep()
+        }
+    }
+
+    private fun onProgramSelected(program: CurriculumProgram) {
+        selectedProgram = program
         showSubjectStep()
     }
 
@@ -105,9 +132,26 @@ class ClassesActivity : AppCompatActivity() {
         binding.pickerRecyclerView.adapter = gradeAdapter
     }
 
+    private fun showProgramStep() {
+        currentStep = PickerStep.PROGRAM
+        val highlight = GradeCurriculumRepository.preferredProgram(
+            gradeConfig,
+            selectedGrade,
+            profileCurriculumProgram,
+        )
+        binding.selectClassTitleText.setText(R.string.program_sec)
+        binding.programSubtitleText.visibility = View.VISIBLE
+        binding.programSubtitleText.text = Subjects.gradeOptionLabel(selectedGrade)
+        programAdapter = ProgramOptionAdapter(
+            highlightProgram = highlight,
+            profilePreferredProgram = profileCurriculumProgram,
+        ) { program -> onProgramSelected(program) }
+        binding.pickerRecyclerView.adapter = programAdapter
+    }
+
     private fun showSubjectStep() {
         currentStep = PickerStep.SUBJECT
-        val program = GradeCurriculumRepository.programForGrade(gradeConfig, selectedGrade)
+        val program = activeProgram()
         val programLabel = Subjects.programHeaderLabel(program)
         binding.selectClassTitleText.setText(R.string.ders_sec)
         binding.programSubtitleText.visibility = View.VISIBLE
@@ -119,8 +163,13 @@ class ClassesActivity : AppCompatActivity() {
         binding.pickerRecyclerView.adapter = subjectAdapter
     }
 
-    private fun programForSelectedGrade(): CurriculumProgram {
-        return GradeCurriculumRepository.programForGrade(gradeConfig, selectedGrade)
+    private fun activeProgram(): CurriculumProgram {
+        return GradeCurriculumRepository.activeProgram(
+            gradeConfig,
+            selectedGrade,
+            profileCurriculumProgram,
+            selectedProgram,
+        )
     }
 
     private fun handleSubjectClick(dersAdi: String) {
@@ -128,7 +177,7 @@ class ClassesActivity : AppCompatActivity() {
         when (dersAdi) {
             "Paragraf", "Problem" -> openLegacyStudy(dersAdi, "TYT")
             "Diğer" -> openOtherStudy()
-            else -> when (programForSelectedGrade()) {
+            else -> when (activeProgram()) {
                 CurriculumProgram.LEGACY -> showLegacyExamTypePopup(dersAdi)
                 CurriculumProgram.TYMM -> showTemaPickerAndOpen(dersAdi)
             }
@@ -136,7 +185,7 @@ class ClassesActivity : AppCompatActivity() {
     }
 
     private fun openOtherStudy() {
-        when (programForSelectedGrade()) {
+        when (activeProgram()) {
             CurriculumProgram.LEGACY -> showLegacyExamTypePopup("Diğer")
             CurriculumProgram.TYMM -> openMaarifStudy(
                 dersAdi = "Diğer",

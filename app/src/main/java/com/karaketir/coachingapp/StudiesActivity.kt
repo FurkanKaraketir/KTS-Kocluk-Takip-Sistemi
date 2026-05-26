@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,21 +33,16 @@ import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
 import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
+import com.karaketir.coachingapp.services.ExcelExportHelper
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
-import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.IndexedColors
+import com.karaketir.coachingapp.services.StudyQueryHelper
+import com.karaketir.coachingapp.services.StudyTotals
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.CellUtil
-import org.apache.poi.xssf.usermodel.IndexedColorMap
-import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -56,8 +52,6 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
-    private val workbook = XSSFWorkbook()
-
     private lateinit var recyclerViewStudies: RecyclerView
     private var studyList = mutableListOf<com.karaketir.coachingapp.models.Class>()
     private var classList = mutableListOf<String>()
@@ -106,14 +100,6 @@ class StudiesActivity : AppCompatActivity() {
         }
 
 
-        val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-        //Create Header Cell Style
-        val cellStyle = getHeaderStyle(workbook)
-
-        //Creating sheet header row
-        createSheetHeader(cellStyle, sheet)
-
         val dersProgramiTeacherButton = binding.dersProgramiTeacherButton
         val previousRatingsButton = binding.previousRatingsButton
         val gorevlerButton = binding.gorevTeacherButton
@@ -148,74 +134,10 @@ class StudiesActivity : AppCompatActivity() {
         zamanAraligiTextView.text = secilenZamanAraligi
 
         excelCreateButton.setOnClickListener {
-
-            Toast.makeText(this, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT).show()
-            addData(sheet)
-
-            askForPermissions()
-
+            exportStudentStudiesExcel()
         }
 
-        var toplamSure = 0
-        var toplamSoru = 0
-
-        db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
-            .addSnapshotListener { value, _ ->
-                if (value != null) {
-                    studyList.clear()
-                    classList.clear()
-                    for (i in value) {
-                        classList.add(i.id)
-                    }
-
-                    for (i in classList) {
-                        var iCalisma = 0
-                        var iCozulen = 0
-
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(studentID).collection("Studies").whereEqualTo("dersAdi", i)
-                            .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
-                            .addSnapshotListener { value2, error ->
-                                if (error != null) {
-                                    println(error.localizedMessage)
-                                }
-
-                                if (value2 != null) {
-                                    for (study in value2) {
-                                        iCalisma += study.get("toplamCalisma").toString().toInt()
-                                        iCozulen += study.get("çözülenSoru").toString().toInt()
-                                    }
-                                }
-                                toplamSoru += iCozulen
-                                toplamSure += iCalisma
-                                val currentClass = com.karaketir.coachingapp.models.Class(
-                                    i,
-                                    studentID,
-                                    baslangicTarihi,
-                                    bitisTarihi,
-                                    secilenZamanAraligi,
-                                    iCozulen,
-                                    iCalisma
-                                )
-                                val toplamSureSaat = toplamSure.toFloat() / 60
-                                toplamSureText.text = toplamSure.toString() + "dk " + "(${
-                                    toplamSureSaat.format(2)
-                                } Saat)"
-                                toplamSoruText.text = "$toplamSoru Soru"
-
-                                studyList.add(currentClass)
-
-                                recyclerViewStudiesAdapter.notifyDataSetChanged()
-
-                            }
-
-
-                    }
-
-
-                }
-            }
+        loadStudiesForDateRange(toplamSureText, toplamSoruText)
 
 
 
@@ -284,6 +206,63 @@ class StudiesActivity : AppCompatActivity() {
 
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+    private fun loadStudiesForDateRange(
+        toplamSureText: android.widget.TextView,
+        toplamSoruText: android.widget.TextView,
+    ) {
+        lifecycleScope.launch {
+            try {
+                val lessonsSnap = db.collection("Lessons")
+                    .orderBy("dersAdi", Query.Direction.ASCENDING)
+                    .get()
+                    .await()
+                classList.clear()
+                lessonsSnap.documents.forEach { classList.add(it.id) }
+
+                val byDers = StudyQueryHelper.fetchAggregatedByDers(
+                    db,
+                    kurumKodu.toString(),
+                    studentID,
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+
+                studyList.clear()
+                var toplamSure = 0
+                var toplamSoru = 0
+                for (dersAdi in classList) {
+                    val totals = byDers[dersAdi] ?: StudyTotals()
+                    toplamSure += totals.minutes
+                    toplamSoru += totals.questions
+                    studyList.add(
+                        com.karaketir.coachingapp.models.Class(
+                            dersAdi,
+                            studentID,
+                            baslangicTarihi,
+                            bitisTarihi,
+                            secilenZamanAraligi,
+                            totals.questions,
+                            totals.minutes,
+                        )
+                    )
+                }
+
+                val toplamSureSaat = toplamSure.toFloat() / 60
+                toplamSureText.text = "${toplamSure}dk (${toplamSureSaat.format(2)} Saat)"
+                toplamSoruText.text = "$toplamSoru Soru"
+                recyclerViewStudiesAdapter.notifyDataSetChanged()
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                Toast.makeText(
+                    this@StudiesActivity,
+                    "Çalışmalar yüklenemedi",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
+
     private fun starFun(yildisSayisi: Int) {
 
         val now = Calendar.getInstance()
@@ -346,244 +325,123 @@ class StudiesActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("Range", "Recycle", "SimpleDateFormat")
-    private fun createExcel() {
-        val time = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val current = formatter.format(time)
-        
-        val contentUri = MediaStore.Files.getContentUri("external")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
-            val selectionArgs = arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/")
-
-            val cursor: Cursor? = contentResolver.query(contentUri, null, selection, selectionArgs, null)
-
-            var uri: Uri? = null
-
-            if (cursor != null) {
-                if (cursor.count == 0) {
-                    try {
-                        val values = ContentValues()
-                        values.put(
-                            MediaStore.MediaColumns.DISPLAY_NAME,
-                            "$name - $secilenZamanAraligi - $current.xlsx"
-                        )
-                        values.put(
-                            MediaStore.MediaColumns.MIME_TYPE,
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
-                        values.put(
-                            MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                        )
-                        uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), values)
-                        val outputStream = contentResolver.openOutputStream(uri!!)
-                        workbook.write(outputStream)
-                        outputStream!!.flush()
-                        outputStream.close()
-                        Toast.makeText(this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT).show()
-                    } catch (e: IOException) {
-                        Toast.makeText(this, "İşlem Başarısız: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    while (cursor.moveToNext()) {
-                        val fileName: String = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$name - $secilenZamanAraligi - $current.xlsx") {
-                            val id: Long = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-                            uri = ContentUris.withAppendedId(contentUri, id)
-                            break
-                        }
-                    }
-                    if (uri == null) {
-                        try {
-                            val values = ContentValues()
-                            values.put(
-                                MediaStore.MediaColumns.DISPLAY_NAME,
-                                "$name - $secilenZamanAraligi - $current.xlsx"
-                            )
-                            values.put(
-                                MediaStore.MediaColumns.MIME_TYPE,
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
-                            values.put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                            )
-                            uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), values)
-                            val outputStream = contentResolver.openOutputStream(uri!!)
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            outputStream.close()
-                            Toast.makeText(this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(this, "İşlem Başarısız: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        try {
-                            val outputStream: OutputStream? = contentResolver.openOutputStream(
-                                uri, "rwt"
-                            )
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            outputStream.close()
-                            Toast.makeText(this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-        } else {
-            val filePath = File(
-                Environment.getExternalStorageDirectory()
-                    .toString() + "/$name - $secilenZamanAraligi - $current.xlsx"
-            )
-            try {
-                if (!filePath.exists()) {
-                    filePath.createNewFile()
-                }
-                val fileOutputStream = FileOutputStream(filePath)
-                workbook.write(fileOutputStream)
-                Toast.makeText(this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT).show()
-                fileOutputStream.flush()
-                fileOutputStream.close()
-            } catch (e: Exception) {
-                Toast.makeText(this, "İşlem Başarısız: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                e.printStackTrace()
-            }
-        }
-    }
-
-
-    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
-        //setHeaderStyle is a custom function written below to add header style
-
-        //Create sheet first row
-        val row = sheet.createRow(0)
-
-        //Header list
-        val headerList = listOf("column_1", "column_2", "column_3")
-
-        //Loop to populate each column of header row
-        for ((index, value) in headerList.withIndex()) {
-
-            val columnWidth = (15 * 500)
-
-            sheet.setColumnWidth(index, columnWidth)
-
-            val cell = row.createCell(index)
-
-            cell?.setCellValue(value)
-
-            cell.cellStyle = cellStyle
-        }
-    }
-
-    private fun addData(sheet: Sheet) {
-        // Create header row
-        val headerRow = sheet.createRow(0)
-        CellUtil.createCell(headerRow, 0, "Ders Adı")
-        CellUtil.createCell(headerRow, 1, "Program")
-        CellUtil.createCell(headerRow, 2, "Çalışma Türü")
-        CellUtil.createCell(headerRow, 3, "Tema")
-        CellUtil.createCell(headerRow, 4, "Konu Adı")
-        CellUtil.createCell(headerRow, 5, "Toplam Çalışma (dk)")
-        CellUtil.createCell(headerRow, 6, "Toplam Çalışma (saat)")
-        CellUtil.createCell(headerRow, 7, "Çözülen Soru")
-
-        sheet.setColumnWidth(0, 5000)
-        sheet.setColumnWidth(1, 3500)
-        sheet.setColumnWidth(2, 5500)
-        sheet.setColumnWidth(3, 5000)
-        sheet.setColumnWidth(4, 5000)
-        sheet.setColumnWidth(5, 4500)
-        sheet.setColumnWidth(6, 4500)
-        sheet.setColumnWidth(7, 4000)
-
-        var indexNum = 1 // Start from the second row for data
-        db.collection("School").document(kurumKodu.toString()).collection("Student")
-            .document(studentID).collection("Studies")
-            .whereGreaterThan("timestamp", baslangicTarihi).whereLessThan("timestamp", bitisTarihi)
-            .get()
-            .addOnSuccessListener { value ->
-                if (value != null) {
-                    for (i in value) {
-                        val row = sheet.createRow(indexNum)
-
-                        CellUtil.createCell(row, 0, i.getString("dersAdi").orEmpty())
-                        CellUtil.createCell(row, 1, StudyLabels.programLabel(i.getString("program")))
-                        CellUtil.createCell(row, 2, StudyLabels.studyTypeLabel(i))
-                        CellUtil.createCell(row, 3, i.getString("temaAdi").orEmpty())
-                        CellUtil.createCell(row, 4, StudyLabels.studyTrackingLabel(i))
-                        CellUtil.createCell(row, 5, i.get("toplamCalisma").toString())
-                        CellUtil.createCell(
-                            row,
-                            6,
-                            String.format("%.2f", i.get("toplamCalisma").toString().toFloat() / 60)
-                        )
-                        CellUtil.createCell(row, 7, i.get("çözülenSoru").toString())
-                        indexNum += 1
-                    }
-                    createExcel()
-                }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Excel oluşturulurken hata: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
-
-        //Cell style for header row
-        val cellStyle: CellStyle = workbook.createCellStyle()
-
-        //Apply cell color
-        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
-        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
-        cellStyle.fillForegroundColor = color
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-
-        //Apply font style on cell text
-        val whiteFont = workbook.createFont()
-        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
-        whiteFont.color = color
-        whiteFont.bold = true
-        cellStyle.setFont(whiteFont)
-
-
-        return cellStyle
-    }
-
-    private fun askForPermissions() {
-
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+    private fun exportStudentStudiesExcel() {
+        if (ExcelExportHelper.needsLegacyStoragePermission() &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //İzin Verilmedi, iste
             ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ), 1
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                1
             )
-
-
-        } else {
-            createExcel()
+            return
         }
 
+        Toast.makeText(this, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
+
+        val workbook: Workbook = XSSFWorkbook()
+        val sheet: Sheet = workbook.createSheet("Çalışmalar")
+        val headers = arrayOf(
+            "Ders Adı",
+            "Program",
+            "Çalışma Türü",
+            "Tema",
+            "Konu Adı",
+            "Toplam Çalışma (dk)",
+            "Toplam Çalışma (saat)",
+            "Çözülen Soru"
+        )
+        val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
+        val columnWidths = intArrayOf(
+            30 * 256, 18 * 256, 22 * 256, 22 * 256, 28 * 256, 20 * 256, 20 * 256, 18 * 256
+        )
+
+        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
+            sheet,
+            ExcelExportHelper.ReportContext(
+                title = getString(R.string.excel_rapor_ogrenci_calisma),
+                gradeLabel = name.ifBlank { "Öğrenci" },
+                timeRangeLabel = secilenZamanAraligi,
+                startDate = baslangicTarihi,
+                endDate = bitisTarihi
+            ),
+            headers.size
+        )
+        var rowIndex = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, infoEnd, columnWidths
+        )
+        val decimalStyle = ExcelExportHelper.createDecimalStyle(workbook)
+
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(studentID).collection("Studies")
+            .whereGreaterThan("timestamp", baslangicTarihi)
+            .whereLessThan("timestamp", bitisTarihi)
+            .get()
+            .addOnSuccessListener { studies ->
+                if (studies.isEmpty) {
+                    Toast.makeText(this, "Dışa aktarılacak çalışma yok", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+                for (study in studies) {
+                    val row = sheet.createRow(rowIndex++)
+                    CellUtil.createCell(row, 0, study.getString("dersAdi").orEmpty())
+                    CellUtil.createCell(row, 1, StudyLabels.programLabel(study.getString("program")))
+                    CellUtil.createCell(row, 2, StudyLabels.studyTypeLabel(study))
+                    CellUtil.createCell(row, 3, study.getString("temaAdi").orEmpty())
+                    CellUtil.createCell(row, 4, StudyLabels.studyTrackingLabel(study))
+
+                    val minutes = study.get("toplamCalisma")?.toString()?.toDoubleOrNull() ?: 0.0
+                    val questions = study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
+
+                    val minutesCell = row.createCell(5)
+                    minutesCell.setCellValue(minutes)
+                    minutesCell.cellStyle = decimalStyle
+
+                    val hoursCell = row.createCell(6)
+                    hoursCell.setCellValue(minutes / 60.0)
+                    hoursCell.cellStyle = decimalStyle
+
+                    val questionsCell = row.createCell(7)
+                    questionsCell.setCellValue(questions)
+                    questionsCell.cellStyle = decimalStyle
+                }
+
+                val safeName = name.replace(Regex("[\\\\/:*?\"<>|]"), "_").take(40)
+                val fileName = ExcelExportHelper.buildFileName(
+                    "Ogrenci_Calisma",
+                    safeName,
+                    secilenZamanAraligi
+                )
+                ExcelExportHelper.saveWorkbook(
+                    this,
+                    workbook,
+                    fileName,
+                    ExcelExportHelper.FOLDER_STATS
+                )
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    getString(R.string.excel_dosya_hata, e.localizedMessage ?: ""),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                createExcel()
-            }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            exportStudentStudiesExcel()
         }
     }
 

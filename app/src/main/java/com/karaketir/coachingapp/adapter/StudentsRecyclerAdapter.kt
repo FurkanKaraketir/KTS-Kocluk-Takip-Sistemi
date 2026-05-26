@@ -16,6 +16,7 @@ import com.karaketir.coachingapp.StudentClassUpdateActivity
 import com.karaketir.coachingapp.StudiesActivity
 import com.karaketir.coachingapp.databinding.StudentRowBinding
 import com.karaketir.coachingapp.models.Student
+import com.karaketir.coachingapp.models.StudentRowStatus
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -25,44 +26,83 @@ class StudentsRecyclerAdapter(
     private val kurumKodu: Int,
     private val baslangicTarihi: Date,
     private val bitisTarihi: Date,
-    private val secilenZaman: String
+    private val secilenZaman: String,
+    private val useLiveListeners: Boolean = false,
 ) : RecyclerView.Adapter<StudentsRecyclerAdapter.StudentHolder>() {
 
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private var rowStatusByStudentId: Map<String, StudentRowStatus> = emptyMap()
+
+    fun updateRowStatuses(statuses: Map<String, StudentRowStatus>) {
+        rowStatusByStudentId = statuses
+        notifyDataSetChanged()
+    }
 
     class StudentHolder(val binding: StudentRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n", "SimpleDateFormat")
-        fun bind(student: Student, adapter: StudentsRecyclerAdapter) {
+        fun bind(
+            student: Student,
+            adapter: StudentsRecyclerAdapter,
+            status: StudentRowStatus?,
+        ) {
             binding.studentNameTextView.text = student.studentName
             binding.studentGradeTextView.text = student.grade.toString()
 
             setupClickListeners(student, adapter)
-            setupFirestoreListeners(student, adapter)
+            if (adapter.useLiveListeners) {
+                setupFirestoreListeners(student, adapter)
+            } else {
+                applyRowStatus(status)
+            }
 
             binding.studentAddButton.visibility = View.GONE
             binding.studentDeleteButton.visibility = View.VISIBLE
 
             binding.studentDeleteButton.setOnClickListener {
-
-
-                binding.studentNameTextView.text = student.studentName
-                val removeStudent = AlertDialog.Builder(itemView.context)
-                removeStudent.setTitle("Öğrenci Çıkar")
-                removeStudent.setMessage("${student.studentName} Öğrencisini Koçluğunuzdan Çıkarmak İstediğinizden Emin misiniz?")
-                removeStudent.setPositiveButton("ÇIKAR") { _, _ ->
-
-                    adapter.db.collection("School").document(adapter.kurumKodu.toString())
-                        .collection("Student")
-                        .document(student.id).update("teacher", "")
-                    adapter.db.collection("User").document(student.id).update("teacher", "")
-                }
-                removeStudent.setNegativeButton("İPTAL") { _, _ ->
-
-                }
-                removeStudent.show()
-
-
+                showRemoveStudentDialog(student, adapter)
             }
+        }
+
+        private fun applyRowStatus(status: StudentRowStatus?) {
+            val row = status ?: StudentRowStatus()
+            binding.todayStudyImageView.setImageResource(
+                if (row.hasStudyInRange) R.drawable.ic_baseline_check_circle_outline_24
+                else R.drawable.ic_baseline_error_outline_24
+            )
+
+            if (row.ratingStars == null || row.ratingDate == null) {
+                binding.fiveStarButton.visibility = View.GONE
+            } else {
+                binding.fiveStarButton.visibility = View.VISIBLE
+                applyRatingUi(row.ratingStars, row.ratingDate)
+            }
+
+            if (row.reportTimestamp == null) {
+                binding.reportIcon.visibility = View.GONE
+                binding.reportDate.visibility = View.GONE
+            } else {
+                binding.reportIcon.visibility = View.VISIBLE
+                binding.reportDate.visibility = View.VISIBLE
+                applyReportUi(row.reportTimestamp)
+            }
+        }
+
+        @SuppressLint("SimpleDateFormat")
+        private fun applyRatingUi(yildizSayisi: Int, tarih: Date) {
+            binding.degerlendirmeDate.text =
+                SimpleDateFormat("dd/MM/yyyy").format(tarih)
+            binding.starTwo.visibility = if (yildizSayisi >= 2) View.VISIBLE else View.GONE
+            binding.starThree.visibility = if (yildizSayisi >= 3) View.VISIBLE else View.GONE
+            binding.starFour.visibility = if (yildizSayisi >= 4) View.VISIBLE else View.GONE
+            binding.starFive.visibility = if (yildizSayisi == 5) View.VISIBLE else View.GONE
+        }
+
+        @SuppressLint("SimpleDateFormat")
+        private fun applyReportUi(tarih: Date) {
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm").apply {
+                timeZone = TimeZone.getTimeZone("GMT+3")
+            }
+            binding.reportDate.text = dateFormat.format(tarih)
         }
 
         private fun setupClickListeners(student: Student, adapter: StudentsRecyclerAdapter) {
@@ -111,10 +151,10 @@ class StudentsRecyclerAdapter(
         private fun setupFirestoreListeners(student: Student, adapter: StudentsRecyclerAdapter) {
             val schoolRef = adapter.db.collection("School").document(adapter.kurumKodu.toString())
 
-            // Studies listener
             schoolRef.collection("Student").document(student.id).collection("Studies")
                 .whereGreaterThan("timestamp", adapter.baslangicTarihi)
                 .whereLessThan("timestamp", adapter.bitisTarihi)
+                .limit(1)
                 .addSnapshotListener { value, error ->
                     if (error != null) {
                         println(error.localizedMessage)
@@ -126,12 +166,10 @@ class StudentsRecyclerAdapter(
                     )
                 }
 
-            // Degerlendirme listener
             schoolRef.collection("Student").document(student.id).collection("Degerlendirme")
                 .orderBy("degerlendirmeDate", Query.Direction.DESCENDING).limit(1)
                 .addSnapshotListener { value, error ->
                     if (error != null) {
-                        println(error.localizedMessage)
                         return@addSnapshotListener
                     }
                     if (value?.isEmpty == true) {
@@ -140,48 +178,24 @@ class StudentsRecyclerAdapter(
                     }
                     binding.fiveStarButton.visibility = View.VISIBLE
                     value?.documents?.firstOrNull()?.let { document ->
-                        updateDegerlendirmeUI(document)
+                        val tarih = document.get("degerlendirmeDate") as? Timestamp
+                        val stars = document.get("yildizSayisi").toString().toIntOrNull() ?: 0
+                        applyRatingUi(stars, tarih?.toDate() ?: Date())
                     }
                 }
 
-            // Last report date listener
             schoolRef.collection("LastReports").document(student.id)
                 .addSnapshotListener { value, error ->
-                    if (error != null) {
+                    if (error != null || value?.exists() != true) {
                         binding.reportIcon.visibility = View.GONE
                         binding.reportDate.visibility = View.GONE
                         return@addSnapshotListener
                     }
-                    if (value?.exists() == true) {
-                        updateReportDateUI(value)
-                    } else {
-                        binding.reportIcon.visibility = View.GONE
-                        binding.reportDate.visibility = View.GONE
-                    }
+                    binding.reportIcon.visibility = View.VISIBLE
+                    binding.reportDate.visibility = View.VISIBLE
+                    val tarih = value.get("timestamp") as? Timestamp
+                    applyReportUi(tarih?.toDate() ?: Date())
                 }
-        }
-
-        @SuppressLint("SimpleDateFormat")
-        private fun updateDegerlendirmeUI(document: com.google.firebase.firestore.DocumentSnapshot) {
-            val tarih = document.get("degerlendirmeDate") as? Timestamp
-            val dateFormatted = SimpleDateFormat("dd/MM/yyyy").format(tarih?.toDate() ?: Date())
-            binding.degerlendirmeDate.text = dateFormatted
-
-            val yildizSayisi = document.get("yildizSayisi").toString().toIntOrNull() ?: 0
-            binding.starTwo.visibility = if (yildizSayisi >= 2) View.VISIBLE else View.GONE
-            binding.starThree.visibility = if (yildizSayisi >= 3) View.VISIBLE else View.GONE
-            binding.starFour.visibility = if (yildizSayisi >= 4) View.VISIBLE else View.GONE
-            binding.starFive.visibility = if (yildizSayisi == 5) View.VISIBLE else View.GONE
-        }
-
-        @SuppressLint("SimpleDateFormat")
-        private fun updateReportDateUI(document: com.google.firebase.firestore.DocumentSnapshot) {
-            val tarih = document.get("timestamp") as? Timestamp
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm").apply {
-                timeZone = TimeZone.getTimeZone("GMT+3")
-            }
-            val dateFormatted = dateFormat.format(tarih?.toDate() ?: Date())
-            binding.reportDate.text = dateFormatted
         }
     }
 
@@ -192,14 +206,14 @@ class StudentsRecyclerAdapter(
 
     override fun onBindViewHolder(holder: StudentHolder, position: Int) {
         val student = studentList.getOrNull(position) ?: return
-        holder.bind(student, this)
+        holder.bind(student, this, rowStatusByStudentId[student.id])
     }
 
     override fun getItemCount() = studentList.size
 
     class StudentDiffCallback(
         private val oldList: List<Student>,
-        private val newList: List<Student>
+        private val newList: List<Student>,
     ) : DiffUtil.Callback() {
         override fun getOldListSize() = oldList.size
         override fun getNewListSize() = newList.size

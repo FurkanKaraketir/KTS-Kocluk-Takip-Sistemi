@@ -19,29 +19,26 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityStatsBinding
 import com.karaketir.coachingapp.models.Statistic
-import org.apache.poi.ss.usermodel.*
-import org.apache.poi.ss.util.CellUtil.createCell
-import org.apache.poi.xssf.usermodel.IndexedColorMap
-import org.apache.poi.xssf.usermodel.XSSFColor
+import com.karaketir.coachingapp.services.ExcelExportHelper
+import com.karaketir.coachingapp.services.StudyQueryHelper
+import kotlinx.coroutines.launch
+import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
 import java.lang.ref.WeakReference
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class StatsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -52,7 +49,6 @@ class StatsActivity : AppCompatActivity() {
     private lateinit var layoutManager: GridLayoutManager
     private var secilenZamanAraligi = ""
     private var kurumKodu = 0
-    private val workbook = XSSFWorkbook()
     private var secilenGrade = ""
     private lateinit var recyclerViewStats: RecyclerView
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
@@ -78,254 +74,78 @@ class StatsActivity : AppCompatActivity() {
         "Tüm Zamanlar"
     )
 
-    @SuppressLint("Recycle", "Range", "SimpleDateFormat")
-    private fun createExcel() {
-
-        val time = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val current = formatter.format(time)
-
-        val contentUri = MediaStore.Files.getContentUri("external")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
-
-            val selectionArgs =
-                arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
-
-
-            val cursor: Cursor? =
-                contentResolver.query(contentUri, null, selection, selectionArgs, null)
-
-            var uri: Uri? = null
-
-            if (cursor != null) {
-                if (cursor.count == 0) {
-                    Toast.makeText(
-                        this,
-                        "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/\"",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    try {
-                        val values = ContentValues()
-                        values.put(
-                            MediaStore.MediaColumns.DISPLAY_NAME,
-                            "$secilenGrade - $secilenZamanAraligi - $current"
-                        ) //file name
-                        values.put(
-                            MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                        ) //file extension, will automatically add to file
-                        values.put(
-                            MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                        ) //end "/" is not mandatory
-                        uri = contentResolver.insert(
-                            MediaStore.Files.getContentUri("external"), values
-                        ) //important!
-                        val outputStream = contentResolver.openOutputStream(uri!!)
-                        workbook.write(outputStream)
-                        outputStream!!.flush()
-                        //outputStream!!.write("This is menu category data.".toByteArray())
-                        outputStream.close()
-                        Toast.makeText(
-                            this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: IOException) {
-                        Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
-                    }
-
-                } else {
-                    while (cursor.moveToNext()) {
-                        val fileName: String =
-                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$secilenGrade - $secilenZamanAraligi - $current.xls") {                          //must include extension
-                            val id: Long =
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-                            uri = ContentUris.withAppendedId(contentUri, id)
-                            break
-                        }
-                    }
-                    if (uri == null) {
-                        Toast.makeText(
-                            this,
-                            "\"$secilenGrade - $secilenZamanAraligi - $current.xls\" Bulunamadı",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        try {
-                            val values = ContentValues()
-                            values.put(
-                                MediaStore.MediaColumns.DISPLAY_NAME,
-                                "$secilenGrade - $secilenZamanAraligi - $current"
-                            ) //file name
-                            values.put(
-                                MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                            ) //file extension, will automatically add to file
-                            values.put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                            ) //end "/" is not mandatory
-                            uri = contentResolver.insert(
-                                MediaStore.Files.getContentUri("external"), values
-                            ) //important!
-                            val outputStream = contentResolver.openOutputStream(uri!!)
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
-                        }
-
-
-                    } else {
-                        try {
-                            val outputStream: OutputStream? = contentResolver.openOutputStream(
-                                uri, "rwt"
-                            ) //overwrite mode, see below
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(this, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-
-
-        } else {
-            val filePath = File(
-                Environment.getExternalStorageDirectory()
-                    .toString() + "/$secilenGrade - $secilenZamanAraligi - $current.xlsx"
-            )
-            try {
-                if (!filePath.exists()) {
-                    filePath.createNewFile()
-                }
-                val fileOutputStream = FileOutputStream(filePath)
-                workbook.write(fileOutputStream)
-                Toast.makeText(
-                    this, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                ).show()
-                fileOutputStream.flush()
-
-                fileOutputStream.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                println(e)
-            }
-        }
-    }
-
-    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
-        //setHeaderStyle is a custom function written below to add header style
-
-        //Create sheet first row
-        val row = sheet.createRow(0)
-
-        //Header list
-        val headerList = listOf("column_1", "column_2", "column_3")
-
-        //Loop to populate each column of header row
-        for ((index, value) in headerList.withIndex()) {
-
-            val columnWidth = (15 * 500)
-
-            sheet.setColumnWidth(index, columnWidth)
-
-            val cell = row.createCell(index)
-
-            cell?.setCellValue(value)
-
-            cell.cellStyle = cellStyle
-        }
-    }
-
     @SuppressLint("SetTextI18n")
-    private fun addData(sheet: Sheet) {
-
-        //Create row based on row index
-        val row = sheet.createRow(0)
-
-        var toplamSure = 0f
-        var toplamSoru = 0f
-        if (statsList.isNotEmpty()) {
-            for (i in statsList) {
-                toplamSure += i.toplamCalisma.toFloat()
-                toplamSoru += i.cozulenSoru.toFloat()
-            }
+    private fun exportStatsExcel() {
+        if (statsList.isEmpty()) {
+            Toast.makeText(this, "Dışa aktarılacak veri yok", Toast.LENGTH_SHORT).show()
+            return
         }
 
+        Toast.makeText(this, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
 
-        val toplamSureSaat = toplamSure / 60
-        createCell(row, 0, "Toplam")
-        createCell(
-            row, 1, toplamSure.format(2) + "dk " + "(${
-                toplamSureSaat.format(2)
-            } Saat)"
-        ) //Column 1
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("İstatistik")
+        val headers = arrayOf(
+            "Ders",
+            "Ortalama Süre (dk)",
+            "Ortalama Süre (saat)",
+            "Ortalama Soru"
+        )
+        val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
+        val columnWidths = intArrayOf(30 * 256, 25 * 256, 25 * 256, 25 * 256)
 
+        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
+            sheet,
+            ExcelExportHelper.ReportContext(
+                title = getString(R.string.excel_rapor_istatistik),
+                gradeLabel = secilenGrade,
+                timeRangeLabel = secilenZamanAraligi,
+                startDate = baslangicTarihi,
+                endDate = bitisTarihi,
+                extraLines = listOf("Öğrenci sayısı: $ogrenciSayisi")
+            ),
+            headers.size
+        )
+        var rowIndex = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, infoEnd, columnWidths
+        )
 
-        createCell(row, 2, "${toplamSoru.format(2)} Soru")
-        var indexNum = 0
-        if (ogrenciSayisi != 0) {
-
-            for (i in dersSureHash.keys) {
-                val row2 = sheet.createRow(indexNum + 1)
-
-                val dersSure = dersSureHash[i]
-                if (dersSure != null) {
-                    val sureSaat = (dersSure) / (60 * ogrenciSayisi)
-
-                    createCell(row2, 0, i)
-                    createCell(
-                        row2,
-                        1,
-                        (dersSure / (ogrenciSayisi)).format(2) + "dk " + "(${sureSaat.format(2)} Saat)"
-                    )
-                }
-                val dersSoru = dersSoruHash[i]
-                if (dersSoru != null) {
-                    createCell(
-                        row2, 2, (dersSoru / ogrenciSayisi).format(2) + " Soru"
-                    )
-                }
-                indexNum += 1
-
-            }
+        statsList.sortedBy { it.dersAdi }.forEach { stat ->
+            val row = sheet.createRow(rowIndex++)
+            CellUtil.createCell(row, 0, stat.dersAdi)
+            CellUtil.createCell(row, 1, stat.toplamCalisma)
+            CellUtil.createCell(
+                row,
+                2,
+                String.format(Locale.US, "%.2f", stat.toplamCalisma.toFloat() / 60f)
+            )
+            CellUtil.createCell(row, 3, stat.cozulenSoru)
         }
-        Toast.makeText(this, "Excel Dosyası Oluşturuldu", Toast.LENGTH_SHORT).show()
-    }
 
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
+        rowIndex += 1
+        val summaryRow = sheet.createRow(rowIndex)
+        val totalTime = statsList.sumOf { it.toplamCalisma.toDouble() }.toFloat()
+        val totalSoru = statsList.sumOf { it.cozulenSoru.toDouble() }.toFloat()
+        CellUtil.createCell(summaryRow, 0, "Toplam")
+        CellUtil.createCell(summaryRow, 1, totalTime.format(2))
+        CellUtil.createCell(
+            summaryRow,
+            2,
+            String.format(Locale.US, "%.2f", totalTime / 60f)
+        )
+        CellUtil.createCell(summaryRow, 3, totalSoru.format(2))
 
-        //Cell style for header row
-        val cellStyle: CellStyle = workbook.createCellStyle()
-
-        //Apply cell color
-        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
-        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
-        cellStyle.fillForegroundColor = color
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-
-        //Apply font style on cell text
-        val whiteFont = workbook.createFont()
-        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
-        whiteFont.color = color
-        whiteFont.bold = true
-        cellStyle.setFont(whiteFont)
-
-
-        return cellStyle
+        val fileName = ExcelExportHelper.buildFileName(
+            "Istatistik",
+            secilenGrade,
+            secilenZamanAraligi
+        )
+        ExcelExportHelper.saveWorkbook(
+            this,
+            workbook,
+            fileName,
+            ExcelExportHelper.FOLDER_STATS
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -338,16 +158,6 @@ class StatsActivity : AppCompatActivity() {
         db = Firebase.firestore
 
         kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
-
-        val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-        //Create Header Cell Style
-        val cellStyle = getHeaderStyle(workbook)
-
-        //Creating sheet header row
-        createSheetHeader(cellStyle, sheet)
-
-        //Adding data to the sheet
 
         val fileSaveButton = binding.fileSaveExcelButton
 
@@ -369,10 +179,16 @@ class StatsActivity : AppCompatActivity() {
 
 
         fileSaveButton.setOnClickListener {
-            addData(sheet)
-
-            askForPermissions()
-            createExcel()
+            if (ExcelExportHelper.needsLegacyStoragePermission() &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            } else {
+                exportStatsExcel()
+            }
         }
 
 
@@ -585,235 +401,7 @@ class StatsActivity : AppCompatActivity() {
                         }
 
 
-                        val dersListesi = kotlin.collections.ArrayList<String>()
-
-
-
-                        db.collection("Lessons").orderBy("dersAdi", Query.Direction.ASCENDING)
-                            .addSnapshotListener { dersler, _ ->
-                                if (dersler != null) {
-                                    for (i in dersler) {
-                                        dersListesi.add(i.id)
-                                    }
-                                }
-                                for (dersIndex in dersListesi) {
-
-                                    if (secilenGrade == "Bütün Sınıflar") {
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Student")
-                                            .whereEqualTo("teacher", auth.uid.toString())
-                                            .addSnapshotListener { ogrencliler, _ ->
-                                                statsList.clear()
-
-                                                if (ogrencliler != null) {
-                                                    ogrenciSayisi = ogrencliler.size()
-
-                                                    for (ogrenci in ogrencliler) {
-                                                        var toplamCalisma = 0
-                                                        var cozulenSoru = 0
-                                                        db.collection("School")
-                                                            .document(kurumKodu.toString())
-                                                            .collection("Student")
-                                                            .document(ogrenci.id)
-                                                            .collection("Studies").whereEqualTo(
-                                                                "dersAdi", dersIndex
-                                                            ).whereGreaterThan(
-                                                                "timestamp", baslangicTarihi
-                                                            ).whereLessThan(
-                                                                "timestamp", bitisTarihi
-                                                            ).addSnapshotListener { studies, _ ->
-
-
-                                                                if (studies != null && ogrencliler.size() != 0) {
-
-                                                                    for (study in studies) {
-                                                                        toplamCalisma += study.get(
-                                                                            "toplamCalisma"
-                                                                        ).toString().toInt()
-                                                                        cozulenSoru += study.get(
-                                                                            "çözülenSoru"
-                                                                        ).toString().toInt()
-
-
-                                                                    }
-                                                                    if (dersIndex in dersSoruHash.keys) {
-
-                                                                        val currentValue =
-                                                                            dersSoruHash[dersIndex]
-
-                                                                        if (currentValue != null) {
-                                                                            dersSoruHash[dersIndex] =
-                                                                                currentValue + cozulenSoru
-                                                                        }
-
-
-                                                                    } else {
-                                                                        dersSoruHash[dersIndex] =
-                                                                            cozulenSoru.toFloat()
-                                                                    }
-
-                                                                    if (dersIndex in dersSureHash.keys) {
-
-                                                                        val currentValue =
-                                                                            dersSureHash[dersIndex]
-
-                                                                        if (currentValue != null) {
-                                                                            dersSureHash[dersIndex] =
-                                                                                currentValue + toplamCalisma
-                                                                        }
-
-
-                                                                    } else {
-                                                                        dersSureHash[dersIndex] =
-                                                                            toplamCalisma.toFloat()
-                                                                    }
-
-
-
-
-                                                                    statsList.clear()
-                                                                    for (i in dersSureHash.keys) {
-                                                                        val currentStatistic =
-                                                                            Statistic(
-                                                                                i,
-                                                                                (dersSureHash[i]?.div(
-                                                                                    ogrenciSayisi
-                                                                                )).toString(),
-                                                                                (dersSoruHash[i]?.div(
-                                                                                    ogrenciSayisi
-                                                                                )).toString()
-                                                                            )
-
-                                                                        statsList.add(
-                                                                            currentStatistic
-                                                                        )
-                                                                        recyclerViewStatsAdapter.notifyDataSetChanged()
-                                                                    }
-                                                                }
-
-
-                                                            }
-
-
-                                                    }
-
-                                                }
-
-
-                                            }
-                                    } else {
-                                        db.collection("School").document(kurumKodu.toString())
-                                            .collection("Student")
-                                            .whereEqualTo("teacher", auth.uid.toString())
-                                            .whereEqualTo("grade", secilenGrade.toInt())
-                                            .addSnapshotListener { ogrencliler, error ->
-                                                statsList.clear()
-                                                if (error != null) {
-                                                    println(error.localizedMessage)
-                                                }
-
-                                                if (ogrencliler != null) {
-                                                    ogrenciSayisi = ogrencliler.size()
-
-                                                    for (ogrenci in ogrencliler) {
-                                                        var toplamCalisma = 0
-                                                        var cozulenSoru = 0
-                                                        db.collection("School")
-                                                            .document(kurumKodu.toString())
-                                                            .collection("Student")
-                                                            .document(ogrenci.id)
-                                                            .collection("Studies").whereEqualTo(
-                                                                "dersAdi", dersIndex
-                                                            ).whereGreaterThan(
-                                                                "timestamp", baslangicTarihi
-                                                            ).whereLessThan(
-                                                                "timestamp", bitisTarihi
-                                                            ).addSnapshotListener { studies, _ ->
-
-
-                                                                if (studies != null && ogrencliler.size() != 0) {
-
-                                                                    for (study in studies) {
-                                                                        toplamCalisma += study.get(
-                                                                            "toplamCalisma"
-                                                                        ).toString().toInt()
-                                                                        cozulenSoru += study.get(
-                                                                            "çözülenSoru"
-                                                                        ).toString().toInt()
-
-
-                                                                    }
-                                                                    if (dersIndex in dersSoruHash.keys) {
-
-                                                                        val currentValue =
-                                                                            dersSoruHash[dersIndex]
-
-                                                                        if (currentValue != null) {
-                                                                            dersSoruHash[dersIndex] =
-                                                                                currentValue + cozulenSoru
-                                                                        }
-
-
-                                                                    } else {
-                                                                        dersSoruHash[dersIndex] =
-                                                                            cozulenSoru.toFloat()
-                                                                    }
-
-                                                                    if (dersIndex in dersSureHash.keys) {
-
-                                                                        val currentValue =
-                                                                            dersSureHash[dersIndex]
-
-                                                                        if (currentValue != null) {
-                                                                            dersSureHash[dersIndex] =
-                                                                                currentValue + toplamCalisma
-                                                                        }
-
-
-                                                                    } else {
-                                                                        dersSureHash[dersIndex] =
-                                                                            toplamCalisma.toFloat()
-                                                                    }
-
-
-
-                                                                    statsList.clear()
-                                                                    for (i in dersSureHash.keys) {
-                                                                        val currentStatistic =
-                                                                            Statistic(
-                                                                                i,
-                                                                                (dersSureHash[i]?.div(
-                                                                                    ogrenciSayisi
-                                                                                )).toString(),
-                                                                                (dersSoruHash[i]?.div(
-                                                                                    ogrenciSayisi
-                                                                                )).toString()
-                                                                            )
-                                                                        statsList.add(
-                                                                            currentStatistic
-                                                                        )
-                                                                        recyclerViewStatsAdapter.notifyDataSetChanged()
-                                                                    }
-
-
-                                                                }
-
-
-                                                            }
-
-
-                                                    }
-
-                                                }
-
-
-                                            }
-                                    }
-                                }
-
-                            }
-
-
+                        loadStatsData()
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -843,6 +431,83 @@ class StatsActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+    private fun loadStatsData() {
+        val teacherId = auth.uid ?: return
+        val gradeFilter = if (secilenGrade == "Bütün Sınıflar") {
+            null
+        } else {
+            secilenGrade.toIntOrNull()
+        }
+
+        statsList.clear()
+        dersSureHash.clear()
+        dersSoruHash.clear()
+
+        recyclerViewStats = binding.statsRecyclerView
+        recyclerViewStats.layoutManager = layoutManager
+        recyclerViewStatsAdapter = StatisticsRecyclerAdapter(statsList)
+        recyclerViewStats.adapter = recyclerViewStatsAdapter
+
+        lifecycleScope.launch {
+            try {
+                val studentIds = StudyQueryHelper.fetchStudentIdsForTeacher(
+                    db,
+                    kurumKodu.toString(),
+                    teacherId,
+                    gradeFilter,
+                )
+                ogrenciSayisi = studentIds.size
+                if (studentIds.isEmpty()) {
+                    updateStatsListFromHashes()
+                    return@launch
+                }
+
+                val merged = StudyQueryHelper.fetchClassStatsAggregates(
+                    db,
+                    kurumKodu.toString(),
+                    studentIds,
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+
+                dersSureHash.clear()
+                dersSoruHash.clear()
+                merged.forEach { (ders, totals) ->
+                    dersSureHash[ders] = totals.minutes.toFloat()
+                    dersSoruHash[ders] = totals.questions.toFloat()
+                }
+                updateStatsListFromHashes()
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                Toast.makeText(
+                    this@StatsActivity,
+                    "İstatistikler yüklenemedi",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateStatsListFromHashes() {
+        if (ogrenciSayisi <= 0) {
+            statsList.clear()
+            recyclerViewStatsAdapter.notifyDataSetChanged()
+            showSum()
+            return
+        }
+        statsList.clear()
+        dersSureHash.forEach { (dersAdi, toplamSure) ->
+            val ortalamaSure = (toplamSure / ogrenciSayisi).format(2)
+            val ortalamaSoru = ((dersSoruHash[dersAdi] ?: 0f) / ogrenciSayisi).format(2)
+            statsList.add(Statistic(dersAdi, ortalamaSure, ortalamaSoru))
+        }
+        statsList.sortBy { it.dersAdi }
+        recyclerViewStatsAdapter.notifyDataSetChanged()
+        showSum()
+    }
+
     @SuppressLint("SetTextI18n")
     private fun showSum() {
         var toplamSure = 0f
@@ -868,23 +533,9 @@ class StatsActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                createExcel()
-            } else {
-                // Permission not granted, handle accordingly
+                exportStatsExcel()
             }
         }
-
-    private fun askForPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission not granted, request it
-            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            createExcel()
-        }
-    }
 
     // Define a WeakReferenceHandlerCallback class
     class WeakReferenceHandlerCallback(activity: StatsActivity) : Handler.Callback {

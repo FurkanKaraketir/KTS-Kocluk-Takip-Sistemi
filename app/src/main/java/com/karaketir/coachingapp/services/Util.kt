@@ -17,6 +17,11 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.IndexedColors
@@ -560,545 +565,168 @@ fun addData(
     CellUtil.createCell(rowFake, 27, "Diğer Süre")
     CellUtil.createCell(rowFake, 28, "Diğer Soru")
 
-    if (secilenGrade != "Bütün Sınıflar") {
-        db.collection("School").document(currentKurumKodu).collection("Student")
-            .whereEqualTo("teacher", auth.uid.toString())
-            .whereEqualTo("grade", secilenGrade.toInt()).orderBy("nameAndSurname")
-            .addSnapshotListener { students, _ ->
-                if (students != null) {
-                    var index = 1
-                    var counter = 0
-                    val studentCount = students.size()
-                    for (i in students) {
-                        var biyoSure = 0
-                        var biyoSoru = 0
-
-                        var cografyaSure = 0
-                        var cografyaSoru = 0
-
-                        var dinSure = 0
-                        var dinSoru = 0
-
-                        var digerSure = 0
-                        var digerSoru = 0
-
-                        var felsefeSure = 0
-                        var felsefeSoru = 0
-
-                        var fizikSure = 0
-                        var fizikSoru = 0
-
-                        var geometriSure = 0
-                        var geometriSoru = 0
-
-                        var kimyaSure = 0
-                        var kimyaSoru = 0
-
-                        var matSure = 0
-                        var matSoru = 0
-
-                        var paragrafSure = 0
-                        var paragrafSoru = 0
-
-                        var problemSure = 0
-                        var problemSoru = 0
-
-                        var tarihSure = 0
-                        var tarihSoru = 0
-
-                        var turkceSure = 0
-                        var turkceSoru = 0
-
-
-                        var ogrenciToplamSure = 0
-                        var ogrenciToplamSoru = 0
-                        val row = sheet.createRow(index)
-                        CellUtil.createCell(row, 0, i.get("nameAndSurname").toString())
-
-                        db.collection("School").document(currentKurumKodu).collection("Student")
-                            .document(i.id).collection("Studies")
-                            .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
-                            .addSnapshotListener { studies, errorStudies ->
-
-                                if (errorStudies != null) {
-                                    println(errorStudies.localizedMessage)
-                                }
-
-                                if (studies != null) {
-                                    for (study in studies) {
-
-                                        when (study.get("dersAdi")) {
-
-                                            "Biyoloji" -> {
-
-                                                biyoSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                biyoSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Coğrafya" -> {
-
-                                                cografyaSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                cografyaSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Din" -> {
-
-                                                dinSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                dinSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Diğer" -> {
-
-                                                digerSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                digerSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Felsefe" -> {
-
-                                                felsefeSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                felsefeSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Fizik" -> {
-
-                                                fizikSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                fizikSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Geometri" -> {
-
-                                                geometriSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                geometriSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Kimya" -> {
-
-                                                kimyaSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                kimyaSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Matematik" -> {
-
-                                                matSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                matSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Paragraf" -> {
-
-                                                paragrafSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                paragrafSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Problem" -> {
-
-                                                problemSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                problemSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Tarih" -> {
-
-                                                tarihSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                tarihSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Türkçe-Edebiyat" -> {
-
-                                                turkceSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                turkceSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-                                        }
-
-
-                                        ogrenciToplamSure += study.get("toplamCalisma").toString()
-                                            .toInt()
-                                        ogrenciToplamSoru += study.get("çözülenSoru").toString()
-                                            .toInt()
-                                    }
-
-
-                                    CellUtil.createCell(
-                                        row, 1, "$ogrenciToplamSure"
-                                    )
-                                    CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
-
-                                    CellUtil.createCell(row, 3, matSure.toString())
-                                    CellUtil.createCell(row, 4, matSoru.toString())
-
-                                    CellUtil.createCell(row, 5, problemSure.toString())
-                                    CellUtil.createCell(row, 6, problemSoru.toString())
-
-                                    CellUtil.createCell(row, 7, geometriSure.toString())
-                                    CellUtil.createCell(row, 8, geometriSoru.toString())
-
-                                    CellUtil.createCell(row, 9, paragrafSure.toString())
-                                    CellUtil.createCell(row, 10, paragrafSoru.toString())
-
-                                    CellUtil.createCell(row, 11, turkceSure.toString())
-                                    CellUtil.createCell(row, 12, turkceSoru.toString())
-
-                                    CellUtil.createCell(row, 13, fizikSure.toString())
-                                    CellUtil.createCell(row, 14, fizikSoru.toString())
-
-                                    CellUtil.createCell(row, 15, kimyaSure.toString())
-                                    CellUtil.createCell(row, 16, kimyaSoru.toString())
-
-                                    CellUtil.createCell(row, 17, biyoSure.toString())
-                                    CellUtil.createCell(row, 18, biyoSoru.toString())
-
-                                    CellUtil.createCell(row, 19, tarihSure.toString())
-                                    CellUtil.createCell(row, 20, tarihSoru.toString())
-
-                                    CellUtil.createCell(row, 21, cografyaSure.toString())
-                                    CellUtil.createCell(row, 22, cografyaSoru.toString())
-
-                                    CellUtil.createCell(row, 23, felsefeSure.toString())
-                                    CellUtil.createCell(row, 24, felsefeSoru.toString())
-
-                                    CellUtil.createCell(row, 25, dinSure.toString())
-                                    CellUtil.createCell(row, 26, dinSoru.toString())
-
-                                    CellUtil.createCell(row, 27, digerSure.toString())
-                                    CellUtil.createCell(row, 28, digerSoru.toString())
-
-                                }
-                                counter += 1
-                                if (counter == studentCount) {
-                                    createExcel(context, secilenGrade, secilenZaman, workbook)
-                                }
-
-
-                            }
-
-                        index += 1
-                    }
-                }
-            }
-
-
-    } else {
-        db.collection("School").document(currentKurumKodu).collection("Student")
-            .whereEqualTo("teacher", auth.uid.toString()).orderBy("nameAndSurname")
-            .addSnapshotListener { students, _ ->
-                if (students != null) {
-                    var index = 1
-                    var counter = 0
-                    val studentCount = students.size()
-                    for (i in students) {
-                        var biyoSure = 0
-                        var biyoSoru = 0
-
-                        var cografyaSure = 0
-                        var cografyaSoru = 0
-
-                        var dinSure = 0
-                        var dinSoru = 0
-
-                        var digerSure = 0
-                        var digerSoru = 0
-
-                        var felsefeSure = 0
-                        var felsefeSoru = 0
-
-                        var fizikSure = 0
-                        var fizikSoru = 0
-
-                        var geometriSure = 0
-                        var geometriSoru = 0
-
-                        var kimyaSure = 0
-                        var kimyaSoru = 0
-
-                        var matSure = 0
-                        var matSoru = 0
-
-                        var paragrafSure = 0
-                        var paragrafSoru = 0
-
-                        var problemSure = 0
-                        var problemSoru = 0
-
-                        var tarihSure = 0
-                        var tarihSoru = 0
-
-                        var turkceSure = 0
-                        var turkceSoru = 0
-
-
-                        var ogrenciToplamSure = 0
-                        var ogrenciToplamSoru = 0
-                        val row = sheet.createRow(index)
-                        CellUtil.createCell(row, 0, i.get("nameAndSurname").toString())
-
-                        db.collection("School").document(currentKurumKodu).collection("Student")
-                            .document(i.id).collection("Studies")
-                            .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
-                            .addSnapshotListener { studies, errorStudies ->
-
-                                if (errorStudies != null) {
-                                    println(errorStudies.localizedMessage)
-                                }
-
-                                if (studies != null) {
-                                    for (study in studies) {
-
-                                        when (study.get("dersAdi")) {
-
-                                            "Biyoloji" -> {
-
-                                                biyoSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                biyoSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Coğrafya" -> {
-
-                                                cografyaSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                cografyaSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Din" -> {
-
-                                                dinSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                dinSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Diğer" -> {
-
-                                                digerSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                digerSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Felsefe" -> {
-
-                                                felsefeSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                felsefeSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Fizik" -> {
-
-                                                fizikSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                fizikSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Geometri" -> {
-
-                                                geometriSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                geometriSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Kimya" -> {
-
-                                                kimyaSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                kimyaSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Matematik" -> {
-
-                                                matSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                matSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Paragraf" -> {
-
-                                                paragrafSure += study.get("toplamCalisma")
-                                                    .toString().toInt()
-                                                paragrafSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Problem" -> {
-
-                                                problemSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                problemSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Tarih" -> {
-
-                                                tarihSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                tarihSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-
-                                            "Türkçe-Edebiyat" -> {
-
-                                                turkceSure += study.get("toplamCalisma").toString()
-                                                    .toInt()
-                                                turkceSoru += study.get("çözülenSoru").toString()
-                                                    .toInt()
-
-
-                                            }
-                                        }
-
-                                        ogrenciToplamSure += study.get("toplamCalisma").toString()
-                                            .toInt()
-                                        ogrenciToplamSoru += study.get("çözülenSoru").toString()
-                                            .toInt()
-                                    }
-
-                                    CellUtil.createCell(
-                                        row, 1, "$ogrenciToplamSure"
-                                    )
-                                    CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
-
-                                    CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
-
-                                    CellUtil.createCell(row, 3, matSure.toString())
-                                    CellUtil.createCell(row, 4, matSoru.toString())
-
-                                    CellUtil.createCell(row, 5, problemSure.toString())
-                                    CellUtil.createCell(row, 6, problemSoru.toString())
-
-                                    CellUtil.createCell(row, 7, geometriSure.toString())
-                                    CellUtil.createCell(row, 8, geometriSoru.toString())
-
-                                    CellUtil.createCell(row, 9, paragrafSure.toString())
-                                    CellUtil.createCell(row, 10, paragrafSoru.toString())
-
-                                    CellUtil.createCell(row, 11, turkceSure.toString())
-                                    CellUtil.createCell(row, 12, turkceSoru.toString())
-
-                                    CellUtil.createCell(row, 13, fizikSure.toString())
-                                    CellUtil.createCell(row, 14, fizikSoru.toString())
-
-                                    CellUtil.createCell(row, 15, kimyaSure.toString())
-                                    CellUtil.createCell(row, 16, kimyaSoru.toString())
-
-                                    CellUtil.createCell(row, 17, biyoSure.toString())
-                                    CellUtil.createCell(row, 18, biyoSoru.toString())
-
-                                    CellUtil.createCell(row, 19, tarihSure.toString())
-                                    CellUtil.createCell(row, 20, tarihSoru.toString())
-
-                                    CellUtil.createCell(row, 21, cografyaSure.toString())
-                                    CellUtil.createCell(row, 22, cografyaSoru.toString())
-
-                                    CellUtil.createCell(row, 23, felsefeSure.toString())
-                                    CellUtil.createCell(row, 24, felsefeSoru.toString())
-
-                                    CellUtil.createCell(row, 25, dinSure.toString())
-                                    CellUtil.createCell(row, 26, dinSoru.toString())
-
-                                    CellUtil.createCell(row, 27, digerSure.toString())
-                                    CellUtil.createCell(row, 28, digerSoru.toString())
-
-
-                                }
-                                counter += 1
-                                if (counter == studentCount) {
-                                    createExcel(context, secilenGrade, secilenZaman, workbook)
-                                }
-
-                            }
-
-                        index += 1
-                    }
-                }
-            }
-
-
+    val exportScope = (context as? LifecycleOwner)?.lifecycleScope
+    if (exportScope == null) {
+        return
     }
 
-
+    exportScope.launch {
+        try {
+            val studentsQuery = if (secilenGrade != "Bütün Sınıflar") {
+                db.collection("School").document(currentKurumKodu).collection("Student")
+                    .whereEqualTo("teacher", auth.uid.toString())
+                    .whereEqualTo("grade", secilenGrade.toInt())
+                    .orderBy("nameAndSurname")
+            } else {
+                db.collection("School").document(currentKurumKodu).collection("Student")
+                    .whereEqualTo("teacher", auth.uid.toString())
+                    .orderBy("nameAndSurname")
+            }
+            val students = studentsQuery.get().await()
+            val studiesByStudent = StudyQueryHelper.fetchStudiesByStudentIds(
+                db,
+                currentKurumKodu,
+                students.documents.map { it.id },
+                baslangicTarihi,
+                bitisTarihi,
+            )
+            var index = 1
+            for (studentDoc in students) {
+                val row = sheet.createRow(index)
+                CellUtil.createCell(row, 0, studentDoc.get("nameAndSurname").toString())
+                writeLegacySubjectExcelRow(row, studiesByStudent[studentDoc.id].orEmpty())
+                index++
+            }
+            createExcel(context, secilenGrade, secilenZaman, workbook)
+        } catch (e: Exception) {
+            Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
+
+
+private fun writeLegacySubjectExcelRow(
+    row: org.apache.poi.ss.usermodel.Row,
+    studies: List<DocumentSnapshot>,
+) {
+    var biyoSure = 0
+    var biyoSoru = 0
+    var cografyaSure = 0
+    var cografyaSoru = 0
+    var dinSure = 0
+    var dinSoru = 0
+    var digerSure = 0
+    var digerSoru = 0
+    var felsefeSure = 0
+    var felsefeSoru = 0
+    var fizikSure = 0
+    var fizikSoru = 0
+    var geometriSure = 0
+    var geometriSoru = 0
+    var kimyaSure = 0
+    var kimyaSoru = 0
+    var matSure = 0
+    var matSoru = 0
+    var paragrafSure = 0
+    var paragrafSoru = 0
+    var problemSure = 0
+    var problemSoru = 0
+    var tarihSure = 0
+    var tarihSoru = 0
+    var turkceSure = 0
+    var turkceSoru = 0
+    var ogrenciToplamSure = 0
+    var ogrenciToplamSoru = 0
+
+    for (study in studies) {
+        when (study.get("dersAdi")) {
+            "Biyoloji" -> {
+                biyoSure += study.get("toplamCalisma").toString().toInt()
+                biyoSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Coğrafya" -> {
+                cografyaSure += study.get("toplamCalisma").toString().toInt()
+                cografyaSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Din" -> {
+                dinSure += study.get("toplamCalisma").toString().toInt()
+                dinSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Diğer" -> {
+                digerSure += study.get("toplamCalisma").toString().toInt()
+                digerSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Felsefe" -> {
+                felsefeSure += study.get("toplamCalisma").toString().toInt()
+                felsefeSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Fizik" -> {
+                fizikSure += study.get("toplamCalisma").toString().toInt()
+                fizikSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Geometri" -> {
+                geometriSure += study.get("toplamCalisma").toString().toInt()
+                geometriSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Kimya" -> {
+                kimyaSure += study.get("toplamCalisma").toString().toInt()
+                kimyaSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Matematik" -> {
+                matSure += study.get("toplamCalisma").toString().toInt()
+                matSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Paragraf" -> {
+                paragrafSure += study.get("toplamCalisma").toString().toInt()
+                paragrafSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Problem" -> {
+                problemSure += study.get("toplamCalisma").toString().toInt()
+                problemSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Tarih" -> {
+                tarihSure += study.get("toplamCalisma").toString().toInt()
+                tarihSoru += study.get("çözülenSoru").toString().toInt()
+            }
+            "Türkçe-Edebiyat" -> {
+                turkceSure += study.get("toplamCalisma").toString().toInt()
+                turkceSoru += study.get("çözülenSoru").toString().toInt()
+            }
+        }
+        ogrenciToplamSure += study.get("toplamCalisma").toString().toInt()
+        ogrenciToplamSoru += study.get("çözülenSoru").toString().toInt()
+    }
+
+    CellUtil.createCell(row, 1, "$ogrenciToplamSure")
+    CellUtil.createCell(row, 2, ogrenciToplamSoru.toString())
+    CellUtil.createCell(row, 3, matSure.toString())
+    CellUtil.createCell(row, 4, matSoru.toString())
+    CellUtil.createCell(row, 5, problemSure.toString())
+    CellUtil.createCell(row, 6, problemSoru.toString())
+    CellUtil.createCell(row, 7, geometriSure.toString())
+    CellUtil.createCell(row, 8, geometriSoru.toString())
+    CellUtil.createCell(row, 9, paragrafSure.toString())
+    CellUtil.createCell(row, 10, paragrafSoru.toString())
+    CellUtil.createCell(row, 11, turkceSure.toString())
+    CellUtil.createCell(row, 12, turkceSoru.toString())
+    CellUtil.createCell(row, 13, fizikSure.toString())
+    CellUtil.createCell(row, 14, fizikSoru.toString())
+    CellUtil.createCell(row, 15, kimyaSure.toString())
+    CellUtil.createCell(row, 16, kimyaSoru.toString())
+    CellUtil.createCell(row, 17, biyoSure.toString())
+    CellUtil.createCell(row, 18, biyoSoru.toString())
+    CellUtil.createCell(row, 19, tarihSure.toString())
+    CellUtil.createCell(row, 20, tarihSoru.toString())
+    CellUtil.createCell(row, 21, cografyaSure.toString())
+    CellUtil.createCell(row, 22, cografyaSoru.toString())
+    CellUtil.createCell(row, 23, felsefeSure.toString())
+    CellUtil.createCell(row, 24, felsefeSoru.toString())
+    CellUtil.createCell(row, 25, dinSure.toString())
+    CellUtil.createCell(row, 26, dinSoru.toString())
+    CellUtil.createCell(row, 27, digerSure.toString())
+    CellUtil.createCell(row, 28, digerSoru.toString())
+}
+
 
 data class WorldTime(
     val abbreviation: String,

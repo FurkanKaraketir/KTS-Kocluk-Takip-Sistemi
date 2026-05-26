@@ -15,12 +15,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.MainActivity
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
 import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
 import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
+import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.curriculum.StudyLabels
+import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.FragmentSettingsBinding
 import com.karaketir.coachingapp.services.openLink
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class SettingsFragment: Fragment() {
 
@@ -37,6 +41,8 @@ class SettingsFragment: Fragment() {
     private var name = ""
     private var personType = ""
     private var grade = 0
+    private var selectedCurriculumProgram: CurriculumProgram? = null
+    private var gradeOffersProgramChoice = false
 
     private var _binding: FragmentSettingsBinding? = null
     private var isViewCreated = false
@@ -114,7 +120,7 @@ class SettingsFragment: Fragment() {
                     if (personType == "Student") {
                         textInputChangeGrade.visibility = View.VISIBLE
                         gradeChangeEditText.setText(grade.toString())
-                        loadCurriculumProgramSubtitle(mBinding, grade)
+                        loadCurriculumProgramUi(mBinding, grade)
                     } else {
                         textInputChangeGrade.visibility = View.GONE
                         mBinding.curriculumProgramText.visibility = View.GONE
@@ -148,6 +154,13 @@ class SettingsFragment: Fragment() {
                                 db.collection("School").document(kurumKodu.toString())
                                     .collection(personType).document(auth.uid.toString())
                                     .update("grade", gradeChangeEditText.text.toString().toInt())
+                            }
+                            selectedCurriculumProgram?.let { program ->
+                                db.collection("User").document(auth.uid.toString())
+                                    .update("curriculumProgram", program.firestoreValue)
+                                db.collection("School").document(kurumKodu.toString())
+                                    .collection(personType).document(auth.uid.toString())
+                                    .update("curriculumProgram", program.firestoreValue)
                             }
                             Toast.makeText(mainActivity, "İşlem Başarılı!", Toast.LENGTH_SHORT)
                                 .show()
@@ -200,24 +213,79 @@ class SettingsFragment: Fragment() {
 
     }
 
-    private fun loadCurriculumProgramSubtitle(
+    private fun loadCurriculumProgramUi(
         mBinding: FragmentSettingsBinding,
-        studentGrade: Int
+        studentGrade: Int,
     ) {
         lifecycleScope.launch {
-            val program = try {
-                val config = GradeCurriculumRepository.load(db)
-                GradeCurriculumRepository.programForGrade(config, studentGrade)
+            val config = try {
+                GradeCurriculumRepository.load(db)
             } catch (_: Exception) {
-                GradeCurriculumRepository.programForGrade(
-                    GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms),
-                    studentGrade
-                )
+                GradeCurriculumRepository.defaultConfig()
+            }
+            val profileProgram = try {
+                val snap = db.collection("User").document(auth.uid.toString()).get().await()
+                CurriculumProgram.fromFirestore(snap.getString("curriculumProgram"))
+            } catch (_: Exception) {
+                null
             }
             if (!isBindingAvailable()) return@launch
+            gradeOffersProgramChoice =
+                GradeCurriculumRepository.offersProgramChoice(config, studentGrade)
+            val program = GradeCurriculumRepository.preferredProgram(
+                config,
+                studentGrade,
+                profileProgram,
+            )
+            selectedCurriculumProgram = if (gradeOffersProgramChoice) program else null
             mBinding.curriculumProgramText.visibility = View.VISIBLE
-            mBinding.curriculumProgramText.text =
-                StudyLabels.programDisplayName(program, studentGrade)
+            if (gradeOffersProgramChoice) {
+                mBinding.curriculumProgramText.text = getString(
+                    R.string.varsayilan_mufredat,
+                ) + ": " + Subjects.programHeaderLabel(program)
+                mBinding.curriculumProgramText.isClickable = true
+                mBinding.curriculumProgramText.setOnClickListener {
+                    showCurriculumProgramPicker(mBinding, studentGrade, config, profileProgram)
+                }
+            } else {
+                mBinding.curriculumProgramText.setOnClickListener(null)
+                mBinding.curriculumProgramText.isClickable = false
+                mBinding.curriculumProgramText.text =
+                    StudyLabels.programDisplayName(program, studentGrade)
+            }
         }
+    }
+
+    private fun showCurriculumProgramPicker(
+        mBinding: FragmentSettingsBinding,
+        studentGrade: Int,
+        config: GradeCurriculumConfig,
+        profileProgram: CurriculumProgram?,
+    ) {
+        val activity = mainActivity ?: return
+        val options = arrayOf(
+            Subjects.programHeaderLabel(CurriculumProgram.LEGACY),
+            Subjects.programHeaderLabel(CurriculumProgram.TYMM),
+        )
+        val current = GradeCurriculumRepository.preferredProgram(
+            config,
+            studentGrade,
+            profileProgram ?: selectedCurriculumProgram,
+        )
+        val checked = if (current == CurriculumProgram.TYMM) 1 else 0
+        AlertDialog.Builder(activity)
+            .setTitle(R.string.varsayilan_mufredat)
+            .setSingleChoiceItems(options, checked) { dialog, which ->
+                selectedCurriculumProgram = if (which == 1) {
+                    CurriculumProgram.TYMM
+                } else {
+                    CurriculumProgram.LEGACY
+                }
+                mBinding.curriculumProgramText.text = getString(R.string.varsayilan_mufredat) +
+                    ": " + Subjects.programHeaderLabel(selectedCurriculumProgram!!)
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 }

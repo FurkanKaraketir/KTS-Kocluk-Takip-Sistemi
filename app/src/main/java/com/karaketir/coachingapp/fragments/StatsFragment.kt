@@ -1,18 +1,9 @@
 package com.karaketir.coachingapp.fragments
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.AlertDialog
-import android.content.ContentUris
-import android.content.ContentValues
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,15 +12,13 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.MainActivity
@@ -37,23 +26,15 @@ import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentStatsBinding
 import com.karaketir.coachingapp.models.Statistic
-import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.IndexedColors
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
-import org.apache.poi.ss.util.CellRangeAddress
+import com.karaketir.coachingapp.services.ExcelExportHelper
+import com.karaketir.coachingapp.services.StudyQueryHelper
+import kotlinx.coroutines.launch
 import org.apache.poi.ss.util.CellUtil
-import org.apache.poi.xssf.usermodel.IndexedColorMap
-import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
@@ -75,7 +56,6 @@ class StatsFragment : Fragment() {
     private lateinit var layoutManager: LinearLayoutManager
     private var secilenZamanAraligi = "Seçiniz"
     private var kurumKodu = 0
-    private val workbook = XSSFWorkbook()
     private var secilenGrade = "Bütün Sınıflar"
     private lateinit var recyclerViewStats: RecyclerView
     private lateinit var recyclerViewStatsAdapter: StatisticsRecyclerAdapter
@@ -134,14 +114,6 @@ class StatsFragment : Fragment() {
             mBinding = binding
             toplamSureTextView = mBinding.toplamSure
             toplamSoruTextView = mBinding.toplamSoru
-            val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-            //Create Header Cell Style
-            val cellStyle = getHeaderStyle(workbook)
-
-            //Creating sheet header row
-            createSheetHeader(cellStyle, sheet)
-
             val fileSaveButton = mBinding.fileSaveExcelButton
 
             layoutManager = LinearLayoutManager(mainActivity)
@@ -156,9 +128,7 @@ class StatsFragment : Fragment() {
             }
 
             fileSaveButton.setOnClickListener {
-                addData(sheet)
-                askForPermissions()
-                createExcel()
+                exportStatsExcel()
             }
         }
     }
@@ -352,377 +322,141 @@ class StatsFragment : Fragment() {
     }
 
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                createExcel()
-            } else {
-                // Permission not granted, handle accordingly
-            }
+    @SuppressLint("SetTextI18n")
+    private fun exportStatsExcel() {
+        val ctx = mainActivity ?: return
+        if (secilenZamanAraligi == "Seçiniz") {
+            Toast.makeText(ctx, "Lütfen bir zaman aralığı seçiniz", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (statsList.isEmpty()) {
+            Toast.makeText(ctx, "Dışa aktarılacak veri yok", Toast.LENGTH_SHORT).show()
+            return
         }
 
-    private fun askForPermissions() {
-        if (mainActivity?.let {
-                ContextCompat.checkSelfPermission(
-                    it, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            } != PackageManager.PERMISSION_GRANTED) {
-            // Permission not granted, request it
-            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            createExcel()
-        }
-    }
+        Toast.makeText(ctx, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
 
-    @SuppressLint("Recycle", "Range", "SimpleDateFormat")
-    private fun createExcel() {
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("İstatistik")
+        val headers = arrayOf(
+            "Ders",
+            "Ortalama Süre (dk)",
+            "Ortalama Süre (saat)",
+            "Ortalama Soru"
+        )
+        val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
+        val columnWidths = intArrayOf(30 * 256, 25 * 256, 25 * 256, 25 * 256)
 
-        val time = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val current = formatter.format(time)
+        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
+            sheet,
+            ExcelExportHelper.ReportContext(
+                title = getString(R.string.excel_rapor_istatistik),
+                gradeLabel = secilenGrade,
+                timeRangeLabel = secilenZamanAraligi,
+                startDate = baslangicTarihi,
+                endDate = bitisTarihi,
+                extraLines = listOf("Öğrenci sayısı: $ogrenciSayisi")
+            ),
+            headers.size
+        )
+        var rowIndex = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, infoEnd, columnWidths
+        )
 
-        val contentUri = MediaStore.Files.getContentUri("external")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
-
-            val selectionArgs =
-                arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/") //must include "/" in front and end
-
-
-            val cursor: Cursor? = mainActivity?.contentResolver?.query(
-                contentUri, null, selection, selectionArgs, null
-            )
-
-            var uri: Uri? = null
-
-            if (cursor != null) {
-                if (cursor.count == 0) {
-
-                    try {
-                        val values = ContentValues()
-                        values.put(
-                            MediaStore.MediaColumns.DISPLAY_NAME,
-                            "$secilenGrade - $secilenZamanAraligi - $current"
-                        ) //file name
-                        values.put(
-                            MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                        ) //file extension, will automatically add to file
-                        values.put(
-                            MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                        ) //end "/" is not mandatory
-                        uri = mainActivity?.contentResolver?.insert(
-                            MediaStore.Files.getContentUri("external"), values
-                        ) //important!
-                        val outputStream = mainActivity?.contentResolver?.openOutputStream(uri!!)
-                        workbook.write(outputStream)
-                        outputStream!!.flush()
-                        //outputStream!!.write("This is menu category data.".toByteArray())
-                        outputStream.close()
-                        Toast.makeText(
-                            mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: IOException) {
-                        Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT).show()
-                    }
-
-                } else {
-                    while (cursor.moveToNext()) {
-                        val fileName: String =
-                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$secilenGrade - $secilenZamanAraligi - $current.xls") {                          //must include extension
-                            val id: Long =
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-                            uri = ContentUris.withAppendedId(contentUri, id)
-                            break
-                        }
-                    }
-                    if (uri == null) {
-
-                        try {
-                            val values = ContentValues()
-                            values.put(
-                                MediaStore.MediaColumns.DISPLAY_NAME,
-                                "$secilenGrade - $secilenZamanAraligi - $current"
-                            ) //file name
-                            values.put(
-                                MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                            ) //file extension, will automatically add to file
-                            values.put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_DOCUMENTS + "/Koçluk İstatistikleri/"
-                            ) //end "/" is not mandatory
-                            uri = mainActivity?.contentResolver?.insert(
-                                MediaStore.Files.getContentUri("external"), values
-                            ) //important!
-                            val outputStream =
-                                mainActivity?.contentResolver?.openOutputStream(uri!!)
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-
-
-                    } else {
-                        try {
-                            val outputStream: OutputStream? =
-                                mainActivity?.contentResolver?.openOutputStream(
-                                    uri, "rwt"
-                                ) //overwrite mode, see below
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(mainActivity, "İşlem Başarısız!", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                }
-            }
-
-
-        } else {
-            val filePath = File(
-                Environment.getExternalStorageDirectory()
-                    .toString() + "/$secilenGrade - $secilenZamanAraligi - $current.xlsx"
-            )
-            try {
-                if (!filePath.exists()) {
-                    filePath.createNewFile()
-                }
-                val fileOutputStream = FileOutputStream(filePath)
-                workbook.write(fileOutputStream)
-                Toast.makeText(
-                    mainActivity, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                ).show()
-                fileOutputStream.flush()
-
-                fileOutputStream.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                println(e)
-            }
-        }
-    }
-
-    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
-        //setHeaderStyle is a custom function written below to add header style
-
-        //Create sheet first row
-        val row = sheet.createRow(0)
-
-        //Header list
-        val headerList = listOf("column_1", "column_2", "column_3")
-
-        //Loop to populate each column of header row
-        for ((index, value) in headerList.withIndex()) {
-
-            val columnWidth = (15 * 500)
-
-            sheet.setColumnWidth(index, columnWidth)
-
-            val cell = row.createCell(index)
-
-            cell?.setCellValue(value)
-
-            cell.cellStyle = cellStyle
-        }
-    }
-
-    @SuppressLint("SetTextI18n", "SimpleDateFormat")
-    private fun addData(sheet: Sheet) {
-        try {
-            // Add information row
-            val infoRow = sheet.createRow(0)
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val sortedStats = statsList.sortedBy { it.dersAdi }
+        sortedStats.forEach { stat ->
+            val row = sheet.createRow(rowIndex++)
+            CellUtil.createCell(row, 0, stat.dersAdi)
+            CellUtil.createCell(row, 1, stat.toplamCalisma)
             CellUtil.createCell(
-                infoRow, 
-                0, 
-                "${secilenGrade.ifEmpty { "Tüm Sınıflar" }} - ${secilenZamanAraligi} " +
-                "(${dateFormat.format(baslangicTarihi)} - ${dateFormat.format(bitisTarihi)})"
+                row,
+                2,
+                String.format(Locale.US, "%.2f", stat.toplamCalisma.toFloat() / 60f)
             )
-            
-            // Merge cells for the info row
-            sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 2))
-
-            // Create header row (now in row 2)
-            val headerRow = sheet.createRow(2)
-            
-            // Set fixed column widths
-            sheet.setColumnWidth(0, 30 * 256) // Ders column - wider for lesson names
-            sheet.setColumnWidth(1, 25 * 256) // Ortalama Süre (dk) column
-            sheet.setColumnWidth(2, 25 * 256) // Ortalama Süre (saat) column
-            sheet.setColumnWidth(3, 25 * 256) // Ortalama Soru column
-
-            // Create header cells
-            CellUtil.createCell(headerRow, 0, "Ders")
-            CellUtil.createCell(headerRow, 1, "Ortalama Süre (dk)")
-            CellUtil.createCell(headerRow, 2, "Ortalama Süre (saat)")
-            CellUtil.createCell(headerRow, 3, "Ortalama Soru")
-
-            // Add statistics rows starting from row 3
-            statsList.forEachIndexed { index, stat ->
-                val row = sheet.createRow(index + 3)
-                CellUtil.createCell(row, 0, stat.dersAdi)
-                CellUtil.createCell(row, 1, stat.toplamCalisma)
-                CellUtil.createCell(row, 2, String.format("%.2f", stat.toplamCalisma.toFloat() / 60))
-                CellUtil.createCell(row, 3, stat.cozulenSoru)
-            }
-
-            // Add summary row with a blank row above it
-            val summaryRow = sheet.createRow(statsList.size + 5)
-            CellUtil.createCell(summaryRow, 0, "Toplam")
-            val totalTime = calculateTotalTime()
-            CellUtil.createCell(summaryRow, 1, totalTime)
-            CellUtil.createCell(summaryRow, 2, String.format("%.2f", totalTime.toFloat() / 60))
-            CellUtil.createCell(summaryRow, 3, calculateTotalQuestions())
-
-            // Add student count information
-            val studentCountRow = sheet.createRow(statsList.size + 6)
-            CellUtil.createCell(studentCountRow, 0, "Öğrenci Sayısı: $ogrenciSayisi")
-            sheet.addMergedRegion(CellRangeAddress(
-                statsList.size + 6, 
-                statsList.size + 6, 
-                0, 
-                3
-            ))
-
-        } catch (e: Exception) {
-            mainActivity?.let {
-                Toast.makeText(it, "Excel oluşturma hatası: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            CellUtil.createCell(row, 3, stat.cozulenSoru)
         }
-    }
 
-    private fun calculateTotalTime(): String {
-        val total = statsList.sumOf { it.toplamCalisma.toDouble() }.toFloat()
-        return total.format(2)
-    }
+        rowIndex += 1
+        val summaryRow = sheet.createRow(rowIndex)
+        val totalTime = statsList.sumOf { it.toplamCalisma.toDouble() }.toFloat()
+        val totalSoru = statsList.sumOf { it.cozulenSoru.toDouble() }.toFloat()
+        CellUtil.createCell(summaryRow, 0, "Toplam")
+        CellUtil.createCell(summaryRow, 1, totalTime.format(2))
+        CellUtil.createCell(
+            summaryRow,
+            2,
+            String.format(Locale.US, "%.2f", totalTime / 60f)
+        )
+        CellUtil.createCell(summaryRow, 3, totalSoru.format(2))
 
-    private fun calculateTotalQuestions(): String {
-        val total = statsList.sumOf { it.cozulenSoru.toDouble() }.toFloat()
-        return total.format(2)
-    }
-
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
-
-        //Cell style for header row
-        val cellStyle: CellStyle = workbook.createCellStyle()
-
-        //Apply cell color
-        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
-        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
-        cellStyle.fillForegroundColor = color
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-
-        //Apply font style on cell text
-        val whiteFont = workbook.createFont()
-        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
-        whiteFont.color = color
-        whiteFont.bold = true
-        cellStyle.setFont(whiteFont)
-
-
-        return cellStyle
+        val fileName = ExcelExportHelper.buildFileName(
+            "Istatistik",
+            secilenGrade,
+            secilenZamanAraligi
+        )
+        ExcelExportHelper.saveWorkbook(
+            ctx,
+            workbook,
+            fileName,
+            ExcelExportHelper.FOLDER_STATS
+        )
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getData() {
-        // Clear lists at the start
+        if (secilenZamanAraligi == "Seçiniz" || kurumKodu == 0) return
+
         statsList.clear()
         dersSureHash.clear()
         dersSoruHash.clear()
-        
+
         recyclerViewStats = mBinding.statsRecyclerView
         recyclerViewStats.layoutManager = layoutManager
         recyclerViewStatsAdapter = StatisticsRecyclerAdapter(statsList)
         recyclerViewStats.adapter = recyclerViewStatsAdapter
 
-        // Move dersListesi outside the listener to prevent multiple initializations
-        val dersListesi = ArrayList<String>()
-        
-        db.collection("Lessons")
-            .orderBy("dersAdi", Query.Direction.ASCENDING)
-            .get() // Use get() instead of addSnapshotListener for one-time data fetch
-            .addOnSuccessListener { dersler ->
-                dersler?.forEach { ders ->
-                    dersListesi.add(ders.id)
-                }
-                
-                // Process each ders after getting the full list
-                processStudentData(dersListesi)
-            }
-    }
+        val teacherId = auth.uid ?: return
+        val gradeFilter = if (secilenGrade == "Bütün Sınıflar") null else secilenGrade.toIntOrNull()
 
-    private fun processStudentData(dersListesi: List<String>) {
-        val studentQuery = if (secilenGrade == "Bütün Sınıflar") {
-            db.collection("School")
-                .document(kurumKodu.toString())
-                .collection("Student")
-                .whereEqualTo("teacher", auth.uid.toString())
-        } else {
-            db.collection("School")
-                .document(kurumKodu.toString())
-                .collection("Student")
-                .whereEqualTo("teacher", auth.uid.toString())
-                .whereEqualTo("grade", secilenGrade.toInt())
-        }
-
-        studentQuery.get().addOnSuccessListener { students ->
-            ogrenciSayisi = students.size()
-            
-            // Process each student's data for each ders
-            students.forEach { student ->
-                dersListesi.forEach { ders ->
-                    processStudentDersData(student.id, ders)
-                }
-            }
-        }
-    }
-
-    private fun processStudentDersData(studentId: String, dersAdi: String) {
-        db.collection("School")
-            .document(kurumKodu.toString())
-            .collection("Student")
-            .document(studentId)
-            .collection("Studies")
-            .whereEqualTo("dersAdi", dersAdi)
-            .whereGreaterThan("timestamp", baslangicTarihi)
-            .whereLessThan("timestamp", bitisTarihi)
-            .get()
-            .addOnSuccessListener { studies ->
-                var toplamCalisma = 0
-                var cozulenSoru = 0
-                
-                studies.forEach { study ->
-                    toplamCalisma += study.get("toplamCalisma").toString().toInt()
-                    cozulenSoru += study.get("çözülenSoru").toString().toInt()
+        lifecycleScope.launch {
+            try {
+                val studentIds = StudyQueryHelper.fetchStudentIdsForTeacher(
+                    db,
+                    kurumKodu.toString(),
+                    teacherId,
+                    gradeFilter,
+                )
+                ogrenciSayisi = studentIds.size
+                if (studentIds.isEmpty()) {
+                    if (!isBindingAvailable()) return@launch
+                    updateStatsList()
+                    return@launch
                 }
 
-                // Update the hash maps atomically
-                synchronized(dersSureHash) {
-                    dersSureHash[dersAdi] = (dersSureHash[dersAdi] ?: 0f) + toplamCalisma.toFloat()
-                }
-                synchronized(dersSoruHash) {
-                    dersSoruHash[dersAdi] = (dersSoruHash[dersAdi] ?: 0f) + cozulenSoru.toFloat()
+                val merged = StudyQueryHelper.fetchClassStatsAggregates(
+                    db,
+                    kurumKodu.toString(),
+                    studentIds,
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+
+                dersSureHash.clear()
+                dersSoruHash.clear()
+                merged.forEach { (ders, totals) ->
+                    dersSureHash[ders] = totals.minutes.toFloat()
+                    dersSoruHash[ders] = totals.questions.toFloat()
                 }
 
-                // Update the UI
+                if (!isBindingAvailable()) return@launch
                 updateStatsList()
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                if (!isBindingAvailable()) return@launch
+                Toast.makeText(mainActivity, "İstatistikler yüklenemedi", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

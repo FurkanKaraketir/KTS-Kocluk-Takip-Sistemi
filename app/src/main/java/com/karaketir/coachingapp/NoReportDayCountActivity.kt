@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -27,20 +28,10 @@ import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.NoReportDayCounterAdapter
 import com.karaketir.coachingapp.databinding.ActivityNoReportDayCountBinding
 import com.karaketir.coachingapp.models.Student
-import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.IndexedColors
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
-import org.apache.poi.ss.util.CellUtil
-import org.apache.poi.xssf.usermodel.IndexedColorMap
-import org.apache.poi.xssf.usermodel.XSSFColor
+import com.karaketir.coachingapp.services.ExcelExportHelper
+import com.karaketir.coachingapp.services.StudyQueryHelper
+import kotlinx.coroutines.launch
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.TreeMap
@@ -54,11 +45,10 @@ class NoReportDayCountActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private var kurumKodu = 763455
     private var studentList = ArrayList<Student>()
-    private val workbook = XSSFWorkbook()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
-    private val userHash = hashMapOf<String, Int>()
     private lateinit var sortedMap: MutableMap<String, Int>
+    private lateinit var dayCounterAdapter: NoReportDayCounterAdapter
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -257,322 +247,102 @@ class NoReportDayCountActivity : AppCompatActivity() {
 
 
         val layoutManager = LinearLayoutManager(applicationContext)
-        val recyclerViewPreviousStudies = binding.noReportDayCounterRecycler
-        recyclerViewPreviousStudies.layoutManager = layoutManager
-        val recyclerViewPreviousStudiesAdapter =
-            NoReportDayCounterAdapter(studentList, secilenZaman, kurumKodu)
-        recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
+        binding.noReportDayCounterRecycler.layoutManager = layoutManager
+        dayCounterAdapter = NoReportDayCounterAdapter(studentList, kurumKodu)
+        binding.noReportDayCounterRecycler.adapter = dayCounterAdapter
 
-
-        for (student in studentList) {
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(student.id).collection("NoDayReport")
-                .whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi).addSnapshotListener { value, error ->
-                    if (error != null) {
-                        println(error.localizedMessage)
-                    }
-                    var size = 0
-                    if (value != null) {
-                        for (i in value) {
-                            size += 1
-                        }
-                    }
-
-                    userHash[student.studentName] = size
-                    sortedMap = TreeMap(userHash)
-
-                }
-        }
-
-
-        testFunMine()
-
-        val sheet: Sheet = workbook.createSheet("Sayfa 1")
-
-        //Create Header Cell Style
-        val cellStyle = getHeaderStyle(workbook)
-
-        //Creating sheet header row
-        createSheetHeader(cellStyle, sheet)
+        loadNoDayReportCounts()
 
         noReportExcelButton.setOnClickListener {
-            addData(
-                sheet, secilenZaman, secilenGrade, this, workbook
-            )
-
-            askForPermissions()
-
+            exportDayCountExcel()
         }
-
     }
 
-    private fun testFunMine() {
-        val layoutManager = LinearLayoutManager(applicationContext)
-        val recyclerViewPreviousStudies = binding.noReportDayCounterRecycler
-        recyclerViewPreviousStudies.layoutManager = layoutManager
-        val recyclerViewPreviousStudiesAdapter =
-            NoReportDayCounterAdapter(studentList, secilenZaman, kurumKodu)
-        recyclerViewPreviousStudies.adapter = recyclerViewPreviousStudiesAdapter
+    private fun loadNoDayReportCounts() {
+        lifecycleScope.launch {
+            try {
+                val counts = StudyQueryHelper.fetchNoDayReportCounts(
+                    db,
+                    kurumKodu.toString(),
+                    studentList.map { it.id },
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+                sortedMap = TreeMap()
+                studentList.forEach { student ->
+                    sortedMap[student.studentName] = counts[student.id] ?: 0
+                }
+                dayCounterAdapter.updateDayCounts(counts)
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+                Toast.makeText(
+                    this@NoReportDayCountActivity,
+                    "Gün sayıları yüklenemedi",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
     }
 
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                createExcel(this, secilenGrade, secilenZaman, workbook)
-            } else {
-                // Permission not granted, handle accordingly
+                exportDayCountExcel()
             }
         }
 
-    private fun askForPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+    private fun exportDayCountExcel() {
+        if (!::sortedMap.isInitialized || sortedMap.isEmpty()) {
+            Toast.makeText(this, "Veri henüz yüklenmedi, lütfen bekleyin", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (ExcelExportHelper.needsLegacyStoragePermission() &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission not granted, request it
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            createExcel(this, secilenGrade, secilenZaman, workbook)
+            return
         }
-    }
 
-    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
-        //setHeaderStyle is a custom function written below to add header style
+        Toast.makeText(this, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
 
-        //Create sheet first row
-        val row = sheet.createRow(0)
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("Gün Sayıları")
+        val headers = arrayOf("Ad Soyad", "Rapor Atılmayan Gün Sayısı")
+        val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
+        val columnWidths = intArrayOf(35 * 256, 28 * 256)
 
-        //Header list
-        val headerList = listOf(
-            "column_1", "column_2"
+        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
+            sheet,
+            ExcelExportHelper.ReportContext(
+                title = getString(R.string.excel_rapor_gun_sayisi),
+                gradeLabel = secilenGrade,
+                timeRangeLabel = secilenZaman,
+                startDate = baslangicTarihi,
+                endDate = bitisTarihi,
+                extraLines = listOf("Kayıt sayısı: ${sortedMap.size}")
+            ),
+            headers.size
+        )
+        var rowIndex = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, infoEnd, columnWidths
         )
 
-        //Loop to populate each column of header row
-        for ((index, value) in headerList.withIndex()) {
-
-            val columnWidth = (15 * 500)
-
-            sheet.setColumnWidth(index, columnWidth)
-
-            val cell = row.createCell(index)
-
-            cell?.setCellValue(value)
-
-            cell.cellStyle = cellStyle
-        }
-    }
-
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
-
-        //Cell style for header row
-        val cellStyle: CellStyle = workbook.createCellStyle()
-
-        //Apply cell color
-        val colorMap: IndexedColorMap = (workbook as XSSFWorkbook).stylesSource.indexedColors
-        var color = XSSFColor(IndexedColors.RED, colorMap).indexed
-        cellStyle.fillForegroundColor = color
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-
-        //Apply font style on cell text
-        val whiteFont = workbook.createFont()
-        color = XSSFColor(IndexedColors.WHITE, colorMap).indexed
-        whiteFont.color = color
-        whiteFont.bold = true
-        cellStyle.setFont(whiteFont)
-
-
-        return cellStyle
-    }
-
-    @SuppressLint("Recycle", "Range", "SimpleDateFormat")
-    fun createExcel(
-        context: Context, secilenGrade: String, secilenZaman: String, workbook: XSSFWorkbook
-    ) {
-
-        val time = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH-mm")
-        val current = formatter.format(time)
-
-        val contentUri = MediaStore.Files.getContentUri("external")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
-
-            val selectionArgs =
-                arrayOf(Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/") //must include "/" in front and end
-
-
-            val cursor: Cursor? =
-                context.contentResolver.query(contentUri, null, selection, selectionArgs, null)
-
-            var uri: Uri? = null
-
-            if (cursor != null) {
-                if (cursor.count == 0) {
-                    Toast.makeText(
-                        context.applicationContext,
-                        "Dosya Bulunamadı \"" + Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/\"",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    try {
-                        val values = ContentValues()
-                        values.put(
-                            MediaStore.MediaColumns.DISPLAY_NAME,
-                            "$secilenGrade - $secilenZaman - $current"
-                        ) //file name
-                        values.put(
-                            MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                        ) //file extension, will automatically add to file
-                        values.put(
-                            MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/"
-                        ) //end "/" is not mandatory
-                        uri = context.contentResolver.insert(
-                            MediaStore.Files.getContentUri("external"), values
-                        ) //important!
-                        val outputStream = context.contentResolver.openOutputStream(uri!!)
-                        workbook.write(outputStream)
-                        outputStream!!.flush()
-                        //outputStream!!.write("This is menu category data.".toByteArray())
-                        outputStream.close()
-                        Toast.makeText(
-                            context.applicationContext,
-                            "Dosya Başarıyla Oluşturuldu",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: IOException) {
-                        Toast.makeText(
-                            context.applicationContext, "İşlem Başarısız!", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                } else {
-                    while (cursor.moveToNext()) {
-                        val fileName: String =
-                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
-                        if (fileName == "$secilenGrade - $secilenZaman - $current.xls") {                          //must include extension
-                            val id: Long =
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-                            uri = ContentUris.withAppendedId(contentUri, id)
-                            break
-                        }
-                    }
-                    if (uri == null) {
-                        Toast.makeText(
-                            context.applicationContext,
-                            "\"$secilenGrade - $secilenZaman - $current.xls\" Bulunamadı",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        try {
-                            val values = ContentValues()
-                            values.put(
-                                MediaStore.MediaColumns.DISPLAY_NAME,
-                                "$secilenGrade - $secilenZaman - $current"
-                            ) //file name
-                            values.put(
-                                MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel"
-                            ) //file extension, will automatically add to file
-                            values.put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_DOCUMENTS + "/Koçluk Takip Sistemi/"
-                            ) //end "/" is not mandatory
-                            uri = context.contentResolver.insert(
-                                MediaStore.Files.getContentUri("external"), values
-                            ) //important!
-                            val outputStream = context.contentResolver.openOutputStream(uri!!)
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                context.applicationContext,
-                                "Dosya Başarıyla Oluşturuldu",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(
-                                context.applicationContext, "İşlem Başarısız!", Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-
-                    } else {
-                        try {
-                            val outputStream: OutputStream? =
-                                context.contentResolver.openOutputStream(
-                                    uri, "rwt"
-                                ) //overwrite mode, see below
-                            workbook.write(outputStream)
-                            outputStream!!.flush()
-                            //outputStream!!.write("This is menu category data.".toByteArray())
-                            outputStream.close()
-                            Toast.makeText(
-                                context.applicationContext,
-                                "Dosya Başarıyla Oluşturuldu",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: IOException) {
-                            Toast.makeText(
-                                context.applicationContext, "İşlem Başarısız!", Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            }
-
-
-        } else {
-            val filePath = File(
-                Environment.getExternalStorageDirectory()
-                    .toString() + "/$secilenGrade - $secilenZaman - $current.xlsx"
-            )
-            try {
-                if (!filePath.exists()) {
-                    filePath.createNewFile()
-                }
-                val fileOutputStream = FileOutputStream(filePath)
-                workbook.write(fileOutputStream)
-                Toast.makeText(
-                    context.applicationContext, "Dosya Başarıyla Oluşturuldu", Toast.LENGTH_SHORT
-                ).show()
-                fileOutputStream.flush()
-
-                fileOutputStream.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                println(e)
-            }
+        sortedMap.forEach { (studentName, dayCount) ->
+            val row = sheet.createRow(rowIndex++)
+            row.createCell(0).setCellValue(studentName)
+            row.createCell(1).setCellValue(dayCount.toDouble())
         }
 
-
-    }
-
-    private fun addData(
-        sheet: Sheet,
-        secilenZaman: String,
-        secilenGrade: String,
-        context: Context,
-        workbook: XSSFWorkbook
-    ) {
-
-        val rowFake = sheet.createRow(0)
-        CellUtil.createCell(rowFake, 0, "Ad Soyad")
-        CellUtil.createCell(rowFake, 1, "Gün Sayısı")
-        var newIndex = 1
-        for (i in sortedMap.keys) {
-            val row = sheet.createRow(newIndex)
-
-            CellUtil.createCell(row, 0, i)
-            CellUtil.createCell(row, 1, sortedMap[i].toString())
-            newIndex += 1
-        }
-
-
-        createExcel(context, secilenGrade, secilenZaman, workbook)
+        val fileName = ExcelExportHelper.buildFileName(
+            "Rapor_Gun_Sayisi",
+            secilenGrade,
+            secilenZaman
+        )
+        ExcelExportHelper.saveWorkbook(this, workbook, fileName)
     }
 
 }

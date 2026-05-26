@@ -22,6 +22,7 @@ import com.karaketir.coachingapp.curriculum.CurriculumProgram
 import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.databinding.ActivityClassAllStudiesGraphBinding
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -223,75 +224,71 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
             }
         }
 
-        if (isMaarif) {
-            lifecycleScope.launch {
-                try {
+        lifecycleScope.launch {
+            try {
+                if (isMaarif) {
                     val temalar = GradeCurriculumRepository.loadTymmThemes(db, dersAdi, sinif)
                     for (tema in temalar) {
                         konuHash[tema.name] = 0
                     }
-                } catch (e: Exception) {
-                    Toast.makeText(this@ClassAllStudiesGraphActivity, e.localizedMessage, Toast.LENGTH_SHORT)
-                        .show()
-                }
-                db.collection("School").document(kurumKodu.toString()).collection("Student")
-                    .document(studentID).collection("Studies")
-                    .whereEqualTo("dersAdi", dersAdi)
-                    .whereEqualTo("program", program)
-                    .whereGreaterThan("timestamp", baslangicTarihi)
-                    .whereLessThan("timestamp", bitisTarihi)
-                    .addSnapshotListener { value, error ->
-                        if (error != null) println(error.localizedMessage)
-                        if (value != null) {
-                            for (doc in value) {
-                                val label = doc.getString("temaAdi")
-                                    ?.takeIf { it.isNotBlank() }
-                                    ?: doc.getString("konuAdi").orEmpty()
-                                val currentValue = konuHash[label] ?: continue
-                                konuHash[label] =
-                                    doc.get("toplamCalisma").toString().toInt() + currentValue
-                            }
-                        }
-                        drawGraph(konuHash, isMaarif)
+                    val studies = db.collection("School").document(kurumKodu.toString())
+                        .collection("Student")
+                        .document(studentID).collection("Studies")
+                        .whereEqualTo("dersAdi", dersAdi)
+                        .whereEqualTo("program", program)
+                        .whereGreaterThan("timestamp", baslangicTarihi)
+                        .whereLessThan("timestamp", bitisTarihi)
+                        .get().await()
+                    for (doc in studies) {
+                        val label = doc.getString("temaAdi")
+                            ?.takeIf { it.isNotBlank() }
+                            ?: doc.getString("konuAdi").orEmpty()
+                        val currentValue = konuHash[label] ?: continue
+                        konuHash[label] =
+                            doc.get("toplamCalisma").toString().toInt() + currentValue
                     }
+                } else {
+                    val konular = db.collection("Lessons").document(dersAdi).collection(secilenTur)
+                        .get().await()
+                    for (konu in konular) {
+                        try {
+                            val arrayType = konu.get("arrayType") as ArrayList<*>
+                            if ("konu" in arrayType) {
+                                konuHash[konu.get("konuAdi").toString()] = 0
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@ClassAllStudiesGraphActivity,
+                                e.localizedMessage,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
+                    val studies = db.collection("School").document(kurumKodu.toString())
+                        .collection("Student")
+                        .document(studentID).collection("Studies")
+                        .whereEqualTo("dersAdi", dersAdi)
+                        .whereEqualTo("tür", secilenTur)
+                        .whereGreaterThan("timestamp", baslangicTarihi)
+                        .whereLessThan("timestamp", bitisTarihi)
+                        .get().await()
+                    for (doc in studies) {
+                        val konuAdi = doc.get("konuAdi").toString()
+                        val currentValue = konuHash[konuAdi] ?: continue
+                        if (doc.get("toplamCalisma") != null) {
+                            konuHash[konuAdi] =
+                                doc.get("toplamCalisma").toString().toInt() + currentValue
+                        }
+                    }
+                }
+                drawGraph(konuHash, isMaarif)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@ClassAllStudiesGraphActivity,
+                    e.localizedMessage,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
-        } else {
-            db.collection("Lessons").document(dersAdi).collection(secilenTur)
-                .addSnapshotListener { konular, _ ->
-                    if (konular != null) {
-                        for (konu in konular) {
-                            try {
-                                val arrayType = konu.get("arrayType") as ArrayList<*>
-                                if ("konu" in arrayType) {
-                                    konuHash[konu.get("konuAdi").toString()] = 0
-                                }
-                            } catch (e: Exception) {
-                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                        db.collection("School").document(kurumKodu.toString()).collection("Student")
-                            .document(studentID).collection("Studies")
-                            .whereEqualTo("dersAdi", dersAdi)
-                            .whereEqualTo("tür", secilenTur)
-                            .whereGreaterThan("timestamp", baslangicTarihi)
-                            .whereLessThan("timestamp", bitisTarihi)
-                            .addSnapshotListener { value, error ->
-                                if (error != null) println(error.localizedMessage)
-                                if (value != null) {
-                                    for (i in value) {
-                                        val konuAdi = i.get("konuAdi").toString()
-                                        val currentValue = konuHash[konuAdi] ?: continue
-                                        if (i.get("toplamCalisma") != null) {
-                                            konuHash[konuAdi] =
-                                                i.get("toplamCalisma").toString().toInt() + currentValue
-                                        }
-                                    }
-                                }
-                                drawGraph(konuHash, isMaarif)
-                            }
-                    }
-                }
         }
     }
 

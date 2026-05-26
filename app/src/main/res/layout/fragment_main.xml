@@ -378,32 +378,60 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="0dp"
+            app:cardElevation="8dp">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:contentDescription="@string/update_required_title"
+                    android:importantForAccessibility="no"
+                    app:srcCompat="@drawable/ic_baseline_system_update_24" />
 
                 <TextView
                     android:id="@+id/updateText"
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
+                    style="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_marginTop="24dp"
                     android:gravity="center"
-                    android:text="@string/uygulamay_g_ncellemeniz_gerekmektedir" />
+                    android:text="@string/update_required_title" />
 
-                <Button
+                <TextView
+                    android:id="@+id/updateVersionInfo"
+                    style="@style/TextAppearance.Material3.BodyMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <TextView
+                    android:id="@+id/updateReleaseNotes"
+                    style="@style/TextAppearance.Material3.BodyMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/updateButton"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/updateText"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="15dp"
-                    android:text="@string/g_ncellemek_in_t_klay_n" />
+                    android:layout_marginTop="28dp"
+                    android:text="@string/update_play_store"
+                    app:icon="@drawable/ic_baseline_play_circle_outline_24" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 

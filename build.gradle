@@ -26,4 +26,10 @@ allprojects {
             url 'https://jitpack.io'
         }
     }
+    configurations.configureEach {
+        resolutionStrategy {
+            // AppCompat 1.7+ FocusRingDrawable.layer() — Giphy vb. eski material sürümünü ezer
+            force 'com.google.android.material:material:1.14.0'
+        }
+    }
 }

@@ -103,7 +103,7 @@ class ActivityStudiesByClasses : AppCompatActivity() {
             studentProgram = GradeCurriculumRepository.programForGrade(config, studentGrade)
         } catch (_: Exception) {
             studentProgram = GradeCurriculumRepository.programForGrade(
-                GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms),
+                GradeCurriculumRepository.defaultConfig(),
                 studentGrade,
             )
         }

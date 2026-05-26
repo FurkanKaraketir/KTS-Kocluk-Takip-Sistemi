@@ -21,8 +21,8 @@ android {
         applicationId "com.karaketir.coachingapp"
         minSdk 23
         targetSdk = 36
-        versionCode 157
-        versionName "1.1.0"
+        versionCode 159
+        versionName "1.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,7 +63,9 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.11.2'
 
     implementation 'com.github.dhaval2404:imagepicker:2.1'
-    implementation 'com.giphy.sdk:ui:2.4.2'
+    implementation('com.giphy.sdk:ui:2.4.2') {
+        exclude group: 'com.google.android.material', module: 'material'
+    }
 
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'androidx.core:core-ktx:1.18.0'

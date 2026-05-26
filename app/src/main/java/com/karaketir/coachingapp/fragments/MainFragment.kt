@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,6 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.AllStudentsActivity
-import com.karaketir.coachingapp.BuildConfig
 import com.karaketir.coachingapp.ClassesActivity
 import com.karaketir.coachingapp.GoalsActivity
 import com.karaketir.coachingapp.LoginActivity
@@ -50,14 +50,16 @@ import com.karaketir.coachingapp.ProgramActivity
 import com.karaketir.coachingapp.TopStudentsActivity
 import com.karaketir.coachingapp.adapter.StudentsRecyclerAdapter
 import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
+import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.FragmentMainBinding
 import com.karaketir.coachingapp.models.Student
 import com.karaketir.coachingapp.models.Study
+import com.karaketir.coachingapp.services.AppUpdateChecker
+import com.karaketir.coachingapp.services.AppUpdatePrompt
+import com.karaketir.coachingapp.services.ExcelExportHelper
+import com.karaketir.coachingapp.services.StudyQueryHelper
 import com.karaketir.coachingapp.services.clearCache
-import com.karaketir.coachingapp.services.createExcel
-import com.karaketir.coachingapp.services.createSheetHeader
-import com.karaketir.coachingapp.services.getHeaderStyle
-import com.karaketir.coachingapp.services.openLink
+import kotlinx.coroutines.launch
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
@@ -69,6 +71,11 @@ import android.content.ContentValues
 import android.os.Environment
 
 class MainFragment : Fragment() {
+
+    private enum class ExcelReportMode {
+        SUMMARY,
+        BY_LESSON
+    }
 
     private var mainActivity: MainActivity? = null
 
@@ -83,6 +90,7 @@ class MainFragment : Fragment() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var workbook = XSSFWorkbook()
+    private var pendingExcelMode = ExcelReportMode.SUMMARY
     private var studyList = mutableListOf<Study>()
     private var secilenGrade = "Bütün Sınıflar"
     private var secilenZaman = "Seçiniz"
@@ -173,6 +181,15 @@ class MainFragment : Fragment() {
             val searchBarTeacher = mBinding.searchBarTeacher
             val updateLayout = mBinding.updateLayout
             val updateButton = mBinding.updateButton
+            val updatePrompt = AppUpdatePrompt(
+                fragment = this,
+                updateOverlay = updateLayout,
+                updateTitle = mBinding.updateText,
+                updateVersionInfo = mBinding.updateVersionInfo,
+                updateReleaseNotes = mBinding.updateReleaseNotes,
+                updateButton = updateButton,
+                signOutButton = signOutButton,
+            )
             val excelButton = mBinding.excelButton
             val dersProgramiButton = mBinding.dersProgramiButton
             val noReportButton = mBinding.noReportButton
@@ -188,15 +205,6 @@ class MainFragment : Fragment() {
 
             var kocID = ""
 
-            updateButton.setOnClickListener {
-                mainActivity?.let { it1 ->
-                    openLink(
-                        "https://play.google.com/store/apps/details?id=com.karaketir.coachingapp",
-                        it1
-                    )
-                }
-            }
-
             dersProgramiButton.setOnClickListener {
                 val newIntent = Intent(activity, ProgramActivity::class.java)
                 newIntent.putExtra("personType", personType)
@@ -206,20 +214,12 @@ class MainFragment : Fragment() {
 
 
 
-            db.collection("VersionCode").document("60qzy2yuxMwCCau44HdF").get()
-                .addOnSuccessListener {
-                    val myVersion = BuildConfig.VERSION_CODE
-                    val latestVersion = it.get("latestVersion").toString().toInt()
-                    if (myVersion < latestVersion) {
-                        signOutButton.visibility = View.GONE
-                        updateLayout.visibility = View.VISIBLE
-
-                    } else {
-                        signOutButton.visibility = View.VISIBLE
-                        updateLayout.visibility = View.GONE
-
-                    }
+            viewLifecycleOwner.lifecycleScope.launch {
+                val status = AppUpdateChecker.checkForUpdate(db)
+                if (isBindingAvailable()) {
+                    updatePrompt.show(status)
                 }
+            }
 
             nameAndSurnameTextView.setOnClickListener {
                 val newIntent = Intent(activity, ProfileActivity::class.java)
@@ -381,9 +381,6 @@ class MainFragment : Fragment() {
                         }
 
                         excelButton.setOnClickListener {
-
-                            //clear list of
-
                             if (secilenZaman == "Seçiniz") {
                                 Toast.makeText(
                                     mainActivity,
@@ -393,19 +390,21 @@ class MainFragment : Fragment() {
                                 return@setOnClickListener
                             }
 
-                            // Create a new workbook instance to clear previous stats
-                            workbook = XSSFWorkbook()
-                            val sheet: Sheet = workbook.createSheet("Sayfa 1")
-                            val cellStyle = getHeaderStyle(workbook)
-                            createSheetHeader(cellStyle, sheet)
-
-                            mainActivity?.let { it1 -> clearCache(it1) }
-                            Toast.makeText(activity, "Lütfen Bekleyiniz...", Toast.LENGTH_SHORT)
+                            val options = arrayOf(
+                                getString(R.string.excel_rapor_ozet),
+                                getString(R.string.excel_rapor_ders_bazli)
+                            )
+                            AlertDialog.Builder(requireContext())
+                                .setTitle(R.string.excel_rapor_turu)
+                                .setItems(options) { _, which ->
+                                    val mode = if (which == 0) {
+                                        ExcelReportMode.SUMMARY
+                                    } else {
+                                        ExcelReportMode.BY_LESSON
+                                    }
+                                    startExcelExport(mode)
+                                }
                                 .show()
-
-                            addData(sheet) {
-                                createExcel()
-                            }
                         }
 
 
@@ -673,51 +672,45 @@ class MainFragment : Fragment() {
             }
 
             noReportButton.setOnClickListener {
-                val myIntent = Intent(activity, NoReportActivity::class.java)
-                myIntent.putExtra("kurumKodu", kurumKodu.toString())
-                myIntent.putExtra("grade", secilenGrade)
-                myIntent.putExtra("baslangicTarihi", baslangicTarihi)
-                myIntent.putExtra("bitisTarihi", bitisTarihi)
-
-                raporGondermeyenList.clear()
-
-                var my = 0
-                for (i in studentList) {
-
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(i.id).collection("Studies")
-                        .whereGreaterThan("timestamp", baslangicTarihi)
-                        .whereLessThan("timestamp", bitisTarihi)
-                        .addSnapshotListener { value, error ->
-                            if (error != null) {
-                                println(error.localizedMessage)
-                            }
-
-                            if (value != null) {
-
-                                if (value.isEmpty) {
-                                    raporGondermeyenList.add(i)
-                                }
-
-                            } else {
-                                raporGondermeyenList.add(i)
-                            }
-
-                            my += 1
-                            if (my == studentList.size) {
-                                println(raporGondermeyenList.size)
-                                for (a in raporGondermeyenList) {
-                                    println(a.studentName)
-                                }
-                                myIntent.putExtra("list", ArrayList(raporGondermeyenList))
-                                myIntent.putExtra("secilenZaman", secilenZaman)
-                                mainActivity?.startActivity(myIntent)
-                            }
-
-                        }
+                if (studentList.isEmpty()) {
+                    Toast.makeText(mainActivity, "Öğrenci listesi boş", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
+                mBinding.progressBar.visibility = View.VISIBLE
+                lifecycleScope.launch {
+                    try {
+                        val withoutIds = StudyQueryHelper.studentIdsWithoutStudiesInRange(
+                            db,
+                            kurumKodu.toString(),
+                            studentList.map { it.id },
+                            baslangicTarihi,
+                            bitisTarihi,
+                        ).toSet()
+                        raporGondermeyenList.clear()
+                        raporGondermeyenList.addAll(studentList.filter { it.id in withoutIds })
 
-
+                        val myIntent = Intent(activity, NoReportActivity::class.java).apply {
+                            putExtra("kurumKodu", kurumKodu.toString())
+                            putExtra("grade", secilenGrade)
+                            putExtra("baslangicTarihi", baslangicTarihi)
+                            putExtra("bitisTarihi", bitisTarihi)
+                            putExtra("list", ArrayList(raporGondermeyenList))
+                            putExtra("secilenZaman", secilenZaman)
+                        }
+                        mainActivity?.startActivity(myIntent)
+                    } catch (e: Exception) {
+                        println(e.localizedMessage)
+                        Toast.makeText(
+                            mainActivity,
+                            "Rapor listesi hazırlanamadı",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    } finally {
+                        if (isBindingAvailable()) {
+                            mBinding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
             }
 
             signOutButton.setOnClickListener {
@@ -803,6 +796,7 @@ class MainFragment : Fragment() {
                     setupStudentRecyclerView(studentList)
 
                     recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+                    refreshStudentRowStatuses()
 
                 }
         } else {
@@ -830,8 +824,35 @@ class MainFragment : Fragment() {
                     setupStudentRecyclerView(studentList)
 
                     recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+                    refreshStudentRowStatuses()
 
                 }
+        }
+    }
+
+    private fun refreshStudentRowStatuses() {
+        if (personType != "Teacher" || studentList.isEmpty() || secilenZaman == "Seçiniz") {
+            return
+        }
+        if (!::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
+            return
+        }
+        lifecycleScope.launch {
+            try {
+                val statuses = StudyQueryHelper.fetchStudentRowStatuses(
+                    db,
+                    kurumKodu.toString(),
+                    studentList.map { it.id },
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+                if (!isBindingAvailable() || !::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
+                    return@launch
+                }
+                recyclerViewMyStudentsRecyclerAdapter.updateRowStatuses(statuses)
+            } catch (e: Exception) {
+                println(e.localizedMessage)
+            }
         }
     }
 
@@ -1003,11 +1024,7 @@ class MainFragment : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                mainActivity?.let {
-                    createExcel(
-                        it, secilenGrade, secilenZaman, workbook
-                    )
-                }
+                saveExcelWorkbook(pendingExcelMode)
             } else {
                 // Permission not granted, handle accordingly
             }
@@ -1021,44 +1038,63 @@ class MainFragment : Fragment() {
             } != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            createExcel()
+            saveExcelWorkbook(pendingExcelMode)
         }
     }
 
-    private fun createSheetHeader(cellStyle: CellStyle, sheet: Sheet) {
-        val row = sheet.createRow(0)
-        
-        val headers = arrayOf(
-            "Öğrenci Adı",
-            "Sınıf", 
-            "Toplam Çalışma Süresi (dk)",
-            "Toplam Çalışma Süresi (saat)",
-            "Günlük Ortalama Çalışma (saat)",
-            "Toplam Soru Sayısı",
-            "Günlük Ortalama Soru",
-            "Toplam Çalışma Sayısı",
-            "Günlük Ortalama Çalışma Sayısı"
+    private fun startExcelExport(mode: ExcelReportMode) {
+        pendingExcelMode = mode
+        val sheetName = if (mode == ExcelReportMode.SUMMARY) "Özet" else "Ders Bazlı"
+        workbook = XSSFWorkbook()
+        val sheet: Sheet = workbook.createSheet(sheetName)
+        val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
+
+        val headers = if (mode == ExcelReportMode.SUMMARY) {
+            arrayOf(
+                "Öğrenci Adı",
+                "Sınıf",
+                "Toplam Çalışma Süresi (dk)",
+                "Toplam Çalışma Süresi (saat)",
+                "Günlük Ortalama Çalışma (saat)",
+                "Toplam Soru Sayısı",
+                "Günlük Ortalama Soru",
+                "Toplam Çalışma Sayısı",
+                "Günlük Ortalama Çalışma Sayısı"
+            )
+        } else {
+            arrayOf(
+                "Öğrenci Adı",
+                "Sınıf",
+                "Ders",
+                "Toplam Çalışma Süresi (dk)",
+                "Toplam Çalışma Süresi (saat)",
+                "Toplam Soru Sayısı",
+                "Günlük Ortalama Soru"
+            )
+        }
+
+        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
+            sheet,
+            ExcelExportHelper.ReportContext(
+                title = getString(R.string.excel_rapor_ogrenci_calisma),
+                gradeLabel = secilenGrade,
+                timeRangeLabel = secilenZaman,
+                startDate = baslangicTarihi,
+                endDate = bitisTarihi,
+                extraLines = listOf("Öğrenci sayısı: ${studentList.size}")
+            ),
+            headers.size
+        )
+        val dataStartRow = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, infoEnd
         )
 
-        headers.forEachIndexed { index, header ->
-            val cell = row.createCell(index)
-            cell.setCellValue(header)
-            cell.cellStyle = cellStyle
-            
-            // Set column widths
-            when (index) {
-                0 -> sheet.setColumnWidth(index, 30 * 256) // Öğrenci Adı - wider
-                1 -> sheet.setColumnWidth(index, 10 * 256) // Sınıf - narrow
-                else -> sheet.setColumnWidth(index, 25 * 256) // Other columns - medium
-            }
-        }
-    }
+        mainActivity?.let { clearCache(it) }
+        Toast.makeText(activity, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
 
-    private fun getHeaderStyle(workbook: Workbook): CellStyle {
-        val cellStyle = workbook.createCellStyle()
-        cellStyle.fillForegroundColor = IndexedColors.LIGHT_BLUE.index
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-        return cellStyle
+        addData(sheet, mode, dataStartRow) {
+            saveExcelWorkbook(mode)
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -1130,180 +1166,174 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun addData(sheet: Sheet, onComplete: () -> Unit) {
-        var completedStudents = 0
-        var rowIndex = 1
-
+    private fun addData(
+        sheet: Sheet,
+        mode: ExcelReportMode,
+        dataStartRow: Int,
+        onComplete: () -> Unit
+    ) {
         if (studentList.isEmpty()) {
             onComplete()
             return
         }
 
-        // Create cell style for numbers with 2 decimal places
-        val decimalStyle = workbook.createCellStyle()
-        val format = workbook.createDataFormat()
-        decimalStyle.dataFormat = format.getFormat("0.00")
-
-        studentList.forEach { student ->
-            db.collection("School")
-                .document(kurumKodu.toString())
-                .collection("Student")
-                .document(student.id)
-                .collection("Studies")
-                .whereGreaterThan("timestamp", baslangicTarihi)
-                .whereLessThan("timestamp", bitisTarihi)
-                .get()
-                .addOnSuccessListener { studies ->
-                    val row = sheet.createRow(rowIndex++)
-                    
-                    // Student info
-                    row.createCell(0).setCellValue(student.studentName)
-                    row.createCell(1).setCellValue(student.grade.toString())
-                    
-                    // Calculate totals
-                    var totalTime = 0.0
-                    var totalQuestions = 0.0
-                    val studyCount = studies.size().toDouble()
-                    
-                    studies.forEach { study ->
-                        totalTime += study.get("toplamCalisma")?.toString()?.toDoubleOrNull() ?: 0.0
-                        totalQuestions += study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
-                    }
-
-                    // Calculate date range in days (ensure it's at least 1 to prevent division by zero)
-                    val daysBetween = maxOf(((bitisTarihi.time - baslangicTarihi.time) / (1000.0 * 60 * 60 * 24)) + 1, 1.0)
-                    
-                    // Calculate daily averages
-                    val avgHoursPerDay = (totalTime / 60.0) / daysBetween
-                    val avgQuestionsPerDay = totalQuestions / daysBetween
-                    val avgStudiesPerDay = studyCount / daysBetween
-                    
-                    // Add totals and averages using numeric cells
-                    val timeCell = row.createCell(2)
-                    timeCell.setCellValue(totalTime)
-                    timeCell.cellStyle = decimalStyle
-                    
-                    val hoursCell = row.createCell(3)
-                    hoursCell.setCellValue(totalTime / 60.0)
-                    hoursCell.cellStyle = decimalStyle
-                    
-                    val avgHoursCell = row.createCell(4)
-                    avgHoursCell.setCellValue(avgHoursPerDay)
-                    avgHoursCell.cellStyle = decimalStyle
-                    
-                    val questionsCell = row.createCell(5)
-                    questionsCell.setCellValue(totalQuestions)
-                    questionsCell.cellStyle = decimalStyle
-                    
-                    val avgQuestionsCell = row.createCell(6)
-                    avgQuestionsCell.setCellValue(avgQuestionsPerDay)
-                    avgQuestionsCell.cellStyle = decimalStyle
-                    
-                    val studyCountCell = row.createCell(7)
-                    studyCountCell.setCellValue(studyCount)
-                    studyCountCell.cellStyle = decimalStyle
-                    
-                    val avgStudiesCell = row.createCell(8)
-                    avgStudiesCell.setCellValue(avgStudiesPerDay)
-                    avgStudiesCell.cellStyle = decimalStyle
-
-                    completedStudents++
-                    if (completedStudents == studentList.size) {
-                        // Add summary row
-                        val summaryRow = sheet.createRow(rowIndex)
-                        val summaryStyle = workbook.createCellStyle()
-                        summaryStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index)
-                        summaryStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-                        summaryStyle.setDataFormat(format.getFormat("0.00"))
-
-                        summaryRow.createCell(0).apply {
-                            setCellValue("ORTALAMA")
-                            cellStyle = summaryStyle
-                        }
-
-                        // Calculate averages for all students
-                        val avgFormula = { col: String -> "AVERAGE($col${2}:$col${rowIndex})" }
-                        
-                        // Skip first two columns (name and grade)
-                        for (i in 2..8) {
-                            val cell = summaryRow.createCell(i)
-                            cell.cellFormula = avgFormula(('A' + i).toString())
-                            cell.cellStyle = summaryStyle
-                        }
-
-                        onComplete()
-                    }
+        lifecycleScope.launch {
+            try {
+                val studiesByStudent = StudyQueryHelper.fetchStudiesByStudentIds(
+                    db,
+                    kurumKodu.toString(),
+                    studentList.map { it.id },
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+                if (mode == ExcelReportMode.BY_LESSON) {
+                    writeLessonExcelRows(sheet, dataStartRow, studiesByStudent)
+                } else {
+                    writeSummaryExcelRows(sheet, dataStartRow, studiesByStudent)
                 }
-                .addOnFailureListener {
-                    completedStudents++
-                    if (completedStudents == studentList.size) {
-                        onComplete()
-                    }
-                }
+                onComplete()
+            } catch (e: Exception) {
+                Toast.makeText(
+                    activity,
+                    e.localizedMessage ?: getString(R.string.excel_lutfen_bekleyin),
+                    Toast.LENGTH_SHORT,
+                ).show()
+                onComplete()
+            }
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun createExcel() {
-        mainActivity?.let { activity ->
-            Toast.makeText(activity, "Excel dosyası hazırlanıyor...", Toast.LENGTH_SHORT).show()
+    private fun writeSummaryExcelRows(
+        sheet: Sheet,
+        dataStartRow: Int,
+        studiesByStudent: Map<String, List<com.google.firebase.firestore.DocumentSnapshot>>,
+    ) {
+        var rowIndex = dataStartRow
+        val decimalStyle = ExcelExportHelper.createDecimalStyle(workbook)
+        val format = workbook.createDataFormat()
+        val daysBetween = ExcelExportHelper.daysBetween(baslangicTarihi, bitisTarihi)
 
-            addData(workbook.getSheetAt(0)) {
-                try {
-                    val fileName = "Öğrenci_Çalışmaları_${
-                        SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(Date())
-                    }.xlsx"
+        for (student in studentList) {
+            val studies = studiesByStudent[student.id].orEmpty()
+            val row = sheet.createRow(rowIndex++)
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        val contentValues = ContentValues().apply {
-                            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                            put(
-                                MediaStore.MediaColumns.MIME_TYPE,
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            )
-                            put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_DOCUMENTS
-                            )
-                        }
+            row.createCell(0).setCellValue(student.studentName)
+            row.createCell(1).setCellValue(student.grade.toString())
 
-                        activity.contentResolver?.insert(
-                            MediaStore.Files.getContentUri("external"),
-                            contentValues
-                        )?.let { uri ->
-                            activity.contentResolver?.openOutputStream(uri)?.use { outputStream ->
-                                workbook.write(outputStream)
-                            }
-                            Toast.makeText(
-                                activity,
-                                "Excel dosyası başarıyla oluşturuldu",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        val path =
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                        val file = File(path, fileName)
+            var totalTime = 0.0
+            var totalQuestions = 0.0
+            val studyCount = studies.size.toDouble()
 
-                        FileOutputStream(file).use { outputStream ->
-                            workbook.write(outputStream)
-                        }
-                        Toast.makeText(
-                            activity,
-                            "Excel dosyası başarıyla oluşturuldu",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Toast.makeText(
-                        activity,
-                        "Excel dosyası oluşturulurken hata oluştu: ${e.localizedMessage}",
-                        Toast.LENGTH_LONG
-                    ).show()
+            for (study in studies) {
+                totalTime += study.get("toplamCalisma")?.toString()?.toDoubleOrNull() ?: 0.0
+                totalQuestions += study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
+            }
+
+            val avgHoursPerDay = (totalTime / 60.0) / daysBetween
+            val avgQuestionsPerDay = totalQuestions / daysBetween
+            val avgStudiesPerDay = studyCount / daysBetween
+
+            row.createCell(2).apply {
+                setCellValue(totalTime)
+                cellStyle = decimalStyle
+            }
+            row.createCell(3).apply {
+                setCellValue(totalTime / 60.0)
+                cellStyle = decimalStyle
+            }
+            row.createCell(4).apply {
+                setCellValue(avgHoursPerDay)
+                cellStyle = decimalStyle
+            }
+            row.createCell(5).apply {
+                setCellValue(totalQuestions)
+                cellStyle = decimalStyle
+            }
+            row.createCell(6).apply {
+                setCellValue(avgQuestionsPerDay)
+                cellStyle = decimalStyle
+            }
+            row.createCell(7).apply {
+                setCellValue(studyCount)
+                cellStyle = decimalStyle
+            }
+            row.createCell(8).apply {
+                setCellValue(avgStudiesPerDay)
+                cellStyle = decimalStyle
+            }
+        }
+
+        val summaryRow = sheet.createRow(rowIndex)
+        val summaryStyle = workbook.createCellStyle()
+        summaryStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index)
+        summaryStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        summaryStyle.setDataFormat(format.getFormat("0.00"))
+
+        summaryRow.createCell(0).apply {
+            setCellValue("ORTALAMA")
+            cellStyle = summaryStyle
+        }
+
+        val avgFormula = { col: String -> "AVERAGE($col${dataStartRow + 1}:$col$rowIndex)" }
+        for (i in 2..8) {
+            val cell = summaryRow.createCell(i)
+            cell.cellFormula = avgFormula(('A' + i).toString())
+            cell.cellStyle = summaryStyle
+        }
+    }
+
+    private fun writeLessonExcelRows(
+        sheet: Sheet,
+        dataStartRow: Int,
+        studiesByStudent: Map<String, List<com.google.firebase.firestore.DocumentSnapshot>>,
+    ) {
+        var rowIndex = dataStartRow
+        val decimalStyle = ExcelExportHelper.createDecimalStyle(workbook)
+        val daysBetween = ExcelExportHelper.daysBetween(baslangicTarihi, bitisTarihi)
+
+        for (student in studentList) {
+            val studies = studiesByStudent[student.id].orEmpty()
+            val byLesson = linkedMapOf<String, Pair<Double, Double>>()
+
+            for (study in studies) {
+                val ders = study.getString("dersAdi")?.takeIf { it.isNotBlank() } ?: "Belirtilmemiş"
+                val time = study.get("toplamCalisma")?.toString()?.toDoubleOrNull() ?: 0.0
+                val questions = study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
+                val current = byLesson.getOrDefault(ders, 0.0 to 0.0)
+                byLesson[ders] = (current.first + time) to (current.second + questions)
+            }
+
+            for ((ders, totals) in byLesson.toSortedMap()) {
+                val row = sheet.createRow(rowIndex++)
+                row.createCell(0).setCellValue(student.studentName)
+                row.createCell(1).setCellValue(student.grade.toString())
+                row.createCell(2).setCellValue(ders)
+
+                row.createCell(3).apply {
+                    setCellValue(totals.first)
+                    cellStyle = decimalStyle
+                }
+                row.createCell(4).apply {
+                    setCellValue(totals.first / 60.0)
+                    cellStyle = decimalStyle
+                }
+                row.createCell(5).apply {
+                    setCellValue(totals.second)
+                    cellStyle = decimalStyle
+                }
+                row.createCell(6).apply {
+                    setCellValue(totals.second / daysBetween)
+                    cellStyle = decimalStyle
                 }
             }
         }
+    }
+
+    private fun saveExcelWorkbook(mode: ExcelReportMode) {
+        val activity = mainActivity ?: return
+        val prefix = if (mode == ExcelReportMode.SUMMARY) "Ogrenci_Ozet" else "Ogrenci_Ders"
+        val fileName = ExcelExportHelper.buildFileName(prefix, secilenGrade, secilenZaman)
+        ExcelExportHelper.saveWorkbook(activity, workbook, fileName)
     }
 
 }

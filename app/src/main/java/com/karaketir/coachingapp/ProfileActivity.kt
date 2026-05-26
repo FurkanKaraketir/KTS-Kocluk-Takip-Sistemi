@@ -15,12 +15,13 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
-import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
 import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.databinding.ActivityProfileBinding
 import com.karaketir.coachingapp.services.openLink
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -157,15 +158,22 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadCurriculumProgramSubtitle(studentGrade: Int) {
         lifecycleScope.launch {
-            val program = try {
-                val config = GradeCurriculumRepository.load(db)
-                GradeCurriculumRepository.programForGrade(config, studentGrade)
+            val config = try {
+                GradeCurriculumRepository.load(db)
             } catch (_: Exception) {
-                GradeCurriculumRepository.programForGrade(
-                    GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms),
-                    studentGrade
-                )
+                GradeCurriculumRepository.defaultConfig()
             }
+            val profileProgram = try {
+                val snap = db.collection("User").document(auth.uid.toString()).get().await()
+                CurriculumProgram.fromFirestore(snap.getString("curriculumProgram"))
+            } catch (_: Exception) {
+                null
+            }
+            val program = GradeCurriculumRepository.preferredProgram(
+                config,
+                studentGrade,
+                profileProgram,
+            )
             binding.curriculumProgramText.visibility = View.VISIBLE
             binding.curriculumProgramText.text =
                 StudyLabels.programDisplayName(program, studentGrade)

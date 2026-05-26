@@ -13,13 +13,29 @@ enum class CurriculumProgram(val firestoreValue: String) {
     }
 }
 
+/** Per-grade curriculum setting in `Settings/gradeCurriculum.grades`. */
+enum class GradeCurriculumMode(val firestoreValue: String) {
+    LEGACY("legacy"),
+    TYMM("tymm"),
+    CHOICE("choice");
+
+    companion object {
+        fun fromFirestore(value: String?): GradeCurriculumMode? = when (value) {
+            LEGACY.firestoreValue -> LEGACY
+            TYMM.firestoreValue -> TYMM
+            CHOICE.firestoreValue -> CHOICE
+            else -> null
+        }
+    }
+}
+
 data class TemaOption(
     val id: String,
     val name: String
 )
 
 data class GradeCurriculumConfig(
-    val grades: Map<Int, CurriculumProgram>
+    val gradeModes: Map<Int, GradeCurriculumMode>,
 )
 
 data class StudyRecordFields(
