@@ -10,34 +10,22 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.databinding.ActivityMainBinding
 import com.karaketir.coachingapp.fragments.*
 
 class MainActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
     private lateinit var auth: FirebaseAuth
     private var kurumKodu = 763455
     private lateinit var binding: ActivityMainBinding
@@ -80,6 +68,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.root.updatePadding(top = systemBars.top)
+            binding.bottomNavigationTeacher.updatePadding(bottom = systemBars.bottom)
+            binding.bottomNavigationStudent.updatePadding(bottom = systemBars.bottom)
+            windowInsets
+        }
+        ViewCompat.requestApplyInsets(binding.root)
+
         auth = Firebase.auth
         db = Firebase.firestore
 
@@ -112,6 +110,7 @@ class MainActivity : AppCompatActivity() {
                 fragmentContainerTeacher.visibility = View.VISIBLE
                 bottomNavigationTeacher.visibility = View.VISIBLE
                 bottomNavigationStudent.visibility = View.GONE
+                binding.root.requestLayout()
                 replaceFragmentTeacher(MainFragment().apply { setMainActivity(this@MainActivity) })
 
             } else {
@@ -122,6 +121,7 @@ class MainActivity : AppCompatActivity() {
                 bottomNavigationTeacher.visibility = View.GONE
                 bottomNavigationStudent.visibility = View.VISIBLE
 
+                binding.root.requestLayout()
                 replaceFragmentStudent(MainFragment().apply { setMainActivity(this@MainActivity) })
             }
 
@@ -135,12 +135,6 @@ class MainActivity : AppCompatActivity() {
 
                     R.id.navigation_stats -> {
                         replaceFragmentTeacher(StatsFragment().apply { setMainActivity(this@MainActivity) })
-
-                    }
-
-                    R.id.navigation_denemeler -> {
-                        replaceFragmentTeacher(DenemelerTeacherFragment().apply { setMainActivity(this@MainActivity) })
-
 
                     }
 
@@ -161,11 +155,6 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId) {
                     R.id.navigation_home -> {
                         replaceFragmentStudent(MainFragment().apply { setMainActivity(this@MainActivity) })
-
-                    }
-
-                    R.id.navigation_denemeler -> {
-                        replaceFragmentStudent(DenemelerFragment().apply { setMainActivity(this@MainActivity) })
 
                     }
 

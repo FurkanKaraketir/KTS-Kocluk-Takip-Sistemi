@@ -6,183 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".ClassesActivity">
 
-    <ScrollView
+    <androidx.cardview.widget.CardView
+        android:id="@+id/selectClassAndSubjectText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:ignore="UselessParent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="10dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/selectClassAndSubjectText"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="5dp"
-                android:gravity="center"
-                app:cardCornerRadius="10dp">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="7dp"
-                    android:text="@string/al_man_n_dersini_ve_konusunu_belirle">
-
-                </TextView>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:id="@+id/selectClassTitleText"
+                style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/selectClassAndSubjectText"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="10dp"
-                app:cardCornerRadius="10dp">
+                android:gravity="center"
+                android:text="@string/sinif_sec" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/programSubtitleText"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:visibility="gone" />
 
-                    <Button
-                        android:id="@+id/problemButton"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/problem"
-                        android:textSize="18sp" />
+        </LinearLayout>
 
-                    <Button
-                        android:id="@+id/paragrafButton"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/paragraf"
-                        android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
 
-                    <Button
-                        android:id="@+id/mathButton"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/matematik"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/geometri"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/geometri"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/physics"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/fizik"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/kimya"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/kimya"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/biyoloji"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/biyoloji"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/cografya"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/co_rafya"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/tarih"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/tarih"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/turkce"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/t_rk_e"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/felsefe"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/felsefe"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/din"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/din"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/deneme"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/di_er"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/denemeAsil"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="320dp"
-                        android:layout_height="60dp"
-                        android:layout_margin="15dp"
-                        android:text="@string/deneme"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
-
-    </ScrollView>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pickerRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/selectClassAndSubjectText"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        tools:listitem="@layout/grade_option_tile_row" />
 
 </RelativeLayout>

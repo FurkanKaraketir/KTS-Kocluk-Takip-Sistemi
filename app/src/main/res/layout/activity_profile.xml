@@ -48,6 +48,15 @@
             android:layout_marginTop="30dp"
             android:text="@string/s_n_f" />
 
+        <TextView
+            android:id="@+id/curriculumProgramText"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TextInputChangeGrade"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

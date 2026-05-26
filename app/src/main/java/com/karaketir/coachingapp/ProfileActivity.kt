@@ -6,35 +6,24 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.storage
+import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
+import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
+import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.databinding.ActivityProfileBinding
 import com.karaketir.coachingapp.services.openLink
+import kotlinx.coroutines.launch
 
 
 class ProfileActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -56,12 +45,12 @@ class ProfileActivity : AppCompatActivity() {
         db = Firebase.firestore
 
         name = intent.getStringExtra("name").toString()
-        grade = intent.getStringExtra("grade").toString().toInt()
+        grade = intent.getStringExtra("grade")?.toIntOrNull() ?: 0
         personType = intent.getStringExtra("personType").toString()
 
 
 
-        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        kurumKodu = intent.getStringExtra("kurumKodu")?.toIntOrNull() ?: 0
 
         val developerButton = binding.developerButtonProfile
 
@@ -89,9 +78,11 @@ class ProfileActivity : AppCompatActivity() {
             gradeText.visibility = View.VISIBLE
             gradeChangeEditText.visibility = View.VISIBLE
             gradeText.text = "Sınıf: $grade"
+            loadCurriculumProgramSubtitle(grade)
         } else {
             gradeText.visibility = View.GONE
             gradeChangeEditText.visibility = View.GONE
+            binding.curriculumProgramText.visibility = View.GONE
         }
 
 
@@ -164,5 +155,21 @@ class ProfileActivity : AppCompatActivity() {
 
     }
 
+    private fun loadCurriculumProgramSubtitle(studentGrade: Int) {
+        lifecycleScope.launch {
+            val program = try {
+                val config = GradeCurriculumRepository.load(db)
+                GradeCurriculumRepository.programForGrade(config, studentGrade)
+            } catch (_: Exception) {
+                GradeCurriculumRepository.programForGrade(
+                    GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms),
+                    studentGrade
+                )
+            }
+            binding.curriculumProgramText.visibility = View.VISIBLE
+            binding.curriculumProgramText.text =
+                StudyLabels.programDisplayName(program, studentGrade)
+        }
+    }
 
 }

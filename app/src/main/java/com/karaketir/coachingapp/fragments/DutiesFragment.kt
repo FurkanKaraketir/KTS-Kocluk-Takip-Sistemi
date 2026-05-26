@@ -11,13 +11,12 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.karaketir.coachingapp.EnterDutyActivity
 import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.adapter.DutiesRecyclerAdapter
@@ -26,23 +25,6 @@ import com.karaketir.coachingapp.models.Duty
 
 class DutiesFragment : Fragment(),
     AdapterView.OnItemSelectedListener {
-
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
     private var mainActivity: MainActivity? = null
 
     fun setMainActivity(activity: MainActivity) {
@@ -55,7 +37,7 @@ class DutiesFragment : Fragment(),
     private lateinit var dutiesRecyclerAdapter: DutiesRecyclerAdapter
     private var gorevTurleri =
         arrayOf("Tamamlanmayan Görevler", "Tamamlanan Görevler", "Tüm Görevler")
-    private var dutyList = ArrayList<Duty>()
+    private var dutyList = mutableListOf<Duty>()
     private lateinit var dutyAddButton: FloatingActionButton
 
     private var kurumKodu = 0
@@ -100,7 +82,7 @@ class DutiesFragment : Fragment(),
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { user ->
             studentID = auth.uid.toString()
             kurumKodu = try {
-                user.get("kurumKodu").toString().toInt()
+                user.get("kurumKodu")?.toString()?.toInt()!!
             } catch (e: Exception) {
                 763455
             }
@@ -162,26 +144,7 @@ class DutiesFragment : Fragment(),
                         if (value != null) {
                             dutyList.clear()
                             for (document in value) {
-                                val konuAdi = document.get("konuAdi").toString()
-                                val tur = document.get("tür").toString()
-                                val dersAdi = document.get("dersAdi").toString()
-                                val toplamCalisma = document.get("toplamCalisma").toString()
-                                val cozulenSoru = document.get("çözülenSoru").toString()
-                                val bitisZamani = document.get("bitisZamani") as Timestamp
-                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                val currentDuty = Duty(
-                                    konuAdi,
-                                    toplamCalisma,
-                                    studentID,
-                                    dersAdi,
-                                    tur,
-                                    cozulenSoru,
-                                    bitisZamani,
-                                    document.id,
-                                    dutyTamamlandi
-                                )
-                                dutyList.add(currentDuty)
+                                dutyList.add(Duty.fromDocument(document, studentID))
                             }
                             dutiesRecyclerAdapter.notifyDataSetChanged()
 
@@ -201,26 +164,7 @@ class DutiesFragment : Fragment(),
                         if (value != null) {
                             dutyList.clear()
                             for (document in value) {
-                                val konuAdi = document.get("konuAdi").toString()
-                                val tur = document.get("tür").toString()
-                                val dersAdi = document.get("dersAdi").toString()
-                                val toplamCalisma = document.get("toplamCalisma").toString()
-                                val cozulenSoru = document.get("çözülenSoru").toString()
-                                val bitisZamani = document.get("bitisZamani") as Timestamp
-                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                val currentDuty = Duty(
-                                    konuAdi,
-                                    toplamCalisma,
-                                    studentID,
-                                    dersAdi,
-                                    tur,
-                                    cozulenSoru,
-                                    bitisZamani,
-                                    document.id,
-                                    dutyTamamlandi
-                                )
-                                dutyList.add(currentDuty)
+                                dutyList.add(Duty.fromDocument(document, studentID))
                             }
                             dutiesRecyclerAdapter.notifyDataSetChanged()
 
@@ -240,26 +184,7 @@ class DutiesFragment : Fragment(),
                         if (value != null) {
                             dutyList.clear()
                             for (document in value) {
-                                val konuAdi = document.get("konuAdi").toString()
-                                val tur = document.get("tür").toString()
-                                val dersAdi = document.get("dersAdi").toString()
-                                val toplamCalisma = document.get("toplamCalisma").toString()
-                                val cozulenSoru = document.get("çözülenSoru").toString()
-                                val bitisZamani = document.get("bitisZamani") as Timestamp
-                                val dutyTamamlandi = document.get("tamamlandi") as Boolean
-
-                                val currentDuty = Duty(
-                                    konuAdi,
-                                    toplamCalisma,
-                                    studentID,
-                                    dersAdi,
-                                    tur,
-                                    cozulenSoru,
-                                    bitisZamani,
-                                    document.id,
-                                    dutyTamamlandi
-                                )
-                                dutyList.add(currentDuty)
+                                dutyList.add(Duty.fromDocument(document, studentID))
                             }
                             dutiesRecyclerAdapter.notifyDataSetChanged()
 

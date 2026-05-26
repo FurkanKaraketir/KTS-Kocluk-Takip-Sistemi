@@ -14,11 +14,12 @@ import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
 import com.karaketir.coachingapp.databinding.ActivityStudentGraphBinding
 import com.karaketir.coachingapp.models.Study
 import java.text.SimpleDateFormat
@@ -27,22 +28,6 @@ import kotlin.collections.ArrayList
 
 
 class StudentGraphActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var binding: ActivityStudentGraphBinding
     private lateinit var db: FirebaseFirestore
@@ -66,6 +51,9 @@ class StudentGraphActivity : AppCompatActivity() {
         val studyDersAdi = intent.getStringExtra("studyDersAdi")
         val studyKonuAdi = intent.getStringExtra("studyKonuAdi")
         val studyTur = intent.getStringExtra("studyTur")
+        val studyProgram = intent.getStringExtra("studyProgram")
+        val studyTemaId = intent.getStringExtra("studyTemaId").orEmpty()
+        val isMaarif = studyProgram == CurriculumProgram.TYMM.firestoreValue && studyTemaId.isNotBlank()
         val zamanAraligi = intent.getStringExtra("zamanAraligi")
         val grafikTuru = intent.getStringExtra("grafikTuru")
         val soruSayisi = intent.getStringExtra("soruSayisi")
@@ -239,12 +227,20 @@ class StudentGraphActivity : AppCompatActivity() {
 
 
         if (studyOwnerID != null) {
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .document(studyOwnerID).collection("Studies").whereEqualTo("dersAdi", studyDersAdi)
-                .whereEqualTo("tür", studyTur).whereEqualTo("konuAdi", studyKonuAdi)
+            var studiesQuery = db.collection("School").document(kurumKodu.toString())
+                .collection("Student")
+                .document(studyOwnerID).collection("Studies")
+                .whereEqualTo("dersAdi", studyDersAdi)
                 .whereGreaterThan("timestamp", baslangicTarihi)
                 .whereLessThan("timestamp", bitisTarihi)
-                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener { value, _ ->
+            studiesQuery = if (isMaarif) {
+                studiesQuery.whereEqualTo("program", studyProgram!!)
+                    .whereEqualTo("temaId", studyTemaId)
+            } else {
+                studiesQuery.whereEqualTo("tür", studyTur).whereEqualTo("konuAdi", studyKonuAdi)
+            }
+            studiesQuery.orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener { value, _ ->
 
                     if (value != null) {
                         konular.clear()
@@ -254,19 +250,7 @@ class StudentGraphActivity : AppCompatActivity() {
                                 val studyCount = document.get("toplamCalisma").toString()
                                 val timestamp = document.get("timestamp") as Timestamp
 
-                                val currentDocument = Study(
-                                    documentKonuAdi,
-                                    studyCount,
-                                    studyOwnerID,
-                                    studyDersAdi!!,
-                                    studyTur!!,
-                                    soruSayisi!!,
-                                    timestamp,
-                                    document.id
-                                )
-
-
-                                konular.add(currentDocument)
+                                konular.add(Study.fromDocument(document, studyOwnerID))
 
                             }
                             val data: MutableList<DataEntry> = ArrayList()
@@ -307,18 +291,7 @@ class StudentGraphActivity : AppCompatActivity() {
                                 val timestamp = document.get("timestamp") as Timestamp
 
 
-                                val currentDocument = Study(
-                                    documentKonuAdi,
-                                    studyCount,
-                                    studyOwnerID,
-                                    studyDersAdi!!,
-                                    studyTur!!,
-                                    soruSayisi!!,
-                                    timestamp,
-                                    document.id
-                                )
-
-                                konular.add(currentDocument)
+                                konular.add(Study.fromDocument(document, studyOwnerID))
                             }
                             val data: MutableList<DataEntry> = ArrayList()
 

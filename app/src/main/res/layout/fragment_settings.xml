@@ -61,6 +61,15 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/curriculumProgramText"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="15dp"
+                android:visibility="gone" />
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/saveProfileButton"
                 android:layout_width="wrap_content"

@@ -18,16 +18,22 @@
         <TextView
             android:id="@+id/studyGridRowStudyNameTextView"
             style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:gravity="center"
-
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:requiresFadingEdge="horizontal"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
             android:text=""
-            android:textSize="18sp">
-
-        </TextView>
+            android:textAlignment="center"
+            android:textSize="18sp" />
 
 
         <LinearLayout
@@ -39,17 +45,39 @@
 
             <TextView
                 android:id="@+id/studyTurText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:text="" />
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
+                android:requiresFadingEdge="horizontal"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text=""
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/studyDersText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:text="" />
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
+                android:requiresFadingEdge="horizontal"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text=""
+                android:textAlignment="center" />
 
         </LinearLayout>
 

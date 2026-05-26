@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 
 
 open class StudiesRecyclerAdapter(
-    private val studyList: ArrayList<Study>,
+    private val studyList: List<Study>,
     private val zamanAraligi: String,
     private val kurumKodu: Int,
     private val personType: String
@@ -98,6 +98,8 @@ open class StudiesRecyclerAdapter(
                             )
                             intent.putExtra("studyKonuAdi", myItem.studyName)
                             intent.putExtra("studyTur", myItem.dersTur)
+                            intent.putExtra("studyProgram", myItem.program)
+                            intent.putExtra("studyTemaId", myItem.temaId.orEmpty())
                             intent.putExtra("soruSayisi", myItem.soruSayisi)
                             intent.putExtra("kurumKodu", kurumKodu.toString())
                             holder.itemView.context.startActivity(intent)
@@ -117,6 +119,8 @@ open class StudiesRecyclerAdapter(
                             )
                             intent.putExtra("studyKonuAdi", myItem.studyName)
                             intent.putExtra("studyTur", myItem.dersTur)
+                            intent.putExtra("studyProgram", myItem.program)
+                            intent.putExtra("studyTemaId", myItem.temaId.orEmpty())
                             intent.putExtra("soruSayisi", myItem.soruSayisi)
                             intent.putExtra("kurumKodu", kurumKodu.toString())
 
@@ -130,9 +134,13 @@ open class StudiesRecyclerAdapter(
 
 
 
-                binding.studyDeleteButton.setOnClickListener {
+                    binding.studyGridRowStudyNameTextView.isSelected = true
+                    binding.studyTurText.isSelected = true
+                    binding.studyDersText.isSelected = true
 
-                    val deleteStudyDialog = AlertDialog.Builder(holder.itemView.context)
+                    binding.studyDeleteButton.setOnClickListener {
+
+                        val deleteStudyDialog = AlertDialog.Builder(holder.itemView.context)
                     deleteStudyDialog.setTitle("Çalışma Sil")
                     deleteStudyDialog.setMessage("Bu Çalışmayı Silmek İstediğinizden Emin misiniz?")
 

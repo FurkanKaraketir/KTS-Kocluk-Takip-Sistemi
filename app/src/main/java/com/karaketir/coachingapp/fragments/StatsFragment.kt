@@ -27,11 +27,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.karaketir.coachingapp.MainActivity
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.adapter.StatisticsRecyclerAdapter
@@ -68,22 +68,6 @@ class StatsFragment : Fragment() {
     fun setMainActivity(activity: MainActivity) {
         this.mainActivity = activity
     }
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var baslangicTarihi: Date

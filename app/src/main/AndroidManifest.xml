@@ -19,6 +19,7 @@
         tools:ignore="ScopedStorage" />
 
     <application
+        android:name=".CoachingAppApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -70,33 +71,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".DenemeAltKonuYanlisGraphActivity"
-            android:screenOrientation="landscape"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DenemeTeacherEditActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".PreviousRatingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".TestResultsShortActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
@@ -118,24 +93,6 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CoachingApp"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".AddDenemeTeacherActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DenemelerTeacherActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <meta-data
                 android:name="android.app.lib_name"
@@ -194,61 +151,7 @@
             android:value="@string/default_notification_channel_id" />
 
         <activity
-            android:name=".DenemeNetGraphByTimeActivity"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DenemeGraphActivity"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".OneDenemeViewerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DenemelerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DenemeYanlisKonuActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".StatsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".EnterTytActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">

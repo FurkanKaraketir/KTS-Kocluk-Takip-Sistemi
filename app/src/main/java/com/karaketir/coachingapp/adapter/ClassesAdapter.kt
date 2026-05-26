@@ -13,7 +13,7 @@ import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.ClassGridRowBinding
 
 class ClassesAdapter(
-    private val classList: ArrayList<com.karaketir.coachingapp.models.Class>,
+    private val classList: List<com.karaketir.coachingapp.models.Class>,
     private val kurumKodu: Int
 ) : RecyclerView.Adapter<ClassesAdapter.ClassHolder>() {
 

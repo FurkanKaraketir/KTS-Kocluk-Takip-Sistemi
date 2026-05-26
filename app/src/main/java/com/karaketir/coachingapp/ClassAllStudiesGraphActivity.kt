@@ -1,8 +1,9 @@
 package com.karaketir.coachingapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
@@ -13,31 +14,18 @@ import com.anychart.enums.HoverMode
 import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
+import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.databinding.ActivityClassAllStudiesGraphBinding
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ClassAllStudiesGraphActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var binding: ActivityClassAllStudiesGraphBinding
 
@@ -51,6 +39,8 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
 
     private var dersAdi = ""
     private var secilenTur = ""
+    private var program = ""
+    private var sinif = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityClassAllStudiesGraphBinding.inflate(layoutInflater)
@@ -63,8 +53,11 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
         zamanAraligi = intent.getStringExtra("secilenZamanAraligi").toString()
         val studentID = intent.getStringExtra("studentID").toString()
         dersAdi = intent.getStringExtra("dersAdi").toString()
-        secilenTur = intent.getStringExtra("tür").toString()
+        secilenTur = intent.getStringExtra("tür").orEmpty()
+        program = intent.getStringExtra("program").orEmpty()
+        sinif = intent.getIntExtra("sinif", 0)
         val konuHash = hashMapOf<String, Int>()
+        val isMaarif = program == CurriculumProgram.TYMM.firestoreValue
 
         var cal = Calendar.getInstance()
         cal[Calendar.HOUR_OF_DAY] = 0 // ! clear would not reset the hour of day !
@@ -230,62 +223,79 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
             }
         }
 
-        db.collection("Lessons").document(dersAdi).collection(secilenTur)
-            .addSnapshotListener { konular, _ ->
-                if (konular != null) {
-                    for (konu in konular) {
-                        try {
-                            val arrayType = konu.get("arrayType") as ArrayList<*>
-                            if ("konu" in arrayType) {
-                                konuHash[konu.get("konuAdi").toString()] = 0
-                            }
-                        } catch (e: Exception) {
-                            Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
-                        }
-
-
+        if (isMaarif) {
+            lifecycleScope.launch {
+                try {
+                    val temalar = GradeCurriculumRepository.loadTymmThemes(db, dersAdi, sinif)
+                    for (tema in temalar) {
+                        konuHash[tema.name] = 0
                     }
-
-
-                    db.collection("School").document(kurumKodu.toString()).collection("Student")
-                        .document(studentID).collection("Studies").whereEqualTo("dersAdi", dersAdi)
-                        .whereEqualTo("tür", secilenTur)
-                        .whereGreaterThan("timestamp", baslangicTarihi)
-                        .whereLessThan("timestamp", bitisTarihi)
-                        .addSnapshotListener { value, error ->
-
-                            if (error != null) {
-                                println(error.localizedMessage)
+                } catch (e: Exception) {
+                    Toast.makeText(this@ClassAllStudiesGraphActivity, e.localizedMessage, Toast.LENGTH_SHORT)
+                        .show()
+                }
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(studentID).collection("Studies")
+                    .whereEqualTo("dersAdi", dersAdi)
+                    .whereEqualTo("program", program)
+                    .whereGreaterThan("timestamp", baslangicTarihi)
+                    .whereLessThan("timestamp", bitisTarihi)
+                    .addSnapshotListener { value, error ->
+                        if (error != null) println(error.localizedMessage)
+                        if (value != null) {
+                            for (doc in value) {
+                                val label = doc.getString("temaAdi")
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?: doc.getString("konuAdi").orEmpty()
+                                val currentValue = konuHash[label] ?: continue
+                                konuHash[label] =
+                                    doc.get("toplamCalisma").toString().toInt() + currentValue
                             }
-
-                            if (value != null) {
-
-                                for (i in value) {
-                                    val konuAdi = i.get("konuAdi").toString()
-                                    val currentValue = konuHash[konuAdi]
-
-                                    if (i.get("toplamCalisma") != null && currentValue != null) {
-                                        konuHash[konuAdi] =
-                                            i.get("toplamCalisma").toString().toInt() + currentValue
-                                    }
-
+                        }
+                        drawGraph(konuHash, isMaarif)
+                    }
+            }
+        } else {
+            db.collection("Lessons").document(dersAdi).collection(secilenTur)
+                .addSnapshotListener { konular, _ ->
+                    if (konular != null) {
+                        for (konu in konular) {
+                            try {
+                                val arrayType = konu.get("arrayType") as ArrayList<*>
+                                if ("konu" in arrayType) {
+                                    konuHash[konu.get("konuAdi").toString()] = 0
                                 }
-
-
+                            } catch (e: Exception) {
+                                Toast.makeText(this, e.localizedMessage, Toast.LENGTH_SHORT).show()
                             }
-                            drawGraph(konuHash)
-
-
                         }
 
-
+                        db.collection("School").document(kurumKodu.toString()).collection("Student")
+                            .document(studentID).collection("Studies")
+                            .whereEqualTo("dersAdi", dersAdi)
+                            .whereEqualTo("tür", secilenTur)
+                            .whereGreaterThan("timestamp", baslangicTarihi)
+                            .whereLessThan("timestamp", bitisTarihi)
+                            .addSnapshotListener { value, error ->
+                                if (error != null) println(error.localizedMessage)
+                                if (value != null) {
+                                    for (i in value) {
+                                        val konuAdi = i.get("konuAdi").toString()
+                                        val currentValue = konuHash[konuAdi] ?: continue
+                                        if (i.get("toplamCalisma") != null) {
+                                            konuHash[konuAdi] =
+                                                i.get("toplamCalisma").toString().toInt() + currentValue
+                                        }
+                                    }
+                                }
+                                drawGraph(konuHash, isMaarif)
+                            }
+                    }
                 }
-            }
-
-
+        }
     }
 
-    private fun drawGraph(konuHashMap: HashMap<String, Int>) {
+    private fun drawGraph(konuHashMap: HashMap<String, Int>, isMaarif: Boolean = false) {
         val data: MutableList<DataEntry> = ArrayList()
         val cartesian: Cartesian = AnyChart.column()
         val anyChartView = binding.anyChartClassAllStudies
@@ -302,7 +312,11 @@ class ClassAllStudiesGraphActivity : AppCompatActivity() {
             .format("{%Value}{groupsSeparator:.}dk")
 
         cartesian.animation(true)
-        val title = "$dersAdi $secilenTur $zamanAraligi Süre-Konu Dağılımı"
+        val title = if (isMaarif) {
+            "$dersAdi Maarif $zamanAraligi Süre-Tema Dağılımı"
+        } else {
+            "$dersAdi $secilenTur $zamanAraligi Süre-Konu Dağılımı"
+        }
         cartesian.title(title)
 
         cartesian.yScale().minimum(0.0)

@@ -6,32 +6,16 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.RatingsRecyclerAdapter
 import com.karaketir.coachingapp.databinding.ActivityPreviousRatingsBinding
 import com.karaketir.coachingapp.models.Rating
 
 class PreviousRatingsActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var binding: ActivityPreviousRatingsBinding
     private lateinit var auth: FirebaseAuth

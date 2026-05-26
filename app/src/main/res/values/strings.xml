@@ -20,6 +20,9 @@
     <string name="genler">Üçgenler</string>
     <string name="veri">Veri</string>
     <string name="al_man_n_dersini_ve_konusunu_belirle">Çalışmanın Dersini ve Konusunu Seç</string>
+    <string name="sinif_sec">Sınıf Seçin</string>
+    <string name="ders_sec">Ders Seçin</string>
+    <string name="profiliniz">Profiliniz</string>
     <string name="matematik">Matematik</string>
     <string name="fizik">Fizik</string>
     <string name="ka_dakika_konu_al_t_n">Kaç Dakika Konu Çalıştın?</string>
@@ -38,6 +41,11 @@
     <string name="ayt">AYT</string>
     <string name="t_r">Tür:</string>
     <string name="konu_se_iniz">Konu Seçiniz:</string>
+    <string name="tema_sec">Tema Seçin</string>
+    <string name="tema_seciniz">Tema:</string>
+    <string name="maarif">Maarif</string>
+    <string name="maarif_tema_yok">Bu ders için henüz Maarif teması tanımlanmamış. Lütfen öğretmeninizle iletişime geçin.</string>
+    <string name="program_subtitle_format">%1$s · %2$d. sınıf</string>
     <string name="alt_konu_se_iniz">Alt Konu Seçiniz</string>
     <string name="al_ma_ara">Çalışma Ara:</string>
     <string name="geometri">Geometri</string>
@@ -55,14 +63,10 @@
     <string name="biti_tarihi_se">Bitiş Tarihi Seç</string>
     <string name="g_revi_kaydet">Görevi Kaydet</string>
     <string name="kurum_kodu">Kurum Kodu</string>
-    <string name="deneme">TYT/AYT Deneme</string>
     <string name="do_ru">Doğru</string>
     <string name="yanl">Yanlış</string>
-    <string name="deneme_ad">Deneme Adı</string>
-    <string name="deneme_tahlili">Deneme Tahlili</string>
     <string name="ko_luk_statistikleri">Koçluk İstatistikleri</string>
     <string name="grafik_olarak_g_ster">Grafik Olarak Göster</string>
-    <string name="denemelerim">Denemelerim</string>
     <string name="tamamlanmayan_g_revler">Tamamlanmayan Görevler</string>
     <string name="tamamlanan_g_revler">Tamamlanan Görevler</string>
     <string name="t_m_g_revler">Tüm Görevler</string>
@@ -70,14 +74,10 @@
     <string name="yanl_konular">Yanlış Konuları</string>
     <string name="felsefe">Felsefe</string>
     <string name="din">Din</string>
-    <string name="deneme_kaydet">Deneme Kaydet</string>
     <string name="toplam_yanl_0">Toplam Yanlış: 0</string>
-    <string name="deneme_tarihi">Deneme Tarihi:</string>
-    <string name="denemeler">Denemeler</string>
     <string name="show">Show</string>
     <string name="default_notification_channel_id">212121</string>
     <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
-    <string name="deneme_t_rleri">Deneme Türleri</string>
     <string name="ifreni_mi_unuttun">Şifreni mi Unuttun?</string>
     <string name="kay_t_olan_ki_i">Kayıt Olan Kişi:</string>
     <string name="kullan_m_ko_ullar_n"><u>Kullanım Koşullarını</u></string>
@@ -95,9 +95,6 @@
     <string name="grafik_halinde_g_rmek_in_herhangi_bir_derse_t_klay_n">(Grafik Halinde Görmek İçin Herhangi Bir Derse Tıklayın)</string>
     <string name="al_ma_zaman_aral">Çalışma Zaman Aralığı</string>
     <string name="konu_al_ma_grafi_i">Konu - Çalışma Grafiği</string>
-    <string name="deneme_ekle">Deneme Ekle</string>
-    <string name="deneme_t_r">Deneme Türü</string>
-    <string name="deneme_s_n_f_d_zeyi">Deneme Sınıf Düzeyi</string>
     <string name="ko_retmenin">Koç Öğretmenin:</string>
     <string name="toplam">Toplam:</string>
     <string name="yi">İyi</string>
@@ -114,9 +111,6 @@
     <string name="uygulamay_g_ncellemeniz_gerekmektedir">Uygulamayı Güncellemeniz Gerekmektedir.</string>
     <string name="g_ncellemek_in_t_klay_n">Güncellemek İçin Tıklayın</string>
     <string name="de_erlendirmeler">Değerlendirmeler</string>
-    <string name="deneme_son_tarih">Bitiş Tarihi:</string>
-    <string name="sonu_lar_g_r_nt_lemek_in_deneme_smine_t_klay_n">Sonuçları Görüntülemek İçin Deneme İsmine Tıklayın</string>
-
     <string name="sample_using_cropimageview">Sample using CropImageView</string>
     <string name="sample_of_customactivity">Sample of CustomActivity</string>
     <string name="sample_calling_cropimage">Sample calling CropImage</string>

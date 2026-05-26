@@ -7,35 +7,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
 import com.karaketir.coachingapp.databinding.ActivityAddPrgrphPrblmBinding
 import com.karaketir.coachingapp.services.WorldTimeApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class AddPrgrphPrblmActivity : AppCompatActivity() {
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var binding: ActivityAddPrgrphPrblmBinding
     private lateinit var db: FirebaseFirestore
@@ -65,10 +49,12 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
 
         val intent = intent
         val documentID = UUID.randomUUID().toString()
+        val program = CurriculumProgram.LEGACY.firestoreValue
         val subjectType = "TYT"
 
         val dersAdi = intent.getStringExtra("dersAdi").toString()
         kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        val sinif = intent.getIntExtra("sinif", intent.getIntExtra("grade", 0))
         val retrofit = Retrofit.Builder().baseUrl("http://worldtimeapi.org")
             .addConverterFactory(GsonConverterFactory.create()).build()
 
@@ -153,11 +139,14 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
                             "konuAnlatımı" to 0,
                             "konuTestiDK" to soruDk,
                             "dersAdi" to dersAdi,
+                            "program" to program,
                             "tür" to subjectType,
                             "konuAdi" to dersAdi,
                             "toplamCalisma" to soruDk,
-                            "çözülenSoru" to soruSayi
-                        )
+                            "çözülenSoru" to soruSayi,
+                        ).apply {
+                            if (sinif > 0) this["sinif"] = sinif
+                        }
 
                         val baslangicTarihi = cal.time
 
@@ -186,6 +175,7 @@ class AddPrgrphPrblmActivity : AppCompatActivity() {
                                                         .toString().toInt(),
                                                     "konuTestiDK" to soruDk + document.get("konuTestiDK")
                                                         .toString().toInt(),
+                                                    "program" to program,
                                                     "tür" to subjectType,
                                                     "dersAdi" to dersAdi,
                                                     "konuAdi" to dersAdi,

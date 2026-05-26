@@ -21,7 +21,7 @@ import java.util.Date
 import java.util.TimeZone
 
 class StudentsRecyclerAdapter(
-    private val studentList: ArrayList<Student>,
+    private val studentList: MutableList<Student>,
     private val kurumKodu: Int,
     private val baslangicTarihi: Date,
     private val bitisTarihi: Date,

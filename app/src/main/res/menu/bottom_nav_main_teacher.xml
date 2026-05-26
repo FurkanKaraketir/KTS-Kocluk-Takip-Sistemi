@@ -11,10 +11,6 @@
         android:icon="@drawable/insert_chart"
         android:title="@string/statistikler" />
     <item
-        android:id="@+id/navigation_denemeler"
-        android:icon="@drawable/post_add"
-        android:title="@string/denemeler" />
-    <item
         android:id="@+id/navigation_settings"
         android:icon="@drawable/baseline_settings_24"
         android:title="@string/ayarlar" />

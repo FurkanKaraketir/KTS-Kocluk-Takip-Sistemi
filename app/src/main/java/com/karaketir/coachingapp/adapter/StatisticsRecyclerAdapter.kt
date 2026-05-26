@@ -31,11 +31,7 @@ class StatisticsRecyclerAdapter(
 
                 val myItem = statisticList[position]
 
-                if (myItem.dersAdi == "Deneme") {
-                    binding.statsDersAdi.text = "Deneme Tahlili"
-                } else {
-                    binding.statsDersAdi.text = myItem.dersAdi
-                }
+                binding.statsDersAdi.text = myItem.dersAdi
                 binding.statsToplamCalisma.text = "${
                     myItem.toplamCalisma.toFloat().format(2)
                 } dk"

@@ -5,10 +5,6 @@
         android:icon="@drawable/control_panel"
         android:title="@string/ana_sayfa" />
     <item
-        android:id="@+id/navigation_denemeler"
-        android:icon="@drawable/post_add"
-        android:title="@string/denemelerim" />
-    <item
         android:id="@+id/navigation_duties"
         android:icon="@drawable/ic_baseline_bookmark_24"
         android:title="@string/g_revlerim" />

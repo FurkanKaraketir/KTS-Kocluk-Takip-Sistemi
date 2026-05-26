@@ -30,11 +30,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.karaketir.coachingapp.AllStudentsActivity
 import com.karaketir.coachingapp.BuildConfig
@@ -53,7 +53,6 @@ import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.databinding.FragmentMainBinding
 import com.karaketir.coachingapp.models.Student
 import com.karaketir.coachingapp.models.Study
-import com.karaketir.coachingapp.services.addData
 import com.karaketir.coachingapp.services.clearCache
 import com.karaketir.coachingapp.services.createExcel
 import com.karaketir.coachingapp.services.createSheetHeader
@@ -76,22 +75,6 @@ class MainFragment : Fragment() {
     fun setMainActivity(activity: MainActivity) {
         this.mainActivity = activity
     }
-
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
     private lateinit var auth: FirebaseAuth
     private var kurumKodu = 763455
     private lateinit var recyclerViewPreviousStudies: RecyclerView
@@ -100,13 +83,13 @@ class MainFragment : Fragment() {
     private lateinit var recyclerViewPreviousStudiesAdapter: StudiesRecyclerAdapter
     private lateinit var recyclerViewMyStudentsRecyclerAdapter: StudentsRecyclerAdapter
     private var workbook = XSSFWorkbook()
-    private var studyList = ArrayList<Study>()
+    private var studyList = mutableListOf<Study>()
     private var secilenGrade = "Bütün Sınıflar"
     private var secilenZaman = "Seçiniz"
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private var gradeList = arrayOf("Bütün Sınıflar", "12", "11", "10", "9", "0", "13")
-    private var raporGondermeyenList = ArrayList<Student>()
+    private var raporGondermeyenList = mutableListOf<Student>()
     private val zamanAraliklari = arrayOf(
         "Seçiniz",
         "Bugün",
@@ -120,9 +103,9 @@ class MainFragment : Fragment() {
         "Özel"
     )
 
-    private lateinit var filteredList: ArrayList<Student>
+    private lateinit var filteredList: MutableList<Student>
 
-    private var studentList = ArrayList<Student>()
+    private var studentList = mutableListOf<Student>()
     private var grade = 0
     private var teacher = ""
     private var personType = ""
@@ -264,7 +247,7 @@ class MainFragment : Fragment() {
                 }
 
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    filteredList = ArrayList()
+                    filteredList = mutableListOf()
                     if (p0.toString() != "") {
                         for (item in studentList) {
                             if (item.studentName.lowercase(Locale.getDefault())
@@ -357,25 +340,9 @@ class MainFragment : Fragment() {
                                 studyList.clear()
                                 val documents = it1!!.documents
                                 for (document in documents) {
-                                    val subjectTheme = document.get("konuAdi").toString()
-                                    val subjectCount = document.get("toplamCalisma").toString()
-                                    val studyDersAdi = document.get("dersAdi").toString()
-                                    val studyTur = document.get("tür").toString()
-                                    val soruSayisi = document.get("çözülenSoru").toString()
-                                    val timestamp = document.get("timestamp") as Timestamp
-                                    val currentStudy = Study(
-                                        subjectTheme,
-                                        subjectCount,
-                                        auth.uid.toString(),
-                                        studyDersAdi,
-                                        studyTur,
-                                        soruSayisi,
-                                        timestamp,
-                                        document.id
+                                    studyList.add(
+                                        Study.fromDocument(document, auth.uid.toString())
                                     )
-
-                                    studyList.add(currentStudy)
-
                                 }
 
                                 setupStudyRecyclerView(studyList)
@@ -742,7 +709,7 @@ class MainFragment : Fragment() {
                                 for (a in raporGondermeyenList) {
                                     println(a.studentName)
                                 }
-                                myIntent.putExtra("list", raporGondermeyenList)
+                                myIntent.putExtra("list", ArrayList(raporGondermeyenList))
                                 myIntent.putExtra("secilenZaman", secilenZaman)
                                 mainActivity?.startActivity(myIntent)
                             }
@@ -780,7 +747,7 @@ class MainFragment : Fragment() {
     }
 
 
-    private fun setupStudentRecyclerView(list: ArrayList<Student>) {
+    private fun setupStudentRecyclerView(list: MutableList<Student>) {
         val layoutManager = LinearLayoutManager(mainActivity)
 
         recyclerViewMyStudents.layoutManager = layoutManager
@@ -792,7 +759,7 @@ class MainFragment : Fragment() {
 
     }
 
-    private fun setupStudyRecyclerView(list: ArrayList<Study>) {
+    private fun setupStudyRecyclerView(list: List<Study>) {
         val layoutManager = GridLayoutManager(mainActivity, 2)
 
         recyclerViewPreviousStudies.layoutManager = layoutManager

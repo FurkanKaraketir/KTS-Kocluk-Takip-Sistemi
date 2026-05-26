@@ -24,12 +24,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
+import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
 import org.apache.poi.ss.usermodel.CellStyle
@@ -52,30 +53,14 @@ import java.util.Date
 
 class StudiesActivity : AppCompatActivity() {
 
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
-
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
     private val workbook = XSSFWorkbook()
 
     private lateinit var recyclerViewStudies: RecyclerView
-    private var studyList = ArrayList<com.karaketir.coachingapp.models.Class>()
-    private var classList = ArrayList<String>()
+    private var studyList = mutableListOf<com.karaketir.coachingapp.models.Class>()
+    private var classList = mutableListOf<String>()
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
@@ -95,7 +80,7 @@ class StudiesActivity : AppCompatActivity() {
         db = Firebase.firestore
         recyclerViewStudies = binding.recyclerViewStudies
 
-        kurumKodu = intent.getStringExtra("kurumKodu").toString().toInt()
+        kurumKodu = intent.getStringExtra("kurumKodu")?.toIntOrNull() ?: 0
 
 
         layoutManager = GridLayoutManager(applicationContext, 2)
@@ -132,7 +117,6 @@ class StudiesActivity : AppCompatActivity() {
         val dersProgramiTeacherButton = binding.dersProgramiTeacherButton
         val previousRatingsButton = binding.previousRatingsButton
         val gorevlerButton = binding.gorevTeacherButton
-        val denemelerButton = binding.denemeTeacherButton
         val hedefTeacherButton = binding.hedefTeacherButton
         val toplamSureText = binding.toplamSureText
         val toplamSoruText = binding.toplamSoruText
@@ -267,16 +251,6 @@ class StudiesActivity : AppCompatActivity() {
 
 
 
-        denemelerButton.setOnClickListener {
-            val intent2 = Intent(this, DenemelerActivity::class.java)
-            intent2.putExtra("studentID", studentID)
-            intent2.putExtra("teacher", auth.uid.toString())
-            intent2.putExtra("grade", "0")
-            intent2.putExtra("personType", "Teacher")
-            intent2.putExtra("kurumKodu", kurumKodu.toString())
-            this.startActivity(intent2)
-        }
-
         gorevlerButton.setOnClickListener {
             val intent2 = Intent(this, DutiesActivity::class.java)
             intent2.putExtra("studentID", studentID)
@@ -296,7 +270,7 @@ class StudiesActivity : AppCompatActivity() {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun setupStudyRecyclerView(list: ArrayList<com.karaketir.coachingapp.models.Class>) {
+    private fun setupStudyRecyclerView(list: List<com.karaketir.coachingapp.models.Class>) {
         val layoutManager = GridLayoutManager(applicationContext, 2)
 
         recyclerViewStudies.layoutManager = layoutManager
@@ -511,19 +485,22 @@ class StudiesActivity : AppCompatActivity() {
         // Create header row
         val headerRow = sheet.createRow(0)
         CellUtil.createCell(headerRow, 0, "Ders Adı")
-        CellUtil.createCell(headerRow, 1, "Tür")
-        CellUtil.createCell(headerRow, 2, "Konu Adı")
-        CellUtil.createCell(headerRow, 3, "Toplam Çalışma (dk)")
-        CellUtil.createCell(headerRow, 4, "Toplam Çalışma (saat)")
-        CellUtil.createCell(headerRow, 5, "Çözülen Soru")
+        CellUtil.createCell(headerRow, 1, "Program")
+        CellUtil.createCell(headerRow, 2, "Çalışma Türü")
+        CellUtil.createCell(headerRow, 3, "Tema")
+        CellUtil.createCell(headerRow, 4, "Konu Adı")
+        CellUtil.createCell(headerRow, 5, "Toplam Çalışma (dk)")
+        CellUtil.createCell(headerRow, 6, "Toplam Çalışma (saat)")
+        CellUtil.createCell(headerRow, 7, "Çözülen Soru")
 
-        // Set column widths
-        sheet.setColumnWidth(0, 5000) // Adjust width for "Ders Adı"
-        sheet.setColumnWidth(1, 3000) // Adjust width for "Tür"
-        sheet.setColumnWidth(2, 5000) // Adjust width for "Konu Adı"
-        sheet.setColumnWidth(3, 4500) // Adjust width for "Toplam Çalışma (dk)"
-        sheet.setColumnWidth(4, 4500) // Adjust width for "Toplam Çalışma (saat)"
-        sheet.setColumnWidth(5, 4000) // Adjust width for "Çözülen Soru"
+        sheet.setColumnWidth(0, 5000)
+        sheet.setColumnWidth(1, 3500)
+        sheet.setColumnWidth(2, 5500)
+        sheet.setColumnWidth(3, 5000)
+        sheet.setColumnWidth(4, 5000)
+        sheet.setColumnWidth(5, 4500)
+        sheet.setColumnWidth(6, 4500)
+        sheet.setColumnWidth(7, 4000)
 
         var indexNum = 1 // Start from the second row for data
         db.collection("School").document(kurumKodu.toString()).collection("Student")
@@ -535,12 +512,18 @@ class StudiesActivity : AppCompatActivity() {
                     for (i in value) {
                         val row = sheet.createRow(indexNum)
 
-                        CellUtil.createCell(row, 0, i.get("dersAdi").toString())
-                        CellUtil.createCell(row, 1, i.get("tür").toString())
-                        CellUtil.createCell(row, 2, i.get("konuAdi").toString())
-                        CellUtil.createCell(row, 3, (i.get("toplamCalisma").toString()))
-                        CellUtil.createCell(row, 4, String.format("%.2f", i.get("toplamCalisma").toString().toFloat() / 60))
-                        CellUtil.createCell(row, 5, (i.get("çözülenSoru").toString()))
+                        CellUtil.createCell(row, 0, i.getString("dersAdi").orEmpty())
+                        CellUtil.createCell(row, 1, StudyLabels.programLabel(i.getString("program")))
+                        CellUtil.createCell(row, 2, StudyLabels.studyTypeLabel(i))
+                        CellUtil.createCell(row, 3, i.getString("temaAdi").orEmpty())
+                        CellUtil.createCell(row, 4, StudyLabels.studyTrackingLabel(i))
+                        CellUtil.createCell(row, 5, i.get("toplamCalisma").toString())
+                        CellUtil.createCell(
+                            row,
+                            6,
+                            String.format("%.2f", i.get("toplamCalisma").toString().toFloat() / 60)
+                        )
+                        CellUtil.createCell(row, 7, i.get("çözülenSoru").toString())
                         indexNum += 1
                     }
                     createExcel()

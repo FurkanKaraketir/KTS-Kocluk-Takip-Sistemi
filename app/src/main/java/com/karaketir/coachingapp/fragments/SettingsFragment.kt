@@ -8,14 +8,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import com.karaketir.coachingapp.MainActivity
+import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
+import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
+import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.databinding.FragmentSettingsBinding
 import com.karaketir.coachingapp.services.openLink
+import kotlinx.coroutines.launch
 
 class SettingsFragment: Fragment() {
 
@@ -24,21 +29,6 @@ class SettingsFragment: Fragment() {
     fun setMainActivity(activity: MainActivity) {
         this.mainActivity = activity
     }
-    init {
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
-    }
-
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -124,9 +114,10 @@ class SettingsFragment: Fragment() {
                     if (personType == "Student") {
                         textInputChangeGrade.visibility = View.VISIBLE
                         gradeChangeEditText.setText(grade.toString())
-
+                        loadCurriculumProgramSubtitle(mBinding, grade)
                     } else {
                         textInputChangeGrade.visibility = View.GONE
+                        mBinding.curriculumProgramText.visibility = View.GONE
                     }
 
 
@@ -207,5 +198,26 @@ class SettingsFragment: Fragment() {
         }
 
 
+    }
+
+    private fun loadCurriculumProgramSubtitle(
+        mBinding: FragmentSettingsBinding,
+        studentGrade: Int
+    ) {
+        lifecycleScope.launch {
+            val program = try {
+                val config = GradeCurriculumRepository.load(db)
+                GradeCurriculumRepository.programForGrade(config, studentGrade)
+            } catch (_: Exception) {
+                GradeCurriculumRepository.programForGrade(
+                    GradeCurriculumConfig(GradeCurriculumRepository.defaultGradePrograms),
+                    studentGrade
+                )
+            }
+            if (!isBindingAvailable()) return@launch
+            mBinding.curriculumProgramText.visibility = View.VISIBLE
+            mBinding.curriculumProgramText.text =
+                StudyLabels.programDisplayName(program, studentGrade)
+        }
     }
 }
