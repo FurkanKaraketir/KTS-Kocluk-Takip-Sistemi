@@ -83,6 +83,30 @@ object GradeCurriculumRepository {
         return GradeCurriculumConfig(gradeModes)
     }
 
+    /** Resolves grade and program for a student (grade settings + profile preference). */
+    suspend fun preferredProgramForStudent(
+        db: FirebaseFirestore,
+        studentId: String,
+    ): Pair<Int, CurriculumProgram> {
+        val grade: Int
+        val profileProgram: CurriculumProgram?
+        try {
+            val studentSnap = db.collection("User").document(studentId).get().await()
+            grade = studentSnap.getLong("grade")?.toInt()
+                ?: studentSnap.getString("grade")?.toIntOrNull()
+                ?: 12
+            profileProgram = CurriculumProgram.fromFirestore(studentSnap.getString("curriculumProgram"))
+        } catch (_: Exception) {
+            return 12 to programForGrade(defaultConfig(), 12)
+        }
+        val config = try {
+            load(db)
+        } catch (_: Exception) {
+            defaultConfig()
+        }
+        return grade to preferredProgram(config, grade, profileProgram)
+    }
+
     suspend fun loadTymmThemes(
         db: FirebaseFirestore,
         dersAdi: String,

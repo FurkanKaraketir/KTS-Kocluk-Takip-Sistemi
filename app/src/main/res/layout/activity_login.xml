@@ -13,7 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
         android:contentDescription="@string/app_name"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/ic_app_logo" />
 
     <TextView
         android:id="@+id/log_in"
@@ -24,6 +24,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:text="@string/log_in"
+        android:textColor="@color/brand_primary"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -97,7 +98,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="@string/log_in"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:icon="@drawable/baseline_account_circle_24" />
 
     <RelativeLayout
         android:id="@+id/layout21"

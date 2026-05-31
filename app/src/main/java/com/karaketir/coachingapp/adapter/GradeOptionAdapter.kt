@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ class GradeOptionAdapter(
 
     class GradeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val card: MaterialCardView = itemView.findViewById(R.id.gradeTileCard)
+        val icon: ImageView = itemView.findViewById(R.id.tileIconImage)
         val label: TextView = itemView.findViewById(R.id.gradeLabelText)
         val profileBadge: TextView = itemView.findViewById(R.id.profileBadgeText)
     }
@@ -32,8 +34,16 @@ class GradeOptionAdapter(
 
     override fun onBindViewHolder(holder: GradeHolder, position: Int) {
         val grade = grades[position]
+        holder.icon.setImageResource(Subjects.gradeIconRes(grade))
+        holder.icon.imageTintList = ContextCompat.getColorStateList(
+            holder.itemView.context,
+            R.color.icon_tint,
+        )
         holder.label.text = Subjects.gradeOptionLabel(grade)
         holder.label.isSelected = true
+        holder.card.setCardBackgroundColor(
+            ContextCompat.getColor(holder.itemView.context, Subjects.gradeTileColorRes(grade)),
+        )
         val isProfile = grade == profileGrade
         holder.profileBadge.visibility = if (isProfile) View.VISIBLE else View.GONE
         holder.profileBadge.text = holder.itemView.context.getString(R.string.profiliniz)

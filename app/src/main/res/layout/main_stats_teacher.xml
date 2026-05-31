@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/teacherStatsCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    app:cardBackgroundColor="@color/stat_card_teacher"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/progress_track"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="4dp">
+
+            <TextView
+                style="@style/TextAppearance.Material3.TitleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/main_stats_teacher_title"
+                android:textColor="@color/icon_tint" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/statsCollapseToggle"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/main_stats_collapse"
+                android:minWidth="36dp"
+                android:minHeight="36dp"
+                android:visibility="gone"
+                app:icon="@drawable/baseline_keyboard_arrow_down_24"
+                app:iconTint="@color/icon_tint" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/statsRingsContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp">
+
+            <include
+                android:id="@+id/teacherRingReporting"
+                layout="@layout/view_main_stat_ring" />
+
+            <include
+                android:id="@+id/teacherRingClassStudy"
+                layout="@layout/view_main_stat_ring" />
+
+            <include
+                android:id="@+id/teacherRingRating"
+                layout="@layout/view_main_stat_ring" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

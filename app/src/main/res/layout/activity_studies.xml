@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        app:cardBackgroundColor="@color/tile_palette_6"
         app:cardCornerRadius="10dp">
 
 
@@ -26,6 +27,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
+                android:drawableStart="@drawable/ic_baseline_menu_book_24"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/icon_tint"
                 android:gravity="center"
                 android:text="@string/al_malar" />
 
@@ -33,12 +37,40 @@
             <TextView
                 android:id="@+id/studentNameForTeacher"
                 style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:gravity="center"
-                android:text="" />
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
+                android:requiresFadingEdge="horizontal"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text=""
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/curriculumSubtitleText"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="10dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
+                android:requiresFadingEdge="horizontal"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text=""
+                android:textAlignment="center" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -114,6 +146,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_baseline_timer_24"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/icon_tint"
                 android:gravity="center"
                 android:text="@string/zaman_aral" />
 
@@ -167,7 +202,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="horizontal"
-                        app:cardBackgroundColor="#EBECFA"
+                        app:cardBackgroundColor="@color/star_rating_5"
                         app:cardCornerRadius="50dp">
 
                         <LinearLayout
@@ -219,7 +254,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="horizontal"
-                        app:cardBackgroundColor="#EBECFA"
+                        app:cardBackgroundColor="@color/star_rating_4"
                         app:cardCornerRadius="50dp">
 
                         <LinearLayout
@@ -265,7 +300,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="horizontal"
-                        app:cardBackgroundColor="#EBECFA"
+                        app:cardBackgroundColor="@color/star_rating_3"
                         app:cardCornerRadius="50dp">
 
                         <LinearLayout
@@ -306,7 +341,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="horizontal"
-                        app:cardBackgroundColor="#EBECFA"
+                        app:cardBackgroundColor="@color/star_rating_2"
                         app:cardCornerRadius="50dp">
 
                         <LinearLayout
@@ -340,7 +375,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="horizontal"
-                        app:cardBackgroundColor="#EBECFA"
+                        app:cardBackgroundColor="@color/star_rating_1"
                         app:cardCornerRadius="50dp">
 
                         <LinearLayout
@@ -369,11 +404,20 @@
 
     </androidx.cardview.widget.CardView>
 
+    <include
+        android:id="@+id/studentStudiesStats"
+        layout="@layout/main_stats_student"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/studiesCard" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewStudies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/studiesCard">
+        android:layout_below="@id/studentStudiesStats"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 

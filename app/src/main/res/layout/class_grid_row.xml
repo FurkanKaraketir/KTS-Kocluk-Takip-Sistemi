@@ -15,16 +15,33 @@
         android:orientation="vertical">
 
 
+        <ImageView
+            android:id="@+id/subjectIconImage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@null"
+            app:tint="@color/icon_tint" />
+
         <TextView
             android:id="@+id/dersAdiTextView"
             style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:text="">
-
-        </TextView>
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:requiresFadingEdge="horizontal"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text=""
+            android:textAlignment="center" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.karaketir.coachingapp.R
+import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.databinding.StatsClassGridRowBinding
 import com.karaketir.coachingapp.models.Statistic
 
@@ -31,13 +33,22 @@ class StatisticsRecyclerAdapter(
 
                 val myItem = statisticList[position]
 
-                binding.statsDersAdi.text = myItem.dersAdi
-                binding.statsToplamCalisma.text = "${
-                    myItem.toplamCalisma.toFloat().format(2)
-                } dk"
-                binding.statsCozulenSoru.text = "${
-                    myItem.cozulenSoru.toFloat().format(2)
-                } Soru"
+                binding.statsDersAdi.text = Subjects.subjectDisplayLabel(myItem.dersAdi)
+                binding.statsSubjectIcon.setImageResource(Subjects.subjectIconRes(myItem.dersAdi))
+                binding.statsSubjectIcon.imageTintList = ContextCompat.getColorStateList(
+                    holder.itemView.context,
+                    R.color.icon_tint,
+                )
+                binding.statisticCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.itemView.context,
+                        Subjects.subjectTileColorResForName(myItem.dersAdi),
+                    ),
+                )
+                binding.statsToplamCalisma.text =
+                    "${myItem.toplamCalisma.toFloat().format(2)} dk"
+                binding.statsCozulenSoru.text =
+                    "${myItem.cozulenSoru.toFloat().format(2)} Soru"
 
 
             }

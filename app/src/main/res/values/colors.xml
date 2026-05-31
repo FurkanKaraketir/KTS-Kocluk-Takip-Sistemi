@@ -12,4 +12,48 @@
     <color name="red">#F73757</color>
     <color name="design_default_color_primary">#7023DD</color>
     <color name="design_default_color_on_primary">#FFFFFF</color>
+    <color name="brand_primary">#7023DD</color>
+    <!-- Semantic icon foreground: dark on light surfaces -->
+    <color name="icon_tint">#FF1A1A1A</color>
+    <color name="brand_secondary">#32C5FF</color>
+    <color name="brand_accent">#F73757</color>
+    <color name="progress_track">#1A1A1A1F</color>
+    <color name="progress_track_teacher">#3341551F</color>
+    <color name="brand_violet">#6D58FC</color>
+
+    <!-- Main home stat rings (student) -->
+    <color name="stat_ring_study">#0D9488</color>
+    <color name="stat_ring_questions">#B45309</color>
+    <color name="stat_ring_report">#BE185D</color>
+    <color name="stat_track_study">#0D948826</color>
+    <color name="stat_track_questions">#B4530926</color>
+    <color name="stat_track_report">#BE185D26</color>
+    <color name="stat_card_student">#E8F4FC</color>
+
+    <!-- Main home stat rings (teacher) -->
+    <color name="stat_ring_teacher_reporting">#4F46E5</color>
+    <color name="stat_ring_teacher_class">#0369A1</color>
+    <color name="stat_ring_teacher_rating">#7C3AED</color>
+    <color name="stat_track_teacher_reporting">#4F46E526</color>
+    <color name="stat_track_teacher_class">#0369A126</color>
+    <color name="stat_track_teacher_rating">#7C3AED26</color>
+    <color name="stat_card_teacher">#EEF2FF</color>
+    <color name="system_status_bar">#2A3063</color>
+    <color name="system_navigation_bar">#FFFFFFFF</color>
+
+    <!-- Pastel tile backgrounds (light mode) -->
+    <color name="tile_palette_0">#E3F2FD</color>
+    <color name="tile_palette_1">#F3E5F5</color>
+    <color name="tile_palette_2">#E8F5E9</color>
+    <color name="tile_palette_3">#FFF3E0</color>
+    <color name="tile_palette_4">#FCE4EC</color>
+    <color name="tile_palette_5">#E0F7FA</color>
+    <color name="tile_palette_6">#EDE7F6</color>
+    <color name="tile_palette_7">#FFF8E1</color>
+
+    <color name="star_rating_5">#EDE7F6</color>
+    <color name="star_rating_4">#E3F2FD</color>
+    <color name="star_rating_3">#E8F5E9</color>
+    <color name="star_rating_2">#FFF3E0</color>
+    <color name="star_rating_1">#FCE4EC</color>
 </resources>

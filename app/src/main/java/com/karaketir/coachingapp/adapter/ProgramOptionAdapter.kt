@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class ProgramOptionAdapter(
 
     class ProgramHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val card: MaterialCardView = itemView.findViewById(R.id.gradeTileCard)
+        val icon: ImageView = itemView.findViewById(R.id.tileIconImage)
         val label: TextView = itemView.findViewById(R.id.gradeLabelText)
         val profileBadge: TextView = itemView.findViewById(R.id.profileBadgeText)
     }
@@ -34,8 +36,16 @@ class ProgramOptionAdapter(
 
     override fun onBindViewHolder(holder: ProgramHolder, position: Int) {
         val program = programs[position]
+        holder.icon.setImageResource(Subjects.programIconRes(program))
+        holder.icon.imageTintList = ContextCompat.getColorStateList(
+            holder.itemView.context,
+            R.color.icon_tint,
+        )
         holder.label.text = Subjects.programHeaderLabel(program)
         holder.label.isSelected = true
+        holder.card.setCardBackgroundColor(
+            ContextCompat.getColor(holder.itemView.context, Subjects.programTileColorRes(program)),
+        )
         val isHighlighted = program == highlightProgram
         val isProfilePreference = program == profilePreferredProgram
         holder.profileBadge.visibility = if (isProfilePreference) View.VISIBLE else View.GONE

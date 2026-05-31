@@ -38,10 +38,12 @@
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="25dp"
                         android:layout_marginBottom="25dp"
+                        android:drawableStart="@drawable/ic_baseline_auto_graph_24"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/icon_tint"
                         android:gravity="center"
                         android:text="@string/ko_luk_statistikleri"
-                        android:textSize="20sp"
-                        app:icon="@drawable/baseline_account_circle_24" />
+                        android:textSize="20sp" />
 
 
                 </RelativeLayout>

@@ -27,12 +27,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.ClassesAdapter
+import com.karaketir.coachingapp.curriculum.CurriculumProgram
+import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.curriculum.StudyLabels
+import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
+import com.karaketir.coachingapp.fragments.MainHomeStatsBinder
+import com.karaketir.coachingapp.models.Study
 import com.karaketir.coachingapp.services.ExcelExportHelper
 import com.karaketir.coachingapp.services.FcmNotificationsSenderService
 import com.karaketir.coachingapp.services.StudyQueryHelper
@@ -54,7 +58,8 @@ class StudiesActivity : AppCompatActivity() {
     private lateinit var recyclerViewStudiesAdapter: ClassesAdapter
     private lateinit var recyclerViewStudies: RecyclerView
     private var studyList = mutableListOf<com.karaketir.coachingapp.models.Class>()
-    private var classList = mutableListOf<String>()
+    private var studentGrade = 12
+    private var studentProgram = CurriculumProgram.LEGACY
     private lateinit var baslangicTarihi: Date
     private lateinit var bitisTarihi: Date
     private lateinit var binding: ActivityStudiesBinding
@@ -113,9 +118,11 @@ class StudiesActivity : AppCompatActivity() {
         val twoStarButton = binding.twoStarButton
         val oneStarButton = binding.oneStarButton
         val zamanAraligiTextView = binding.zamanAraligiTextView
+        val curriculumSubtitleText = binding.curriculumSubtitleText
         val excelCreateButton = binding.excelStudentButton
 
         setupStudyRecyclerView(studyList)
+        setupStudentProgressStats()
 
         previousRatingsButton.setOnClickListener {
             val newIntent = Intent(this, PreviousRatingsActivity::class.java)
@@ -130,14 +137,17 @@ class StudiesActivity : AppCompatActivity() {
         db.collection("User").document(studentID).get().addOnSuccessListener {
             name = it.get("nameAndSurname").toString()
             nameTextView.text = name
+            nameTextView.isSelected = true
         }
+        curriculumSubtitleText.isSelected = true
         zamanAraligiTextView.text = secilenZamanAraligi
 
         excelCreateButton.setOnClickListener {
             exportStudentStudiesExcel()
         }
 
-        loadStudiesForDateRange(toplamSureText, toplamSoruText)
+        loadStudiesForDateRange(toplamSureText, toplamSoruText, curriculumSubtitleText)
+        loadStudentProgressStats()
 
 
 
@@ -206,19 +216,70 @@ class StudiesActivity : AppCompatActivity() {
 
     private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
+    private fun setupStudentProgressStats() {
+        val statsRoot = binding.root.findViewById<View>(R.id.studentStudiesStats)
+        statsRoot.findViewById<View>(R.id.editWeeklyGoalsButton)?.visibility = View.GONE
+        MainHomeStatsBinder.setupStatsCollapse(
+            statsRoot,
+            MainHomeStatsBinder.HomeStatsRole.STUDENT,
+            showToggle = false,
+        )
+        statsRoot.findViewById<android.widget.TextView>(R.id.studentStatsTitle)?.text =
+            getString(R.string.studies_student_stats_title, secilenZamanAraligi)
+    }
+
+    private fun loadStudentProgressStats() {
+        lifecycleScope.launch {
+            try {
+                val snap = StudyQueryHelper.studiesInRangeQuery(
+                    db,
+                    kurumKodu.toString(),
+                    studentID,
+                    baslangicTarihi,
+                    bitisTarihi,
+                ).get().await()
+                val studies = snap.documents.map { Study.fromDocument(it, studentID) }
+                val goals = StudyQueryHelper.fetchWeeklyGoalsForStudent(
+                    db,
+                    kurumKodu.toString(),
+                    studentID,
+                )
+                val rangeDays = ExcelExportHelper.daysBetween(baslangicTarihi, bitisTarihi)
+                val stats = MainHomeStatsBinder.computeStudentStats(
+                    studies,
+                    goals.minutes,
+                    goals.questions,
+                    goals.reportDays,
+                    rangeDays,
+                )
+                val statsRoot = binding.root.findViewById<View>(R.id.studentStudiesStats)
+                MainHomeStatsBinder.bindStudentRings(
+                    MainHomeStatsBinder.ringViewsFromInclude(statsRoot.findViewById(R.id.studentRingStudy)),
+                    MainHomeStatsBinder.ringViewsFromInclude(statsRoot.findViewById(R.id.studentRingQuestions)),
+                    MainHomeStatsBinder.ringViewsFromInclude(statsRoot.findViewById(R.id.studentRingReport)),
+                    stats,
+                    resources,
+                    rangeDays,
+                )
+            } catch (e: Exception) {
+                println("loadStudentProgressStats: ${e.localizedMessage}")
+            }
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     private fun loadStudiesForDateRange(
         toplamSureText: android.widget.TextView,
         toplamSoruText: android.widget.TextView,
+        curriculumSubtitleText: android.widget.TextView,
     ) {
         lifecycleScope.launch {
             try {
-                val lessonsSnap = db.collection("Lessons")
-                    .orderBy("dersAdi", Query.Direction.ASCENDING)
-                    .get()
-                    .await()
-                classList.clear()
-                lessonsSnap.documents.forEach { classList.add(it.id) }
+                val (grade, program) = GradeCurriculumRepository.preferredProgramForStudent(db, studentID)
+                studentGrade = grade
+                studentProgram = program
+                curriculumSubtitleText.text = StudyLabels.programDisplayName(program, grade)
+                curriculumSubtitleText.isSelected = true
 
                 val byDers = StudyQueryHelper.fetchAggregatedByDers(
                     db,
@@ -228,10 +289,15 @@ class StudiesActivity : AppCompatActivity() {
                     bitisTarihi,
                 )
 
+                val subjectNames = Subjects.subjectNamesForProgram(program, grade).toMutableList()
+                byDers.keys.forEach { name ->
+                    if (name !in subjectNames) subjectNames.add(name)
+                }
+
                 studyList.clear()
                 var toplamSure = 0
                 var toplamSoru = 0
-                for (dersAdi in classList) {
+                for (dersAdi in subjectNames) {
                     val totals = byDers[dersAdi] ?: StudyTotals()
                     toplamSure += totals.minutes
                     toplamSoru += totals.questions

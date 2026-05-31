@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -57,6 +58,8 @@ import com.karaketir.coachingapp.models.Study
 import com.karaketir.coachingapp.services.AppUpdateChecker
 import com.karaketir.coachingapp.services.AppUpdatePrompt
 import com.karaketir.coachingapp.services.ExcelExportHelper
+import com.karaketir.coachingapp.services.StatRangeScaling
+import com.karaketir.coachingapp.services.StudentWeeklyGoalsPreferences
 import com.karaketir.coachingapp.services.StudyQueryHelper
 import com.karaketir.coachingapp.services.clearCache
 import kotlinx.coroutines.launch
@@ -118,6 +121,10 @@ class MainFragment : Fragment() {
     private var teacher = ""
     private var personType = ""
     private var name = ""
+    private var weeklyGoalMinutes = MainHomeStatsBinder.defaultWeeklyGoalMinutes()
+    private var weeklyGoalQuestions = MainHomeStatsBinder.defaultWeeklyGoalQuestions()
+    private var weeklyGoalReportDays = MainHomeStatsBinder.defaultWeeklyReportDaysTarget()
+    private var teacherWeeklyGoalMinutesSum = 0
     private lateinit var textYKSsayac: TextView
     private lateinit var mBinding: FragmentMainBinding
 
@@ -325,6 +332,13 @@ class MainFragment : Fragment() {
                         allStudentsBtn.visibility = View.GONE
                         noReportButton.visibility = View.GONE
                         messageButton.visibility = View.GONE
+                        setHomeStatsVisibility(studentVisible = true)
+                        setupHomeStatsCollapse(studentVisible = true)
+
+                        applyLocalWeeklyGoalPreferences()
+                        loadWeeklyGoalsForStudent()
+                        setupStudentStatsGoalsEditor()
+                        refreshStudentHomeStats()
 
                         val cal: Calendar = Calendar.getInstance()
                         cal.add(Calendar.DAY_OF_YEAR, -7)
@@ -348,6 +362,8 @@ class MainFragment : Fragment() {
                                 setupStudyRecyclerView(studyList)
 
                                 recyclerViewPreviousStudiesAdapter.notifyDataSetChanged()
+                                applyLocalWeeklyGoalPreferences()
+                                refreshStudentHomeStats()
 
                             }
 
@@ -372,6 +388,9 @@ class MainFragment : Fragment() {
                         gradeSpinner.visibility = View.VISIBLE
                         teacherCardView.visibility = View.VISIBLE
                         messageButton.visibility = View.VISIBLE
+                        setHomeStatsVisibility(studentVisible = false)
+                        setupHomeStatsCollapse(studentVisible = false)
+                        refreshTeacherHomeStats()
                         updateTime(grade)
 
                         messageButton.setOnClickListener {
@@ -797,6 +816,7 @@ class MainFragment : Fragment() {
 
                     recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
                     refreshStudentRowStatuses()
+                    refreshTeacherHomeStats()
 
                 }
         } else {
@@ -825,13 +845,204 @@ class MainFragment : Fragment() {
 
                     recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
                     refreshStudentRowStatuses()
+                    refreshTeacherHomeStats()
 
                 }
         }
     }
 
+    private fun setHomeStatsVisibility(studentVisible: Boolean) {
+        if (!isBindingAvailable()) return
+        mBinding.root.findViewById<View>(R.id.studentHomeStats)?.visibility =
+            if (studentVisible) View.VISIBLE else View.GONE
+        mBinding.root.findViewById<View>(R.id.teacherHomeStats)?.visibility =
+            if (studentVisible) View.GONE else View.VISIBLE
+    }
+
+    fun reloadStudentWeeklyGoalsFromPreferences() {
+        Log.d(WEEKLY_GOALS_TAG, "reloadStudentWeeklyGoalsFromPreferences: personType=$personType")
+        if (personType != "Student" || !isBindingAvailable()) {
+            Log.d(WEEKLY_GOALS_TAG, "reloadStudentWeeklyGoalsFromPreferences: skipped (not student or no binding)")
+            return
+        }
+        applyLocalWeeklyGoalPreferences()
+        refreshStudentHomeStats()
+    }
+
+    private fun applyLocalWeeklyGoalPreferences() {
+        val ctx = context ?: run {
+            Log.w(WEEKLY_GOALS_TAG, "applyLocalWeeklyGoalPreferences: context null")
+            return
+        }
+        val prefs = StudentWeeklyGoalsPreferences(ctx)
+        weeklyGoalMinutes = prefs.getMinutes()
+        weeklyGoalQuestions = prefs.getQuestions()
+        weeklyGoalReportDays = prefs.getReportDays()
+        Log.d(
+            WEEKLY_GOALS_TAG,
+            "applyLocalWeeklyGoalPreferences: source=student_prefs " +
+                "minutes=$weeklyGoalMinutes questions=$weeklyGoalQuestions reportDays=$weeklyGoalReportDays",
+        )
+        syncWeeklyGoalsToFirestore()
+    }
+
+    private fun setupStudentStatsGoalsEditor() {
+        if (!isBindingAvailable()) return
+        mBinding.root.findViewById<View>(R.id.editWeeklyGoalsButton)?.setOnClickListener {
+            mainActivity?.openStudentSettings()
+        }
+    }
+
+    private fun setupHomeStatsCollapse(studentVisible: Boolean) {
+        if (!isBindingAvailable()) return
+        if (studentVisible) {
+            mBinding.root.findViewById<View>(R.id.studentHomeStats)?.let {
+                MainHomeStatsBinder.setupStatsCollapse(it, MainHomeStatsBinder.HomeStatsRole.STUDENT)
+            }
+        } else {
+            mBinding.root.findViewById<View>(R.id.teacherHomeStats)?.let {
+                MainHomeStatsBinder.setupStatsCollapse(it, MainHomeStatsBinder.HomeStatsRole.TEACHER)
+            }
+        }
+    }
+
+    private fun loadWeeklyGoalsForStudent() {
+        val uid = auth.currentUser?.uid ?: run {
+            Log.w(WEEKLY_GOALS_TAG, "loadWeeklyGoalsForStudent: no auth uid")
+            return
+        }
+        Log.d(WEEKLY_GOALS_TAG, "loadWeeklyGoalsForStudent: uid=...${truncatedUid(uid)} kurumKodu=$kurumKodu")
+        applyLocalWeeklyGoalPreferences()
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(uid).collection("HaftalikHedefler")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w(WEEKLY_GOALS_TAG, "loadWeeklyGoalsForStudent: Firestore error=${error.message}")
+                }
+                if (snapshot == null || !isBindingAvailable()) {
+                    Log.w(
+                        WEEKLY_GOALS_TAG,
+                        "loadWeeklyGoalsForStudent: snapshot null=${snapshot == null} bindingAvailable=${isBindingAvailable()}",
+                    )
+                    return@addSnapshotListener
+                }
+                var subjectGoalMinutes = 0
+                var subjectGoalQuestions = 0
+                for (document in snapshot) {
+                    val docMinutes = document.get("toplamCalisma")?.toString()?.toIntOrNull() ?: 0
+                    val docQuestions = document.get("çözülenSoru")?.toString()?.toIntOrNull() ?: 0
+                    subjectGoalMinutes += docMinutes
+                    subjectGoalQuestions += docQuestions
+                    Log.d(
+                        WEEKLY_GOALS_TAG,
+                        "HaftalikHedefler doc=...${document.id.takeLast(4)} " +
+                            "toplamCalisma=$docMinutes çözülenSoru=$docQuestions",
+                    )
+                }
+                Log.d(
+                    WEEKLY_GOALS_TAG,
+                    "loadWeeklyGoalsForStudent: docCount=${snapshot.size()} " +
+                        "subjectGoalMinutes=$subjectGoalMinutes subjectGoalQuestions=$subjectGoalQuestions " +
+                        "(per-subject teacher goals; not used for main stats rings)",
+                )
+                applyLocalWeeklyGoalPreferences()
+                Log.d(
+                    WEEKLY_GOALS_TAG,
+                    "loadWeeklyGoalsForStudent: main stats source=student_prefs " +
+                        "minutes=$weeklyGoalMinutes questions=$weeklyGoalQuestions reportDays=$weeklyGoalReportDays",
+                )
+                refreshStudentHomeStats()
+            }
+    }
+
+    private fun syncWeeklyGoalsToFirestore() {
+        if (personType != "Student") return
+        val uid = auth.currentUser?.uid ?: return
+        val ctx = context ?: return
+        db.collection("School").document(kurumKodu.toString()).collection("Student")
+            .document(uid)
+            .set(
+                StudentWeeklyGoalsPreferences(ctx).firestoreSyncFields(
+                    weeklyGoalMinutes,
+                    weeklyGoalQuestions,
+                    weeklyGoalReportDays,
+                ),
+                com.google.firebase.firestore.SetOptions.merge(),
+            )
+            .addOnSuccessListener {
+                Log.d(
+                    WEEKLY_GOALS_TAG,
+                    "syncWeeklyGoalsToFirestore: uid=...${truncatedUid(uid)} " +
+                        "minutes=$weeklyGoalMinutes questions=$weeklyGoalQuestions reportDays=$weeklyGoalReportDays",
+                )
+            }
+            .addOnFailureListener { error ->
+                Log.w(WEEKLY_GOALS_TAG, "syncWeeklyGoalsToFirestore: failed ${error.message}")
+            }
+    }
+
+    private fun refreshStudentHomeStats() {
+        if (personType != "Student" || !isBindingAvailable()) return
+        Log.d(
+            WEEKLY_GOALS_TAG,
+            "refreshStudentHomeStats: source=student_prefs studyCount=${studyList.size} targets " +
+                "minutes=$weeklyGoalMinutes questions=$weeklyGoalQuestions reportDays=$weeklyGoalReportDays",
+        )
+        val rangeDays = StatRangeScaling.DAYS_PER_WEEK
+        val stats = MainHomeStatsBinder.computeStudentStats(
+            studyList,
+            weeklyGoalMinutes,
+            weeklyGoalQuestions,
+            weeklyGoalReportDays,
+            rangeDays,
+        )
+        val root = mBinding.root
+        MainHomeStatsBinder.bindStudentRings(
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.studentRingStudy)),
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.studentRingQuestions)),
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.studentRingReport)),
+            stats,
+            resources,
+            rangeDays,
+        )
+    }
+
+    private fun refreshTeacherHomeStats(
+        reportingCount: Int? = null,
+        ratingCount: Int? = null,
+        classStudyMinutes: Int? = null,
+        weeklyGoalMinutesSum: Int? = null,
+    ) {
+        if (personType != "Teacher" || !isBindingAvailable()) return
+
+        if (weeklyGoalMinutesSum != null) {
+            teacherWeeklyGoalMinutesSum = weeklyGoalMinutesSum
+        }
+
+        val timeSelected = secilenZaman != "Seçiniz"
+        val stats = MainHomeStatsBinder.computeTeacherStats(
+            studentCount = studentList.size,
+            reportingCount = reportingCount ?: 0,
+            ratingCount = ratingCount ?: 0,
+            classStudyMinutes = classStudyMinutes ?: 0,
+            weeklyGoalMinutesSum = teacherWeeklyGoalMinutesSum,
+            rangeDays = ExcelExportHelper.daysBetween(baslangicTarihi, bitisTarihi),
+            timeRangeSelected = timeSelected,
+        )
+        val root = mBinding.root
+        MainHomeStatsBinder.bindTeacherRings(
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.teacherRingReporting)),
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.teacherRingClassStudy)),
+            MainHomeStatsBinder.ringViewsFromInclude(root.findViewById(R.id.teacherRingRating)),
+            stats,
+            resources,
+        )
+    }
+
     private fun refreshStudentRowStatuses() {
         if (personType != "Teacher" || studentList.isEmpty() || secilenZaman == "Seçiniz") {
+            teacherWeeklyGoalMinutesSum = 0
+            refreshTeacherHomeStats()
             return
         }
         if (!::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
@@ -839,19 +1050,54 @@ class MainFragment : Fragment() {
         }
         lifecycleScope.launch {
             try {
+                val studentIds = studentList.map { it.id }
                 val statuses = StudyQueryHelper.fetchStudentRowStatuses(
                     db,
                     kurumKodu.toString(),
-                    studentList.map { it.id },
+                    studentIds,
                     baslangicTarihi,
                     bitisTarihi,
                 )
+                val studiesByStudent = StudyQueryHelper.fetchStudiesByStudentIds(
+                    db,
+                    kurumKodu.toString(),
+                    studentIds,
+                    baslangicTarihi,
+                    bitisTarihi,
+                )
+                val weeklyGoalsByStudent = StudyQueryHelper.fetchWeeklyGoalMinutesByStudentIds(
+                    db,
+                    kurumKodu.toString(),
+                    studentIds,
+                )
+                val weeklyGoalMinutesSum = weeklyGoalsByStudent.values.sum()
+                Log.d(
+                    WEEKLY_GOALS_TAG,
+                    "refreshStudentRowStatuses: students=${studentIds.size} " +
+                        "weeklyGoalMinutesSum=$weeklyGoalMinutesSum " +
+                        "perStudent=${weeklyGoalsByStudent.mapValues { it.value }}",
+                )
+                val reportingCount = statuses.values.count { it.hasStudyInRange }
+                val ratingCount = statuses.values.count { it.ratingStars != null }
+                var classMinutes = 0
+                for (documents in studiesByStudent.values) {
+                    classMinutes += StudyQueryHelper.totalFromDocuments(documents).minutes
+                }
                 if (!isBindingAvailable() || !::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
                     return@launch
                 }
                 recyclerViewMyStudentsRecyclerAdapter.updateRowStatuses(statuses)
+                refreshTeacherHomeStats(
+                    reportingCount = reportingCount,
+                    ratingCount = ratingCount,
+                    classStudyMinutes = classMinutes,
+                    weeklyGoalMinutesSum = weeklyGoalMinutesSum,
+                )
             } catch (e: Exception) {
                 println(e.localizedMessage)
+                if (isBindingAvailable()) {
+                    refreshTeacherHomeStats()
+                }
             }
         }
     }
@@ -1019,6 +1265,11 @@ class MainFragment : Fragment() {
         }
 
         super.onResume()
+        if (personType == "Student" && isBindingAvailable()) {
+            mainActivity?.consumeStudentWeeklyGoalsDirty()
+            applyLocalWeeklyGoalPreferences()
+            refreshStudentHomeStats()
+        }
     }
 
     private val requestPermissionLauncher =
@@ -1049,8 +1300,17 @@ class MainFragment : Fragment() {
         val sheet: Sheet = workbook.createSheet(sheetName)
         val headerStyle = ExcelExportHelper.createHeaderStyle(workbook)
 
-        val headers = if (mode == ExcelReportMode.SUMMARY) {
-            arrayOf(
+        val reportContext = ExcelExportHelper.ReportContext(
+            title = getString(R.string.excel_rapor_ogrenci_calisma),
+            gradeLabel = secilenGrade,
+            timeRangeLabel = secilenZaman,
+            startDate = baslangicTarihi,
+            endDate = bitisTarihi,
+            extraLines = listOf("Öğrenci sayısı: ${studentList.size}")
+        )
+
+        val dataStartRow = if (mode == ExcelReportMode.SUMMARY) {
+            val headers = arrayOf(
                 "Öğrenci Adı",
                 "Sınıf",
                 "Toplam Çalışma Süresi (dk)",
@@ -1061,38 +1321,17 @@ class MainFragment : Fragment() {
                 "Toplam Çalışma Sayısı",
                 "Günlük Ortalama Çalışma Sayısı"
             )
+            val infoEnd = ExcelExportHelper.writeReportInfoBlock(sheet, reportContext, headers.size)
+            ExcelExportHelper.writeStyledHeaderRow(sheet, headers, headerStyle, infoEnd)
         } else {
-            arrayOf(
-                "Öğrenci Adı",
-                "Sınıf",
-                "Ders",
-                "Toplam Çalışma Süresi (dk)",
-                "Toplam Çalışma Süresi (saat)",
-                "Toplam Soru Sayısı",
-                "Günlük Ortalama Soru"
-            )
+            // Ders sütunları veri yüklendikten sonra yazılır; üst bilgi geniş sütun aralığı kullanır.
+            ExcelExportHelper.writeReportInfoBlock(sheet, reportContext, 32)
         }
-
-        val infoEnd = ExcelExportHelper.writeReportInfoBlock(
-            sheet,
-            ExcelExportHelper.ReportContext(
-                title = getString(R.string.excel_rapor_ogrenci_calisma),
-                gradeLabel = secilenGrade,
-                timeRangeLabel = secilenZaman,
-                startDate = baslangicTarihi,
-                endDate = bitisTarihi,
-                extraLines = listOf("Öğrenci sayısı: ${studentList.size}")
-            ),
-            headers.size
-        )
-        val dataStartRow = ExcelExportHelper.writeStyledHeaderRow(
-            sheet, headers, headerStyle, infoEnd
-        )
 
         mainActivity?.let { clearCache(it) }
         Toast.makeText(activity, getString(R.string.excel_lutfen_bekleyin), Toast.LENGTH_SHORT).show()
 
-        addData(sheet, mode, dataStartRow) {
+        addData(sheet, mode, dataStartRow, headerStyle) {
             saveExcelWorkbook(mode)
         }
     }
@@ -1170,6 +1409,7 @@ class MainFragment : Fragment() {
         sheet: Sheet,
         mode: ExcelReportMode,
         dataStartRow: Int,
+        headerStyle: CellStyle,
         onComplete: () -> Unit
     ) {
         if (studentList.isEmpty()) {
@@ -1187,7 +1427,7 @@ class MainFragment : Fragment() {
                     bitisTarihi,
                 )
                 if (mode == ExcelReportMode.BY_LESSON) {
-                    writeLessonExcelRows(sheet, dataStartRow, studiesByStudent)
+                    writeLessonExcelRows(sheet, dataStartRow, headerStyle, studiesByStudent)
                 } else {
                     writeSummaryExcelRows(sheet, dataStartRow, studiesByStudent)
                 }
@@ -1282,18 +1522,31 @@ class MainFragment : Fragment() {
         }
     }
 
+    private data class LessonExcelRow(
+        val student: Student,
+        val byLesson: Map<String, Pair<Double, Double>>,
+        val totalTime: Double,
+        val totalQuestions: Double,
+    )
+
     private fun writeLessonExcelRows(
         sheet: Sheet,
-        dataStartRow: Int,
+        headerRowIndex: Int,
+        headerStyle: CellStyle,
         studiesByStudent: Map<String, List<com.google.firebase.firestore.DocumentSnapshot>>,
     ) {
-        var rowIndex = dataStartRow
         val decimalStyle = ExcelExportHelper.createDecimalStyle(workbook)
         val daysBetween = ExcelExportHelper.daysBetween(baslangicTarihi, bitisTarihi)
+        val allLessons = sortedSetOf<String>()
+        val rowsData = mutableListOf<LessonExcelRow>()
 
         for (student in studentList) {
             val studies = studiesByStudent[student.id].orEmpty()
+            if (studies.isEmpty()) continue
+
             val byLesson = linkedMapOf<String, Pair<Double, Double>>()
+            var totalTime = 0.0
+            var totalQuestions = 0.0
 
             for (study in studies) {
                 val ders = study.getString("dersAdi")?.takeIf { it.isNotBlank() } ?: "Belirtilmemiş"
@@ -1301,30 +1554,63 @@ class MainFragment : Fragment() {
                 val questions = study.get("çözülenSoru")?.toString()?.toDoubleOrNull() ?: 0.0
                 val current = byLesson.getOrDefault(ders, 0.0 to 0.0)
                 byLesson[ders] = (current.first + time) to (current.second + questions)
+                totalTime += time
+                totalQuestions += questions
             }
 
-            for ((ders, totals) in byLesson.toSortedMap()) {
-                val row = sheet.createRow(rowIndex++)
-                row.createCell(0).setCellValue(student.studentName)
-                row.createCell(1).setCellValue(student.grade.toString())
-                row.createCell(2).setCellValue(ders)
+            allLessons.addAll(byLesson.keys)
+            rowsData.add(LessonExcelRow(student, byLesson, totalTime, totalQuestions))
+        }
 
-                row.createCell(3).apply {
+        val sortedLessons = allLessons.sorted()
+        val lessonHeaders = sortedLessons.flatMap { listOf("$it Süre (dk)", "$it Soru") }
+        val headers = arrayOf(
+            "Öğrenci Adı",
+            "Sınıf",
+            *lessonHeaders.toTypedArray(),
+            "Toplam Süre (dk)",
+            "Toplam Süre (saat)",
+            "Toplam Soru",
+            "Günlük Ortalama Soru",
+        )
+
+        var rowIndex = ExcelExportHelper.writeStyledHeaderRow(
+            sheet, headers, headerStyle, headerRowIndex
+        )
+
+        for (rowData in rowsData) {
+            val row = sheet.createRow(rowIndex++)
+            row.createCell(0).setCellValue(rowData.student.studentName)
+            row.createCell(1).setCellValue(rowData.student.grade.toString())
+
+            var col = 2
+            for (ders in sortedLessons) {
+                val totals = rowData.byLesson[ders] ?: (0.0 to 0.0)
+                row.createCell(col++).apply {
                     setCellValue(totals.first)
                     cellStyle = decimalStyle
                 }
-                row.createCell(4).apply {
-                    setCellValue(totals.first / 60.0)
-                    cellStyle = decimalStyle
-                }
-                row.createCell(5).apply {
+                row.createCell(col++).apply {
                     setCellValue(totals.second)
                     cellStyle = decimalStyle
                 }
-                row.createCell(6).apply {
-                    setCellValue(totals.second / daysBetween)
-                    cellStyle = decimalStyle
-                }
+            }
+
+            row.createCell(col++).apply {
+                setCellValue(rowData.totalTime)
+                cellStyle = decimalStyle
+            }
+            row.createCell(col++).apply {
+                setCellValue(rowData.totalTime / 60.0)
+                cellStyle = decimalStyle
+            }
+            row.createCell(col++).apply {
+                setCellValue(rowData.totalQuestions)
+                cellStyle = decimalStyle
+            }
+            row.createCell(col).apply {
+                setCellValue(rowData.totalQuestions / daysBetween)
+                cellStyle = decimalStyle
             }
         }
     }
@@ -1334,6 +1620,12 @@ class MainFragment : Fragment() {
         val prefix = if (mode == ExcelReportMode.SUMMARY) "Ogrenci_Ozet" else "Ogrenci_Ders"
         val fileName = ExcelExportHelper.buildFileName(prefix, secilenGrade, secilenZaman)
         ExcelExportHelper.saveWorkbook(activity, workbook, fileName)
+    }
+
+    private fun truncatedUid(uid: String): String = uid.takeLast(4)
+
+    companion object {
+        private const val WEEKLY_GOALS_TAG = "KTS:WeeklyGoals"
     }
 
 }

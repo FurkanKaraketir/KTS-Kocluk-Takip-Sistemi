@@ -15,9 +15,19 @@ data class StudyTotals(
     val questions: Int = 0,
 )
 
+data class StudentWeeklyGoals(
+    val minutes: Int = StudentWeeklyGoalsPreferences.DEFAULT_MINUTES,
+    val questions: Int = StudentWeeklyGoalsPreferences.DEFAULT_QUESTIONS,
+    val reportDays: Int = StudentWeeklyGoalsPreferences.DEFAULT_REPORT_DAYS,
+)
+
 object StudyQueryHelper {
 
     private const val PARALLEL_STUDENT_QUERIES = 8
+
+    const val FIELD_WEEKLY_GOAL_MINUTES = "weeklyGoalMinutes"
+    const val FIELD_WEEKLY_GOAL_QUESTIONS = "weeklyGoalQuestions"
+    const val FIELD_WEEKLY_GOAL_REPORT_DAYS = "weeklyGoalReportDays"
 
     fun studiesInRangeQuery(
         db: FirebaseFirestore,
@@ -154,6 +164,52 @@ object StudyQueryHelper {
                             .get()
                             .await()
                         id to totalFromDocuments(snap.documents).minutes
+                    }
+                }.awaitAll()
+            }.toMap()
+        }
+    }
+
+    /** Öğrencinin Firestore'daki haftalık hedefleri (ana sayfa / öğretmen çalışma ekranı). */
+    suspend fun fetchWeeklyGoalsForStudent(
+        db: FirebaseFirestore,
+        kurumKodu: String,
+        studentId: String,
+    ): StudentWeeklyGoals {
+        val snap = db.collection("School")
+            .document(kurumKodu)
+            .collection("Student")
+            .document(studentId)
+            .get()
+            .await()
+        val minutes = snap.getLong(FIELD_WEEKLY_GOAL_MINUTES)?.toInt()?.let {
+            StudentWeeklyGoalsPreferences.clampMinutes(it)
+        } ?: StudentWeeklyGoalsPreferences.DEFAULT_MINUTES
+        val questions = snap.getLong(FIELD_WEEKLY_GOAL_QUESTIONS)?.toInt()?.let {
+            StudentWeeklyGoalsPreferences.clampQuestions(it)
+        } ?: StudentWeeklyGoalsPreferences.DEFAULT_QUESTIONS
+        val reportDays = snap.getLong(FIELD_WEEKLY_GOAL_REPORT_DAYS)?.toInt()?.let {
+            StudentWeeklyGoalsPreferences.clampReportDays(it)
+        } ?: StudentWeeklyGoalsPreferences.DEFAULT_REPORT_DAYS
+        return StudentWeeklyGoals(minutes, questions, reportDays)
+    }
+
+    /**
+     * Öğrenci haftalık çalışma hedefi (dk). Ayarlardan Firestore'a yazılır;
+     * alan yoksa [StudentWeeklyGoalsPreferences.DEFAULT_MINUTES] kullanılır.
+     */
+    suspend fun fetchWeeklyGoalMinutesByStudentIds(
+        db: FirebaseFirestore,
+        kurumKodu: String,
+        studentIds: List<String>,
+    ): Map<String, Int> {
+        if (studentIds.isEmpty()) return emptyMap()
+        return coroutineScope {
+            studentIds.chunked(PARALLEL_STUDENT_QUERIES).flatMap { chunk ->
+                chunk.map { studentId ->
+                    async {
+                        val goals = fetchWeeklyGoalsForStudent(db, kurumKodu, studentId)
+                        studentId to goals.minutes
                     }
                 }.awaitAll()
             }.toMap()

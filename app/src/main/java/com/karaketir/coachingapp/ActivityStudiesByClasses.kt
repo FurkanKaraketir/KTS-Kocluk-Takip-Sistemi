@@ -17,12 +17,11 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.karaketir.coachingapp.adapter.StudiesRecyclerAdapter
 import com.karaketir.coachingapp.curriculum.CurriculumProgram
-import com.karaketir.coachingapp.curriculum.GradeCurriculumConfig
 import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
+import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.databinding.ActivityStudiesByClassesBinding
 import com.karaketir.coachingapp.models.Study
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 class ActivityStudiesByClasses : AppCompatActivity() {
@@ -70,7 +69,8 @@ class ActivityStudiesByClasses : AppCompatActivity() {
             }
         }
 
-        binding.dersAdiStudyTextView.text = secilenDersAdi
+        binding.dersAdiStudyTextView.text = Subjects.subjectDisplayLabel(secilenDersAdi)
+        binding.dersAdiStudyTextView.isSelected = true
         recyclerView.layoutManager = GridLayoutManager(applicationContext, 2)
         recyclerAdapter =
             StudiesRecyclerAdapter(studyList, secilenZamanAraligi, kurumKodu, "Teacher")
@@ -94,19 +94,9 @@ class ActivityStudiesByClasses : AppCompatActivity() {
     }
 
     private suspend fun loadStudentProgram(studentID: String) {
-        try {
-            val studentSnap = db.collection("User").document(studentID).get().await()
-            studentGrade = studentSnap.getLong("grade")?.toInt()
-                ?: studentSnap.getString("grade")?.toIntOrNull()
-                ?: 12
-            val config = GradeCurriculumRepository.load(db)
-            studentProgram = GradeCurriculumRepository.programForGrade(config, studentGrade)
-        } catch (_: Exception) {
-            studentProgram = GradeCurriculumRepository.programForGrade(
-                GradeCurriculumRepository.defaultConfig(),
-                studentGrade,
-            )
-        }
+        val (grade, program) = GradeCurriculumRepository.preferredProgramForStudent(db, studentID)
+        studentGrade = grade
+        studentProgram = program
     }
 
     private fun showLegacyTurDialog(dersAdi: String, zamanAraligi: String, studentID: String) {

@@ -175,7 +175,15 @@ class ClassesActivity : AppCompatActivity() {
     private fun handleSubjectClick(dersAdi: String) {
         if (subjectBusy) return
         when (dersAdi) {
-            "Paragraf", "Problem" -> openLegacyStudy(dersAdi, "TYT")
+            "Paragraf", "Problem" -> when (activeProgram()) {
+                CurriculumProgram.LEGACY -> openLegacyStudy(dersAdi, "TYT")
+                CurriculumProgram.TYMM -> openMaarifStudy(
+                    dersAdi = dersAdi,
+                    sinif = selectedGrade,
+                    temaId = "",
+                    temaAdi = "",
+                )
+            }
             "Diğer" -> openOtherStudy()
             else -> when (activeProgram()) {
                 CurriculumProgram.LEGACY -> showLegacyExamTypePopup(dersAdi)

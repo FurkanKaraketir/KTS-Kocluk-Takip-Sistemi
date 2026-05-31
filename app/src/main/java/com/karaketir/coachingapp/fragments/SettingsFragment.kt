@@ -2,6 +2,8 @@ package com.karaketir.coachingapp.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.core.os.bundleOf
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,8 @@ import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.curriculum.StudyLabels
 import com.karaketir.coachingapp.R
 import com.karaketir.coachingapp.databinding.FragmentSettingsBinding
+import com.karaketir.coachingapp.services.StudentWeeklyGoalsPreferences
+import com.karaketir.coachingapp.services.StudyQueryHelper
 import com.karaketir.coachingapp.services.openLink
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -121,9 +125,11 @@ class SettingsFragment: Fragment() {
                         textInputChangeGrade.visibility = View.VISIBLE
                         gradeChangeEditText.setText(grade.toString())
                         loadCurriculumProgramUi(mBinding, grade)
+                        showWeeklyGoalsSection(mBinding)
                     } else {
                         textInputChangeGrade.visibility = View.GONE
                         mBinding.curriculumProgramText.visibility = View.GONE
+                        hideWeeklyGoalsSection(mBinding)
                     }
 
 
@@ -161,6 +167,12 @@ class SettingsFragment: Fragment() {
                                 db.collection("School").document(kurumKodu.toString())
                                     .collection(personType).document(auth.uid.toString())
                                     .update("curriculumProgram", program.firestoreValue)
+                            }
+                            if (personType == "Student") {
+                                val activity = mainActivity ?: return@setPositiveButton
+                                if (!saveWeeklyGoalsFromUi(mBinding, activity)) {
+                                    return@setPositiveButton
+                                }
                             }
                             Toast.makeText(mainActivity, "İşlem Başarılı!", Toast.LENGTH_SHORT)
                                 .show()
@@ -211,6 +223,94 @@ class SettingsFragment: Fragment() {
         }
 
 
+    }
+
+    private fun showWeeklyGoalsSection(mBinding: FragmentSettingsBinding) {
+        val prefs = StudentWeeklyGoalsPreferences(requireContext())
+        Log.d(
+            WEEKLY_GOALS_TAG,
+            "showWeeklyGoalsSection: hours=${prefs.getStudyHours()} questions=${prefs.getQuestions()} reportDays=${prefs.getReportDays()}",
+        )
+        mBinding.weeklyGoalsSectionTitle.visibility = View.VISIBLE
+        mBinding.weeklyGoalsHintText.visibility = View.VISIBLE
+        mBinding.TextInputWeeklyGoalMinutes.visibility = View.VISIBLE
+        mBinding.TextInputWeeklyGoalQuestions.visibility = View.VISIBLE
+        mBinding.TextInputWeeklyGoalReportDays.visibility = View.VISIBLE
+        mBinding.weeklyGoalMinutesEditText.setText(prefs.getStudyHours().toString())
+        mBinding.weeklyGoalQuestionsEditText.setText(prefs.getQuestions().toString())
+        mBinding.weeklyGoalReportDaysEditText.setText(prefs.getReportDays().toString())
+    }
+
+    private fun hideWeeklyGoalsSection(mBinding: FragmentSettingsBinding) {
+        mBinding.weeklyGoalsSectionTitle.visibility = View.GONE
+        mBinding.weeklyGoalsHintText.visibility = View.GONE
+        mBinding.TextInputWeeklyGoalMinutes.visibility = View.GONE
+        mBinding.TextInputWeeklyGoalQuestions.visibility = View.GONE
+        mBinding.TextInputWeeklyGoalReportDays.visibility = View.GONE
+    }
+
+    private fun saveWeeklyGoalsFromUi(
+        mBinding: FragmentSettingsBinding,
+        activity: MainActivity,
+    ): Boolean {
+        val hours = StudentWeeklyGoalsPreferences.parseIntField(
+            mBinding.weeklyGoalMinutesEditText.text?.toString().orEmpty(),
+        )
+        val questions = StudentWeeklyGoalsPreferences.parseIntField(
+            mBinding.weeklyGoalQuestionsEditText.text?.toString().orEmpty(),
+        )
+        val reportDays = StudentWeeklyGoalsPreferences.parseIntField(
+            mBinding.weeklyGoalReportDaysEditText.text?.toString().orEmpty(),
+        )
+
+        if (hours == null || !StudentWeeklyGoalsPreferences.validateHours(hours)) {
+            Log.w(WEEKLY_GOALS_TAG, "saveWeeklyGoalsFromUi: invalid hours=$hours")
+            mBinding.TextInputWeeklyGoalMinutes.error = activity.getString(
+                R.string.settings_goal_minutes_invalid,
+                StudentWeeklyGoalsPreferences.MIN_HOURS,
+                StudentWeeklyGoalsPreferences.MAX_HOURS,
+            )
+            return false
+        }
+        mBinding.TextInputWeeklyGoalMinutes.error = null
+
+        if (questions == null || !StudentWeeklyGoalsPreferences.validateQuestions(questions)) {
+            Log.w(WEEKLY_GOALS_TAG, "saveWeeklyGoalsFromUi: invalid questions=$questions")
+            mBinding.TextInputWeeklyGoalQuestions.error = activity.getString(
+                R.string.settings_goal_questions_invalid,
+                StudentWeeklyGoalsPreferences.MIN_QUESTIONS,
+                StudentWeeklyGoalsPreferences.MAX_QUESTIONS,
+            )
+            return false
+        }
+        mBinding.TextInputWeeklyGoalQuestions.error = null
+
+        if (reportDays == null || !StudentWeeklyGoalsPreferences.validateReportDays(reportDays)) {
+            mBinding.TextInputWeeklyGoalReportDays.error = activity.getString(
+                R.string.settings_goal_report_days_invalid,
+                StudentWeeklyGoalsPreferences.MIN_REPORT_DAYS,
+                StudentWeeklyGoalsPreferences.MAX_REPORT_DAYS,
+            )
+            return false
+        }
+        mBinding.TextInputWeeklyGoalReportDays.error = null
+
+        StudentWeeklyGoalsPreferences(activity).saveStudyHours(hours, questions, reportDays)
+        Log.d(
+            WEEKLY_GOALS_TAG,
+            "saveWeeklyGoalsFromUi: saved hours=$hours questions=$questions reportDays=$reportDays",
+        )
+        syncWeeklyGoalsToFirestore(
+            minutes = StudentWeeklyGoalsPreferences.hoursToMinutes(hours),
+            questions = questions,
+            reportDays = reportDays,
+        )
+        parentFragmentManager.setFragmentResult(
+            MainActivity.REQUEST_WEEKLY_GOALS_CHANGED,
+            bundleOf(),
+        )
+        mainActivity?.onStudentWeeklyGoalsSaved()
+        return true
     }
 
     private fun loadCurriculumProgramUi(
@@ -287,5 +387,33 @@ class SettingsFragment: Fragment() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    private fun syncWeeklyGoalsToFirestore(minutes: Int, questions: Int, reportDays: Int) {
+        val uid = auth.currentUser?.uid ?: return
+        if (kurumKodu == 0) {
+            Log.w(WEEKLY_GOALS_TAG, "syncWeeklyGoalsToFirestore: kurumKodu not loaded")
+            return
+        }
+        val fields = StudentWeeklyGoalsPreferences(requireContext())
+            .firestoreSyncFields(minutes, questions, reportDays)
+        lifecycleScope.launch {
+            try {
+                db.collection("School").document(kurumKodu.toString()).collection("Student")
+                    .document(uid)
+                    .set(fields, com.google.firebase.firestore.SetOptions.merge())
+                    .await()
+                Log.d(
+                    WEEKLY_GOALS_TAG,
+                    "syncWeeklyGoalsToFirestore: uid=...${uid.takeLast(4)} fields=$fields",
+                )
+            } catch (error: Exception) {
+                Log.w(WEEKLY_GOALS_TAG, "syncWeeklyGoalsToFirestore: failed ${error.message}")
+            }
+        }
+    }
+
+    companion object {
+        private const val WEEKLY_GOALS_TAG = "KTS:WeeklyGoals"
     }
 }

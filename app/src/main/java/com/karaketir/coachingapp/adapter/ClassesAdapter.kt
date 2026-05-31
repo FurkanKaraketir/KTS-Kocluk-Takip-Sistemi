@@ -5,7 +5,9 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.karaketir.coachingapp.curriculum.Subjects
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.karaketir.coachingapp.ActivityStudiesByClasses
@@ -42,7 +44,19 @@ class ClassesAdapter(
                 db = FirebaseFirestore.getInstance()
                 auth = FirebaseAuth.getInstance()
 
-                binding.dersAdiTextView.text = myItem.dersAdi
+                binding.dersAdiTextView.text = Subjects.subjectDisplayLabel(myItem.dersAdi)
+                binding.dersAdiTextView.isSelected = true
+                binding.subjectIconImage.setImageResource(Subjects.subjectIconRes(myItem.dersAdi))
+                binding.subjectIconImage.imageTintList = ContextCompat.getColorStateList(
+                    holder.itemView.context,
+                    R.color.icon_tint,
+                )
+                binding.dersAdiCard.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.itemView.context,
+                        Subjects.subjectTileColorResForName(myItem.dersAdi),
+                    ),
+                )
                 binding.dersAdiCard.setOnClickListener {
                     val intent = Intent(
                         holder.itemView.context, ActivityStudiesByClasses::class.java
@@ -55,9 +69,8 @@ class ClassesAdapter(
                     intent.putExtra("secilenZamanAraligi", myItem.secilenZamanAraligi)
                     holder.itemView.context.startActivity(intent)
                 }
-                binding.toplamCalismaTextView.text = myItem.toplamCalisma.toString() + "dk"
-
-                binding.soruSayisiTextView.text = myItem.cozulenSoru.toString() + " Soru"
+                binding.toplamCalismaTextView.text = "${myItem.toplamCalisma}dk"
+                binding.soruSayisiTextView.text = "${myItem.cozulenSoru} Soru"
 
                 if (myItem.toplamCalisma != 0 && myItem.cozulenSoru != 0) {
                     binding.classIcon.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)

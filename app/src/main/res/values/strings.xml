@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">KTS - Koçluk Takip Sistemi</string>
     <string name="log_in">Giriş Yap</string>
-    <string name="email">Email</string>
+    <string name="email">E-posta</string>
     <string name="password">Şifre</string>
     <string name="i_want_to_sign_up">Hesabın yok mu?</string>
     <string name="student">ÖĞRENCİ</string>
@@ -20,11 +20,11 @@
     <string name="genler">Üçgenler</string>
     <string name="veri">Veri</string>
     <string name="al_man_n_dersini_ve_konusunu_belirle">Çalışmanın Dersini ve Konusunu Seç</string>
-    <string name="sinif_sec">Sınıf Seçin</string>
-    <string name="ders_sec">Ders Seçin</string>
+    <string name="sinif_sec">🎒 Sınıf Seçin</string>
+    <string name="ders_sec">📖 Ders Seçin</string>
     <string name="profiliniz">Profiliniz</string>
     <string name="profil_tercihiniz">Profil tercihiniz</string>
-    <string name="program_sec">Müfredat Seçin</string>
+    <string name="program_sec">📋 Müfredat Seçin</string>
     <string name="varsayilan_mufredat">Varsayılan müfredat</string>
     <string name="matematik">Matematik</string>
     <string name="fizik">Fizik</string>
@@ -126,7 +126,7 @@
     <string name="excel_tablosu_olu_tur">Excel Tablosu Oluştur</string>
     <string name="excel_rapor_turu">Rapor Türü Seçin</string>
     <string name="excel_rapor_ozet">Özet (toplam ve ortalamalar)</string>
-    <string name="excel_rapor_ders_bazli">Ders bazlı (öğrenci × ders)</string>
+    <string name="excel_rapor_ders_bazli">Ders bazlı (öğrenci başına, ders sütunları)</string>
     <string name="excel_dosya_olusturuldu">Excel dosyası başarıyla oluşturuldu</string>
     <string name="excel_dosya_hata">Excel oluşturulurken hata: %1$s</string>
     <string name="excel_lutfen_bekleyin">Lütfen bekleyiniz…</string>
@@ -178,4 +178,35 @@
     <string name="ort_s_re">Ort. Süre</string>
     <string name="ort_soru">Ort. Soru</string>
     <string name="al_ma_tarihi">Çalışma Tarihi:</string>
+
+    <string name="main_stats_student_title">Bu hafta özeti</string>
+    <string name="studies_student_stats_title">%1$s özeti</string>
+    <string name="main_stats_teacher_title">Sınıf özeti</string>
+    <string name="main_stat_weekly_study">Haftalık süre</string>
+    <string name="main_stat_weekly_questions">Haftalık soru</string>
+    <string name="main_stat_period_study">Çalışma süresi</string>
+    <string name="main_stat_period_questions">Soru sayısı</string>
+    <string name="main_stat_report_days">Rapor günü</string>
+    <string name="main_stat_period_report_days">Rapor günü</string>
+    <string name="main_stat_report_rate">Rapor oranı</string>
+    <string name="main_stat_class_study">Sınıf çalışması</string>
+    <string name="main_stat_rating_rate">Değerlendirme</string>
+    <string name="main_stat_select_time_range">Zaman aralığı seçin</string>
+    <string name="main_stat_no_students">Öğrenci yok</string>
+    <string name="main_stat_hours_short">sa</string>
+    <string name="main_stat_minutes_short">dk</string>
+    <string name="main_stat_students_reporting">%1$d / %2$d öğrenci</string>
+    <string name="main_stat_study_subtitle">%1$s / %2$s</string>
+    <string name="main_stat_days_subtitle">%1$d / %2$d gün</string>
+    <string name="main_stat_edit_goals">Hedefleri düzenle</string>
+    <string name="main_stats_collapse">İstatistikleri gizle</string>
+    <string name="main_stats_expand">İstatistikleri göster</string>
+    <string name="settings_weekly_goals_title">Haftalık hedefler</string>
+    <string name="settings_weekly_goal_minutes">Haftalık çalışma süresi (saat)</string>
+    <string name="settings_weekly_goal_questions">Haftalık soru hedefi</string>
+    <string name="settings_weekly_goal_report_days">Haftalık rapor günü hedefi</string>
+    <string name="settings_weekly_goals_hint">Ana sayfadaki haftalık ilerleme halkaları bu hedefleri kullanır. Öğretmenin ders bazlı hedefleri Hedefler ekranında görünür.</string>
+    <string name="settings_goal_minutes_invalid">Çalışma süresi %1$d–%2$d saat arasında olmalıdır.</string>
+    <string name="settings_goal_questions_invalid">Soru hedefi %1$d–%2$d arasında olmalıdır.</string>
+    <string name="settings_goal_report_days_invalid">Rapor günü hedefi %1$d–%2$d gün arasında olmalıdır.</string>
 </resources>

@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_margin="8dp"
+        app:cardBackgroundColor="@color/tile_palette_1"
         app:cardCornerRadius="10dp">
 
         <LinearLayout
@@ -26,6 +27,9 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_grade_school"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/icon_tint"
                 android:gravity="center"
                 android:text="@string/sinif_sec" />
 

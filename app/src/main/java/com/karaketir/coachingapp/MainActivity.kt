@@ -10,10 +10,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -31,6 +27,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var db: FirebaseFirestore
     private var isTeacher = false
+    private var studentWeeklyGoalsDirty = false
+
+    fun onStudentWeeklyGoalsSaved() {
+        studentWeeklyGoalsDirty = true
+        val main = supportFragmentManager.findFragmentById(R.id.fragment_container_student)
+        if (main is MainFragment && !isTeacher) {
+            main.reloadStudentWeeklyGoalsFromPreferences()
+            studentWeeklyGoalsDirty = false
+        }
+    }
+
+    fun consumeStudentWeeklyGoalsDirty(): Boolean {
+        val dirty = studentWeeklyGoalsDirty
+        studentWeeklyGoalsDirty = false
+        return dirty
+    }
 
     public override fun onStart() {
         super.onStart()
@@ -61,6 +73,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun openStudentSettings() {
+        if (!isTeacher) {
+            binding.bottomNavigationStudent.selectedItemId = R.id.navigation_settings
+        }
+    }
+
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -68,18 +86,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.root.updatePadding(top = systemBars.top)
-            binding.bottomNavigationTeacher.updatePadding(bottom = systemBars.bottom)
-            binding.bottomNavigationStudent.updatePadding(bottom = systemBars.bottom)
-            windowInsets
-        }
-        ViewCompat.requestApplyInsets(binding.root)
-
         auth = Firebase.auth
         db = Firebase.firestore
+
+        supportFragmentManager.setFragmentResultListener(REQUEST_WEEKLY_GOALS_CHANGED, this) { _, _ ->
+            onStudentWeeklyGoalsSaved()
+        }
 
         val bottomNavigationTeacher = binding.bottomNavigationTeacher
         val bottomNavigationStudent = binding.bottomNavigationStudent
@@ -184,4 +196,8 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _: Boolean ->
 
         }
+
+    companion object {
+        const val REQUEST_WEEKLY_GOALS_CHANGED = "student_weekly_goals_changed"
+    }
 }

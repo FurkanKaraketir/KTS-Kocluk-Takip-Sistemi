@@ -167,19 +167,9 @@ class EnterDutyActivity : AppCompatActivity() {
     }
 
     private suspend fun loadStudentProgram() {
-        try {
-            val studentSnap = db.collection("User").document(studentID).get().await()
-            studentGrade = studentSnap.getLong("grade")?.toInt()
-                ?: studentSnap.getString("grade")?.toIntOrNull()
-                ?: 12
-            val config = GradeCurriculumRepository.load(db)
-            studentProgram = GradeCurriculumRepository.programForGrade(config, studentGrade)
-        } catch (_: Exception) {
-            studentProgram = GradeCurriculumRepository.programForGrade(
-                GradeCurriculumRepository.defaultConfig(),
-                studentGrade,
-            )
-        }
+        val (grade, program) = GradeCurriculumRepository.preferredProgramForStudent(db, studentID)
+        studentGrade = grade
+        studentProgram = program
 
         val isMaarif = studentProgram == CurriculumProgram.TYMM
         binding.dutyTurSpinnerLayout.visibility = if (isMaarif) View.GONE else View.VISIBLE

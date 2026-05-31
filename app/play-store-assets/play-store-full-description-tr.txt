@@ -1,0 +1,33 @@
+KTS – Koçluk Takip Sistemi, öğrencilerin günlük çalışmalarını düzenli raporlamasını ve öğretmenlerin bu verileri grafik ve istatistiklerle takip etmesini sağlayan bir koçluk uygulamasıdır.
+
+Ders çalışma sürenizi, çözdüğünüz soru sayısını ve konu bilgilerinizi birkaç dokunuşla kaydedin; öğretmeniniz çalışmalarınızı anlık olarak görüntüleyebilsin.
+
+ÖĞRENCİLER İÇİN
+• Çalışma raporu: Ders, konu veya tema seçerek konu çalışma süresi, soru sayısı ve test süresi girin
+• TYT / AYT ve müfredat desteği: Klasik müfredat ile Maarif (TYMM) temalarına uygun kayıt
+• Paragraf ve problem çalışmalarını ayrı takip edin
+• Haftalık çalışma geçmişinizi ana ekrandan inceleyin
+• Öğretmeninizin verdiği görevleri görüntüleyin
+• Haftalık hedeflerinizi ve öğretmen değerlendirmelerinizi takip edin
+• Haftalık çalışma programınızı planlayın ve görüntüleyin
+• Sınıfınıza göre YKS geri sayım sayacı
+
+ÖĞRETMENLER İÇİN
+• Öğrenci listenizi ve sınıf filtrelerinizi yönetin
+• Zaman aralığına göre çalışma takibi (bugün, bu hafta, özel tarih aralığı vb.)
+• Öğrenci çalışmalarını ders ve konu bazında grafiklerle görüntüleyin
+• Sınıf istatistikleri ve ders bazlı özet tablolar
+• Excel raporu oluşturma (özet ve ders bazlı)
+• Öğrencilere görev atama (ders, konu, süre, soru hedefi, bitiş tarihi)
+• Haftalık hedef belirleme
+• Rapor göndermeyen öğrencileri ve rapor atılmayan gün sayılarını görme
+• Öğrenci sıralaması
+• Koçluğunuz veya okulunuz için bildirim gönderme
+
+KİMLER İÇİN?
+Lise ve üniversite hazırlık sürecindeki öğrenciler ile koç öğretmenler, rehber öğretmenler ve kurumlar için tasarlanmıştır.
+
+ÖĞRETMENİNİZLE BİRLİKTE KULLANIN
+KTS tek başına değil; okulunuzun kurum kodu ve size atanmış koç öğretmeniniz ile birlikte çalışır. Kayıt olurken kurum kodunuzu girin. Öğrenci olarak koç öğretmeninize bağlandığınızda gönderdiğiniz raporlar doğrudan ona ulaşır; öğretmen hesabı olmadan uygulama amacına uygun şekilde kullanılamaz.
+
+E-posta veya Google hesabıyla giriş yapın, çalışma disiplininizi öğretmeninizle paylaşmaya bugün başlayın.

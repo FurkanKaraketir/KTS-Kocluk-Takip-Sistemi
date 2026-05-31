@@ -1,6 +1,10 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.CoachingApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_200</item>
         <item name="colorPrimaryVariant">#2A3063</item>
@@ -9,8 +13,13 @@
         <item name="colorSecondary">#00C0FF</item>
         <item name="colorSecondaryVariant">#6D58FC</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:windowBackground">@color/system_navigation_bar</item>
+        <item name="android:statusBarColor">@color/system_status_bar</item>
+        <item name="android:navigationBarColor">@color/system_navigation_bar</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="android:color">#FFFFFF</item>
 
         <!-- Customize your theme here. -->
@@ -18,9 +27,17 @@
 
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen.IconBackground">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.CoachingApp</item>
         <item name="windowSplashScreenIconBackgroundColor">#2357dd</item>
+        <item name="android:statusBarColor">@color/system_status_bar</item>
+        <item name="android:navigationBarColor">@color/system_navigation_bar</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
 
