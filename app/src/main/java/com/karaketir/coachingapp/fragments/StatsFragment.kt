@@ -28,6 +28,7 @@ import com.karaketir.coachingapp.databinding.FragmentStatsBinding
 import com.karaketir.coachingapp.models.Statistic
 import com.karaketir.coachingapp.services.ExcelExportHelper
 import com.karaketir.coachingapp.services.StudyQueryHelper
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -79,6 +80,13 @@ class StatsFragment : Fragment() {
     )
 
     private var hasShownInitialDialog = false
+    private var statsLoadJob: Job? = null
+    private var statsLoadGeneration = 0
+
+    private fun setStatsLoading(loading: Boolean) {
+        if (!isBindingAvailable()) return
+        mBinding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -96,6 +104,8 @@ class StatsFragment : Fragment() {
 
 
     override fun onDestroyView() {
+        statsLoadJob?.cancel()
+        statsLoadJob = null
         super.onDestroyView()
         _binding = null
         isViewCreated = false
@@ -407,6 +417,10 @@ class StatsFragment : Fragment() {
     private fun getData() {
         if (secilenZamanAraligi == "Seçiniz" || kurumKodu == 0) return
 
+        statsLoadJob?.cancel()
+        val loadGeneration = ++statsLoadGeneration
+        setStatsLoading(true)
+
         statsList.clear()
         dersSureHash.clear()
         dersSoruHash.clear()
@@ -416,10 +430,13 @@ class StatsFragment : Fragment() {
         recyclerViewStatsAdapter = StatisticsRecyclerAdapter(statsList)
         recyclerViewStats.adapter = recyclerViewStatsAdapter
 
-        val teacherId = auth.uid ?: return
+        val teacherId = auth.uid ?: run {
+            setStatsLoading(false)
+            return
+        }
         val gradeFilter = if (secilenGrade == "Bütün Sınıflar") null else secilenGrade.toIntOrNull()
 
-        lifecycleScope.launch {
+        statsLoadJob = lifecycleScope.launch {
             try {
                 val studentIds = StudyQueryHelper.fetchStudentIdsForTeacher(
                     db,
@@ -429,7 +446,7 @@ class StatsFragment : Fragment() {
                 )
                 ogrenciSayisi = studentIds.size
                 if (studentIds.isEmpty()) {
-                    if (!isBindingAvailable()) return@launch
+                    if (!isBindingAvailable() || loadGeneration != statsLoadGeneration) return@launch
                     updateStatsList()
                     return@launch
                 }
@@ -449,30 +466,35 @@ class StatsFragment : Fragment() {
                     dersSoruHash[ders] = totals.questions.toFloat()
                 }
 
-                if (!isBindingAvailable()) return@launch
+                if (!isBindingAvailable() || loadGeneration != statsLoadGeneration) return@launch
                 updateStatsList()
             } catch (e: Exception) {
                 println(e.localizedMessage)
-                if (!isBindingAvailable()) return@launch
+                if (!isBindingAvailable() || loadGeneration != statsLoadGeneration) return@launch
                 Toast.makeText(mainActivity, "İstatistikler yüklenemedi", Toast.LENGTH_SHORT).show()
+            } finally {
+                if (loadGeneration == statsLoadGeneration) {
+                    setStatsLoading(false)
+                }
             }
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateStatsList() {
+        statsList.clear()
         if (ogrenciSayisi > 0) {
-            statsList.clear()
             dersSureHash.forEach { (dersAdi, toplamSure) ->
                 val ortalamaSure = (toplamSure / ogrenciSayisi).format(2)
                 val ortalamaSoru = ((dersSoruHash[dersAdi] ?: 0f) / ogrenciSayisi).format(2)
-                
                 statsList.add(Statistic(dersAdi, ortalamaSure, ortalamaSoru))
             }
             statsList.sortBy { it.dersAdi }
-            recyclerViewStatsAdapter.notifyDataSetChanged()
-            showSum()
         }
+        if (::recyclerViewStatsAdapter.isInitialized) {
+            recyclerViewStatsAdapter.notifyDataSetChanged()
+        }
+        showSum()
     }
 
     private fun showInitialDialog(statsZamanSpinner: Spinner, statsGradeSpinner: Spinner) {

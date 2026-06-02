@@ -34,6 +34,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
@@ -62,6 +63,7 @@ import com.karaketir.coachingapp.services.StatRangeScaling
 import com.karaketir.coachingapp.services.StudentWeeklyGoalsPreferences
 import com.karaketir.coachingapp.services.StudyQueryHelper
 import com.karaketir.coachingapp.services.clearCache
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -129,10 +131,18 @@ class MainFragment : Fragment() {
     private lateinit var mBinding: FragmentMainBinding
 
     private var _binding: FragmentMainBinding? = null
+    private var rowStatusLoadJob: Job? = null
+    private var studentsListenerRegistration: ListenerRegistration? = null
+    private var rowStatusLoadGeneration = 0
 
     // This property is only valid between onCreateView and
 // onDestroyView.
     private val binding get() = _binding ?: throw IllegalStateException("Binding is null")
+
+    private fun setTeacherListLoading(loading: Boolean) {
+        if (!isBindingAvailable()) return
+        mBinding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -144,6 +154,10 @@ class MainFragment : Fragment() {
     private var isViewCreated = false
 
     override fun onDestroyView() {
+        studentsListenerRegistration?.remove()
+        studentsListenerRegistration = null
+        rowStatusLoadJob?.cancel()
+        rowStatusLoadJob = null
         super.onDestroyView()
         _binding = null
         isViewCreated = false
@@ -328,6 +342,7 @@ class MainFragment : Fragment() {
                         searchEditText.visibility = View.GONE
                         previousRatingsButton.visibility = View.VISIBLE
                         hedeflerStudentButton.visibility = View.VISIBLE
+                        mBinding.myStudentsCard.visibility = View.GONE
                         recyclerViewPreviousStudies.visibility = View.VISIBLE
                         allStudentsBtn.visibility = View.GONE
                         noReportButton.visibility = View.GONE
@@ -350,9 +365,9 @@ class MainFragment : Fragment() {
                             .document(auth.uid.toString()).collection("Studies")
                             .whereGreaterThan("timestamp", baslangicTarihi)
                             .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .addSnapshotListener { it1, _ ->
+                            .addSnapshotListener { snapshot, _ ->
                                 studyList.clear()
-                                val documents = it1!!.documents
+                                val documents = snapshot?.documents.orEmpty()
                                 for (document in documents) {
                                     studyList.add(
                                         Study.fromDocument(document, auth.uid.toString())
@@ -379,7 +394,8 @@ class MainFragment : Fragment() {
                         topStudentsButton.visibility = View.VISIBLE
                         teacherSpinner.visibility = View.VISIBLE
                         kocOgretmenTextView.visibility = View.GONE
-                        recyclerViewMyStudents.visibility = View.VISIBLE
+                        mBinding.myStudentsCard.visibility = View.VISIBLE
+                        recyclerViewPreviousStudies.visibility = View.GONE
                         searchBarTeacher.visibility = View.VISIBLE
                         noReportButton.visibility = View.VISIBLE
                         previousRatingsButton.visibility = View.GONE
@@ -695,7 +711,7 @@ class MainFragment : Fragment() {
                     Toast.makeText(mainActivity, "Öğrenci listesi boş", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                mBinding.progressBar.visibility = View.VISIBLE
+                setTeacherListLoading(true)
                 lifecycleScope.launch {
                     try {
                         val withoutIds = StudyQueryHelper.studentIdsWithoutStudiesInRange(
@@ -725,9 +741,7 @@ class MainFragment : Fragment() {
                             Toast.LENGTH_SHORT,
                         ).show()
                     } finally {
-                        if (isBindingAvailable()) {
-                            mBinding.progressBar.visibility = View.GONE
-                        }
+                        setTeacherListLoading(false)
                     }
                 }
             }
@@ -790,64 +804,40 @@ class MainFragment : Fragment() {
         recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
 
         mBinding.studentCountTextView.text = "Öğrenci Sayısı: "
-        mBinding.progressBar.visibility = View.VISIBLE
+        rowStatusLoadJob?.cancel()
+        rowStatusLoadGeneration++
+        studentsListenerRegistration?.remove()
+        studentsListenerRegistration = null
+        setTeacherListLoading(true)
 
-        if (secilenGrade == "Bütün Sınıflar") {
-            db.collection("School").document(kurumKodu.toString()).collection("Student")
-                .whereEqualTo("teacher", auth.uid.toString()).addSnapshotListener { documents, _ ->
-                    studentList.clear()
-                    if (documents != null) {
-                        for (document in documents) {
-                            val studentGrade = document.get("grade").toString().toInt()
-                            val studentName = document.get("nameAndSurname").toString()
-                            val teacher = document.get("teacher").toString()
-                            val id = document.get("id").toString()
-                            val currentStudent = Student(studentName, teacher, id, studentGrade)
-                            studentList.add(currentStudent)
-
-                        }
-                        mBinding.progressBar.visibility = View.GONE
-                        mBinding.studentCountTextView.text = "Öğrenci Sayısı: " + studentList.size
-                    }
-                    studentList.sortBy { a ->
-                        a.studentName
-                    }
-                    setupStudentRecyclerView(studentList)
-
-                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-                    refreshStudentRowStatuses()
-                    refreshTeacherHomeStats()
-
+        val onStudentsSnapshot: (com.google.firebase.firestore.QuerySnapshot?) -> Unit = { documents ->
+            if (isBindingAvailable()) {
+                studentList.clear()
+                for (document in documents?.documents.orEmpty()) {
+                    val studentGrade = document.get("grade").toString().toInt()
+                    val studentName = document.get("nameAndSurname").toString()
+                    val teacher = document.get("teacher").toString()
+                    val id = document.get("id").toString()
+                    studentList.add(Student(studentName, teacher, id, studentGrade))
                 }
+                mBinding.studentCountTextView.text = "Öğrenci Sayısı: ${studentList.size}"
+                studentList.sortBy { it.studentName }
+                setupStudentRecyclerView(studentList)
+                recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
+                refreshStudentRowStatuses()
+            }
+        }
+
+        val studentsQuery = if (secilenGrade == "Bütün Sınıflar") {
+            db.collection("School").document(kurumKodu.toString()).collection("Student")
+                .whereEqualTo("teacher", auth.uid.toString())
         } else {
             db.collection("School").document(kurumKodu.toString()).collection("Student")
                 .whereEqualTo("teacher", auth.uid.toString())
-                .whereEqualTo("grade", secilenGrade.toInt()).addSnapshotListener { documents, _ ->
-
-                    studentList.clear()
-                    if (documents != null) {
-                        for (document in documents) {
-                            val studentGrade = document.get("grade").toString().toInt()
-                            val studentName = document.get("nameAndSurname").toString()
-                            val teacher = document.get("teacher").toString()
-                            val id = document.get("id").toString()
-                            val currentStudent = Student(studentName, teacher, id, studentGrade)
-                            studentList.add(currentStudent)
-
-                        }
-                        mBinding.progressBar.visibility = View.GONE
-                        mBinding.studentCountTextView.text = "Öğrenci Sayısı: " + studentList.size
-                    }
-                    studentList.sortBy { a ->
-                        a.studentName
-                    }
-                    setupStudentRecyclerView(studentList)
-
-                    recyclerViewMyStudentsRecyclerAdapter.notifyDataSetChanged()
-                    refreshStudentRowStatuses()
-                    refreshTeacherHomeStats()
-
-                }
+                .whereEqualTo("grade", secilenGrade.toInt())
+        }
+        studentsListenerRegistration = studentsQuery.addSnapshotListener { documents, _ ->
+            onStudentsSnapshot(documents)
         }
     }
 
@@ -1043,12 +1033,16 @@ class MainFragment : Fragment() {
         if (personType != "Teacher" || studentList.isEmpty() || secilenZaman == "Seçiniz") {
             teacherWeeklyGoalMinutesSum = 0
             refreshTeacherHomeStats()
+            setTeacherListLoading(false)
             return
         }
         if (!::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
+            setTeacherListLoading(false)
             return
         }
-        lifecycleScope.launch {
+        rowStatusLoadJob?.cancel()
+        val generation = ++rowStatusLoadGeneration
+        rowStatusLoadJob = lifecycleScope.launch {
             try {
                 val studentIds = studentList.map { it.id }
                 val statuses = StudyQueryHelper.fetchStudentRowStatuses(
@@ -1083,7 +1077,9 @@ class MainFragment : Fragment() {
                 for (documents in studiesByStudent.values) {
                     classMinutes += StudyQueryHelper.totalFromDocuments(documents).minutes
                 }
-                if (!isBindingAvailable() || !::recyclerViewMyStudentsRecyclerAdapter.isInitialized) {
+                if (!isBindingAvailable() || !::recyclerViewMyStudentsRecyclerAdapter.isInitialized ||
+                    generation != rowStatusLoadGeneration
+                ) {
                     return@launch
                 }
                 recyclerViewMyStudentsRecyclerAdapter.updateRowStatuses(statuses)
@@ -1095,8 +1091,12 @@ class MainFragment : Fragment() {
                 )
             } catch (e: Exception) {
                 println(e.localizedMessage)
-                if (isBindingAvailable()) {
+                if (isBindingAvailable() && generation == rowStatusLoadGeneration) {
                     refreshTeacherHomeStats()
+                }
+            } finally {
+                if (generation == rowStatusLoadGeneration) {
+                    setTeacherListLoading(false)
                 }
             }
         }
