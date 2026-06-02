@@ -88,6 +88,8 @@ captures/
 
 # Google Services (e.g. APIs or Firebase)
 *.json
+!firebase.json
+!functions/package.json
 
 # Android Patch
 gen-external-apklibs

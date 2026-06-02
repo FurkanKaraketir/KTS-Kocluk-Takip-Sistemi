@@ -79,7 +79,7 @@
     <string name="din">Din</string>
     <string name="toplam_yanl_0">Toplam Yanlış: 0</string>
     <string name="show">Show</string>
-    <string name="default_notification_channel_id">212121</string>
+    <string name="default_notification_channel_id">kts_channel_general</string>
     <string name="kalan_g_rev_miktar">Kalan Görev Miktarı:</string>
     <string name="ifreni_mi_unuttun">Şifreni mi Unuttun?</string>
     <string name="kay_t_olan_ki_i">Kayıt Olan Kişi:</string>
@@ -209,4 +209,33 @@
     <string name="settings_goal_minutes_invalid">Çalışma süresi %1$d–%2$d saat arasında olmalıdır.</string>
     <string name="settings_goal_questions_invalid">Soru hedefi %1$d–%2$d arasında olmalıdır.</string>
     <string name="settings_goal_report_days_invalid">Rapor günü hedefi %1$d–%2$d gün arasında olmalıdır.</string>
+
+    <!-- Bildirim kanalları -->
+    <string name="notification_channel_messages">Mesajlar</string>
+    <string name="notification_channel_messages_desc">Koç ve okul duyuruları</string>
+    <string name="notification_channel_duties">Görevler</string>
+    <string name="notification_channel_duties_desc">Yeni görev ve ödev bildirimleri</string>
+    <string name="notification_channel_study">Çalışma güncellemeleri</string>
+    <string name="notification_channel_study_desc">Çalışma değerlendirme ve ilerleme bildirimleri</string>
+    <string name="notification_channel_general">Genel</string>
+    <string name="notification_channel_general_desc">Diğer uygulama bildirimleri</string>
+    <string name="notification_default_channel_id">kts_channel_general</string>
+
+    <!-- Giden bildirim (FCM) -->
+    <string name="notification_send_success">Bildirim gönderildi</string>
+    <string name="notification_send_success_after_save">İşlem başarılı</string>
+    <string name="notification_send_failed">Bildirim gönderilemedi. Lütfen tekrar deneyin.</string>
+    <string name="notification_send_failed_after_save">Kayıt yapıldı ancak bildirim gönderilemedi.</string>
+    <string name="notification_send_error_not_authenticated">Bildirim göndermek için giriş yapmalısınız.</string>
+    <string name="notification_send_error_permission_denied">Bu bildirimi gönderme yetkiniz yok.</string>
+    <string name="notification_send_error_network">Bağlantı zaman aşımına uğradı veya sunucuya ulaşılamadı. İnternetinizi kontrol edip tekrar deneyin.</string>
+    <string name="notification_send_error_function_not_found">Bildirim sunucusu henüz kurulmamış. Yöneticiniz Firebase Cloud Function (sendNotification) deploy etmelidir.</string>
+    <string name="message_title_empty">Lütfen mesaj başlığı girin</string>
+    <string name="message_body_empty">Lütfen mesaj içeriği girin</string>
+    <string name="message_sending">Gönderiliyor…</string>
+    <string name="message_screen_subtitle">Öğrencilere anlık bildirim gönderin</string>
+    <string name="message_target_helper">Koçluğum: yalnızca sizin öğrencileriniz. Okulum: kurumdaki tüm kullanıcılar.</string>
+    <string name="message_target_spinner_desc">Bildirim hedef kitlesi seçimi</string>
+    <string name="message_send_button_desc">Bildirimi gönder</string>
+    <string name="duty_save_failed">Kayıt başarısız</string>
 </resources>

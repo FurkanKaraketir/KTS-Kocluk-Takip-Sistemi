@@ -12,11 +12,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.karaketir.coachingapp.R
+import com.karaketir.coachingapp.notifications.NotificationChannelRegistry
 
 class CoachingAppApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        NotificationChannelRegistry.ensureCreated(this)
         registerActivityLifecycleCallbacks(SystemBarsCallbacks())
         configurePoiXmlStreamFactories()
     }

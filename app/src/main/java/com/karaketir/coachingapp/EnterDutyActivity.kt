@@ -23,7 +23,9 @@ import com.karaketir.coachingapp.curriculum.GradeCurriculumRepository
 import com.karaketir.coachingapp.curriculum.Subjects
 import com.karaketir.coachingapp.curriculum.TemaOption
 import com.karaketir.coachingapp.databinding.ActivityEnterDutyBinding
-import com.karaketir.coachingapp.services.FcmNotificationsSenderService
+import com.karaketir.coachingapp.notifications.FcmNotificationSender
+import com.karaketir.coachingapp.notifications.NotificationSendFeedback
+import com.karaketir.coachingapp.notifications.NotificationType
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
@@ -139,13 +141,12 @@ class EnterDutyActivity : AppCompatActivity() {
                         dutiesCollection().document(existing.id)
                             .update(dutyUpdate as Map<String, Any>)
                             .addOnSuccessListener {
-                                sendDutyNotification(isMaarif)
-                                Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT).show()
-                                finish()
+                                onDutySaved(isMaarif)
                             }
                             .addOnFailureListener {
                                 stopper = false
                                 dutySaveButton.isClickable = true
+                                Toast.makeText(this, getString(R.string.duty_save_failed), Toast.LENGTH_SHORT).show()
                             }
                     } else if (!stopper) {
                         stopper = true
@@ -153,13 +154,12 @@ class EnterDutyActivity : AppCompatActivity() {
                         dutiesCollection().document(documentID)
                             .set(duty)
                             .addOnSuccessListener {
-                                sendDutyNotification(isMaarif)
-                                Toast.makeText(this, "İşlem Başarılı", Toast.LENGTH_SHORT).show()
-                                finish()
+                                onDutySaved(isMaarif)
                             }
                             .addOnFailureListener {
                                 stopper = false
                                 dutySaveButton.isClickable = true
+                                Toast.makeText(this, getString(R.string.duty_save_failed), Toast.LENGTH_SHORT).show()
                             }
                     }
                 }
@@ -347,17 +347,21 @@ class EnterDutyActivity : AppCompatActivity() {
         return payload
     }
 
-    private fun sendDutyNotification(isMaarif: Boolean) {
+    private fun onDutySaved(isMaarif: Boolean) {
         val body = if (isMaarif) {
             "Yeni Göreviniz Var\nMaarif · $temaAdi $secilenDers"
         } else {
             "Yeni Göreviniz Var\n$secilenTur $secilenDers $secilenKonu"
         }
-        FcmNotificationsSenderService(
+        FcmNotificationSender.send(
+            this,
             "/topics/$studentID",
+            NotificationType.DUTY,
             "Yeni Görev",
             body,
-            this,
-        ).sendNotifications()
+        ) { result ->
+            NotificationSendFeedback.showToast(this, result, primarySaveSucceeded = true)
+            finish()
+        }
     }
 }

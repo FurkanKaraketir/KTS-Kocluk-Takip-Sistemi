@@ -38,7 +38,9 @@ import com.karaketir.coachingapp.databinding.ActivityStudiesBinding
 import com.karaketir.coachingapp.fragments.MainHomeStatsBinder
 import com.karaketir.coachingapp.models.Study
 import com.karaketir.coachingapp.services.ExcelExportHelper
-import com.karaketir.coachingapp.services.FcmNotificationsSenderService
+import com.karaketir.coachingapp.notifications.FcmNotificationSender
+import com.karaketir.coachingapp.notifications.NotificationSendFeedback
+import com.karaketir.coachingapp.notifications.NotificationType
 import com.karaketir.coachingapp.services.StudyQueryHelper
 import com.karaketir.coachingapp.services.StudyTotals
 import kotlinx.coroutines.launch
@@ -337,51 +339,51 @@ class StudiesActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Çalışma Durumu")
         alertDialog.setMessage("Çalışma Durumunu $yildisSayisi Yıldız Olarak Değerlendirmek İstiyor musunuz?")
-        alertDialog.setPositiveButton("$yildisSayisi Yıldız") { _, _ ->
+        alertDialog.setPositiveButton("$yildisSayisi Yıldız") { dialog, _ ->
+            dialog.dismiss()
+            val notificationBody =
+                "Çalışmanızın Durumu $yildisSayisi Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi"
+
+            fun onRatingSaved() {
+                FcmNotificationSender.send(
+                    this,
+                    "/topics/$studentID",
+                    NotificationType.STUDY_UPDATE,
+                    "Çalışmanızın Durumu",
+                    notificationBody,
+                ) { result ->
+                    NotificationSendFeedback.showToast(this, result, primarySaveSucceeded = true)
+                }
+            }
 
             if (secilenZamanAraligi == "Bugün") {
                 val degerlendirmeHash = hashMapOf(
                     "yildizSayisi" to yildisSayisi,
                     "time" to now.time,
-                    "degerlendirmeDate" to now.time
+                    "degerlendirmeDate" to now.time,
                 )
-
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(studentID).collection("Degerlendirme").document()
-                    .set(degerlendirmeHash).addOnSuccessListener {
-                        val notificationsSender = FcmNotificationsSenderService(
-                            "/topics/$studentID",
-                            "Çalışmanızın Durumu",
-                            "Çalışmanızın Durumu $yildisSayisi Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                            this
-                        )
-                        notificationsSender.sendNotifications()
-                        Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-
+                    .set(degerlendirmeHash)
+                    .addOnSuccessListener { onRatingSaved() }
+                    .addOnFailureListener {
+                        Toast.makeText(this, getString(R.string.duty_save_failed), Toast.LENGTH_SHORT).show()
                     }
             } else {
                 now.add(Calendar.DAY_OF_YEAR, -1)
                 val degerlendirmeHash = hashMapOf(
                     "yildizSayisi" to yildisSayisi,
                     "time" to Calendar.getInstance().time,
-                    "degerlendirmeDate" to now.time
+                    "degerlendirmeDate" to now.time,
                 )
-
                 db.collection("School").document(kurumKodu.toString()).collection("Student")
                     .document(studentID).collection("Degerlendirme").document()
-                    .set(degerlendirmeHash).addOnSuccessListener {
-                        val notificationsSender = FcmNotificationsSenderService(
-                            "/topics/$studentID",
-                            "Çalışmanızın Durumu",
-                            "Çalışmanızın Durumu $yildisSayisi Yıldız Olarak Değerlendirildi. \nÇalışma Tarihi: $secilenZamanAraligi",
-                            this
-                        )
-                        notificationsSender.sendNotifications()
-                        Toast.makeText(this, "İşlem Başarılı!", Toast.LENGTH_SHORT).show()
-
+                    .set(degerlendirmeHash)
+                    .addOnSuccessListener { onRatingSaved() }
+                    .addOnFailureListener {
+                        Toast.makeText(this, getString(R.string.duty_save_failed), Toast.LENGTH_SHORT).show()
                     }
             }
-
         }
         alertDialog.setNegativeButton("İptal") { _, _ ->
 

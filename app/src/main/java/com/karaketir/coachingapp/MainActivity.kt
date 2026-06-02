@@ -1,16 +1,15 @@
 package com.karaketir.coachingapp
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.karaketir.coachingapp.notifications.NotificationDeepLink
+import com.karaketir.coachingapp.notifications.NotificationPermissionHelper
+import com.karaketir.coachingapp.notifications.NotificationType
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -28,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private var isTeacher = false
     private var studentWeeklyGoalsDirty = false
+    private var pendingNotificationType: NotificationType? = null
+    private var mainShellReady = false
 
     fun onStudentWeeklyGoalsSaved() {
         studentWeeklyGoalsDirty = true
@@ -75,8 +76,36 @@ class MainActivity : AppCompatActivity() {
 
     fun openStudentSettings() {
         if (!isTeacher) {
-            binding.bottomNavigationStudent.selectedItemId = R.id.navigation_settings
+            selectStudentBottomNav(R.id.navigation_settings)
         }
+    }
+
+    fun selectStudentBottomNav(itemId: Int) {
+        if (isTeacher) return
+        binding.bottomNavigationStudent.selectedItemId = itemId
+    }
+
+    fun selectTeacherBottomNav(itemId: Int) {
+        if (!isTeacher) return
+        binding.bottomNavigationTeacher.selectedItemId = itemId
+    }
+
+    private fun captureNotificationIntent(intent: Intent?) {
+        NotificationDeepLink.parseType(intent)?.let { pendingNotificationType = it }
+    }
+
+    private fun deliverPendingNotificationNavigation() {
+        if (!mainShellReady) return
+        val type = pendingNotificationType ?: return
+        pendingNotificationType = null
+        NotificationDeepLink.apply(this, type, kurumKodu, isTeacher)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        captureNotificationIntent(intent)
+        deliverPendingNotificationNavigation()
     }
 
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
@@ -88,6 +117,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         db = Firebase.firestore
+        captureNotificationIntent(intent)
 
         supportFragmentManager.setFragmentResultListener(REQUEST_WEEKLY_GOALS_CHANGED, this) { _, _ ->
             onStudentWeeklyGoalsSaved()
@@ -98,15 +128,10 @@ class MainActivity : AppCompatActivity() {
         val fragmentContainerTeacher = binding.fragmentContainerTeacher
         val fragmentContainerStudent = binding.fragmentContainerStudent
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permission not granted, request it
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+        if (NotificationPermissionHelper.shouldRequestPostNotificationsPermission() &&
+            !NotificationPermissionHelper.hasPostNotificationsPermission(this)
+        ) {
+            requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         }
 
         db.collection("User").document(auth.uid.toString()).get().addOnSuccessListener { snapshot ->
@@ -186,10 +211,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
-
+            mainShellReady = true
+            deliverPendingNotificationNavigation()
         }
-
-
     }
 
     private val requestPermissionLauncher =

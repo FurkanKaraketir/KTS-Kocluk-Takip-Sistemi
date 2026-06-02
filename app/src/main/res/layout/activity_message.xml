@@ -1,91 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     tools:context=".MessageActivity">
 
-    <TextView
-        android:id="@+id/signUp"
-        style="@style/MaterialAlertDialog.Material3.Title.Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="13dp"
-        android:text="@string/mesaj_g_nder"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="15dp"
-        android:hint="@string/mesaj_ba_l">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/messageTitleEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="15dp"
-        android:hint="@string/mesaj_eri_i">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/messageSubjectEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
     <LinearLayout
-        android:id="@+id/messageSpinnerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/messageScreenTitle"
+            style="@style/TextAppearance.Material3.HeadlineMedium"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/hedef_se_iniz"
-            android:textSize="18sp" />
+            android:contentDescription="@string/mesaj_g_nder"
+            android:gravity="center_horizontal"
+            android:text="@string/mesaj_g_nder"
+            android:textStyle="bold" />
 
-        <Spinner
-            android:id="@+id/messageSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:spinnerMode="dialog"
-            android:tooltipText="Alan Seçimi Yapınız"
-            tools:ignore="UnusedAttribute" />
+        <TextView
+            style="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/message_screen_subtitle"
+            android:textColor="?android:attr/textColorSecondary" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/messageTitleInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="@string/mesaj_ba_l"
+            app:counterEnabled="true"
+            app:counterMaxLength="@integer/message_title_max_length"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/messageTitleEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/mesaj_ba_l"
+                android:imeOptions="actionNext"
+                android:inputType="textCapSentences"
+                android:maxLength="@integer/message_title_max_length" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/messageBodyInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/mesaj_eri_i"
+            app:counterEnabled="true"
+            app:counterMaxLength="@integer/message_body_max_length"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/messageSubjectEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/mesaj_eri_i"
+                android:gravity="top"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="@integer/message_body_max_length"
+                android:minLines="3" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/messageTargetLabel"
+            style="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:labelFor="@id/messageSpinner"
+            android:text="@string/hedef_se_iniz" />
+
+        <TextView
+            android:id="@+id/messageTargetHelper"
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/message_target_helper"
+            android:textColor="?android:attr/textColorSecondary" />
+
+        <LinearLayout
+            android:id="@+id/messageSpinnerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/messageSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/message_target_spinner_desc"
+                android:minHeight="48dp"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sendMessageButton"
+                style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/message_send_button_desc"
+                android:minHeight="56dp"
+                android:text="@string/g_nder"
+                android:textSize="18sp"
+                app:icon="@drawable/baseline_message_24"
+                app:iconGravity="textStart" />
+
+            <ProgressBar
+                android:id="@+id/sendMessageProgress"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/message_sending"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </FrameLayout>
+
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/sendMessageButton"
-        style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="320dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="15dp"
-        android:text="@string/g_nder"
-        android:textSize="18sp">
-
-    </Button>
-
-
-</LinearLayout>
+</ScrollView>
